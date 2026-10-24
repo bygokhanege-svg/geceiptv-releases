@@ -93,6 +93,8 @@ fun AppSettingsScreen(onBack: () -> Unit) {
     val previewSound by settings.guidePreviewSound.collectAsState()
     val resumeLast by settings.resumeLastChannel.collectAsState()
     val nextEpisodePrompt by settings.nextEpisodePromptEnabled.collectAsState()
+    val tunnelingEnabled by settings.tunnelingEnabled.collectAsState()
+    val playerClockEnabled by settings.playerClockEnabled.collectAsState()
     val liveEnabled by settings.liveEnabled.collectAsState()
     val moviesEnabled by settings.moviesEnabled.collectAsState()
     val seriesEnabled by settings.seriesEnabled.collectAsState()
@@ -245,6 +247,18 @@ fun AppSettingsScreen(onBack: () -> Unit) {
                 subtitle = stringResource(R.string.settings_next_episode_subtitle),
                 checked = nextEpisodePrompt,
                 onToggle = settings::setNextEpisodePromptEnabled,
+            )
+            ToggleRow(
+                title = stringResource(R.string.settings_tunneling_title),
+                subtitle = stringResource(R.string.settings_tunneling_subtitle),
+                checked = tunnelingEnabled,
+                onToggle = settings::setTunnelingEnabled,
+            )
+            ToggleRow(
+                title = stringResource(R.string.settings_player_clock_title),
+                subtitle = stringResource(R.string.settings_player_clock_subtitle),
+                checked = playerClockEnabled,
+                onToggle = settings::setPlayerClockEnabled,
             )
         }
 
@@ -860,6 +874,18 @@ private fun HardwareProfileCard(
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.tertiary,
                 )
+                if (profile.hwTunneling) {
+                    Text(
+                        text = "•",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Text(
+                        text = "⚡ A/V Tunneling",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color(0xFF06B6D4),
+                    )
+                }
             }
         }
     }

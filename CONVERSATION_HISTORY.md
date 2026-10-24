@@ -306,6 +306,39 @@
     * Ana sayfadaki tüm sabit Türkçe metinler (başlıklar, istatistikler, durum etiketleri, sağlayıcı barı, içerik sütunları ve hata pencereleri) `dashboard_*` string kaynaklarına taşındı.
     * Cihaz/uygulama dili İngilizce olduğunda tüm ana sayfa İngilizce, Türkçe olduğunda Türkçe olarak dinamik ve yerel ayarlara duyarlı (`Locale.getDefault()`) hale getirildi.
 
+### 23. Donanım Multimedya Tünelleme (Hardware A/V Tunneling) & Otomatik Kurtarma
+* **Kullanıcı İstekleri:**
+  * Donanım tünelleme (multimedia tunneling) mantığının ne olduğunun açıklanması ve uygulamaya değer katacak şekilde entegre edilmesi.
+* **Teknik Çözüm ve Kararlar:**
+  * **ExoPlayer / Media3 Tünelleme Entegrasyonu ([PlayerController.kt](file:///c:/Users/EGE/Desktop/Tvapk/app/src/main/java/app/opentv/player/PlayerController.kt)):**
+    * `DefaultTrackSelector.parameters` üzerinde `setTunnelingEnabled(isTunnelingActive)` yapılandırıldı.
+    * Ön izleme (`preview = true`) ve Çoklu Ekran (Multi-View) modlarında donanım çakışmalarını önlemek için tünelleme daima pasif tutuldu.
+  * **Akıllı Otomatik Hata Kurtarma (Fail-Safe Fallback):**
+    * Tünelleme açıkken bir kanalın video/ses formatı TV donanımında kod çözücü hatası (`onPlayerError`) verirse motor anında `defaultTrackSelector.parameters = setTunnelingEnabled(false)` yaparak tünellemeyi kapatıp yayını 250ms içinde standart boru hattıyla yeniden başlatır. Böylece kullanıcı asla siyah ekranda veya çökmede kalmaz.
+  * **Kullanıcı Kontrolü ve Ayarlar ([AppSettings.kt](file:///c:/Users/EGE/Desktop/Tvapk/app/src/main/java/app/opentv/core/AppSettings.kt), [AppSettingsScreen.kt](file:///c:/Users/EGE/Desktop/Tvapk/app/src/main/java/app/opentv/ui/settings/AppSettingsScreen.kt)):**
+    * Ayarlar > Oynatma bölümüne `Donanım Tünelleme (A/V Tunneling)` açma/kapatma anahtarı eklendi.
+    * `DeviceOptimizationManager`'da `ULTRA` profili için tünelleme otomatik önerilirken, `LOW_END` ve `BALANCED` için güvenlik gereği varsayılan kapalı bırakıldı; profiller kartında `⚡ A/V Tunneling` rozeti eklendi.
+    * Türkçe ve İngilizce açıklamalar (`strings.xml`, `strings.xml (tr)`) eklendi.
+
+### 24. Canlı Yayın / Video Özellikleri (Nerd Stats) ve Sağ Üst Dijital Saat
+* **Kullanıcı İstekleri:**
+  1. Video izlerken videonun özelliklerini (bağlantı hızı, kaç MB dosya/akış, ne kadarla okunuyor, ebatları, codec vb.) gösteren detaylı bir analiz paneli butonu eklenmesi.
+  2. Video/dizi/TV izlerken ekranın sağ üst köşesinde güncel saatin gösterilmesi ve kullanıcının bunu açıp kapatabilmesi.
+* **Teknik Çözüm ve Kararlar:**
+  * **Oynatıcı İstatistik Motoru ([PlayerController.kt](file:///c:/Users/EGE/Desktop/Tvapk/app/src/main/java/app/opentv/player/PlayerController.kt)):**
+    * `DefaultBandwidthMeter.getSingletonInstance(context)` ExoPlayer ve OkHttp veri kaynağına `TransferListener` olarak bağlandı; anlık indirme/okuma hızı (`bitrateEstimate`) ölçümlendi.
+    * `StreamStatsInfo` modeli ve `getStreamStats()` fonksiyonu ile çözünürlük, en-boy etiketi (1080p, 4K vb.), FPS, video bitrate, video codec (HEVC, AVC vb.), ses codec (Dolby AC-3, E-AC-3 vb.), ses kanalları (Stereo, 5.1 Surround), örnekleme hızı (48 kHz), tampon süresi/yüzdesi, tünelleme durumu ve VOD içeriklerinde tahmini dosya boyutu (MB/GB) anlık hesaplandı.
+  * **İstatistik ve Analiz Paneli ([StreamStatsOverlay.kt](file:///c:/Users/EGE/Desktop/Tvapk/app/src/main/java/app/opentv/ui/player/StreamStatsOverlay.kt)):**
+    * `StreamStatsDialog` bileşeni oluşturuldu; modern koyu camgöbeği/lacivert kartlar halinde canlı olarak saniyede bir güncellenen istatistikler ve doğrudan panel içinden saati açma/kapatma anahtarı sunuldu.
+  * **Sağ Üst Köşe Saati (`PlayerClockBadge`):**
+    * `Alignment.TopEnd` konumunda şık, yarı saydam buzlu cam arka planlı, `HH:mm` formatında her saniye güncellenen dijital saat hapı eklendi.
+    * Tıklandığında istatistik panelini açar; kanal numarası tuşlandığında çakışmaz.
+  * **Canlı TV ve VOD Entegrasyonu ([PlayerScreen.kt](file:///c:/Users/EGE/Desktop/Tvapk/app/src/main/java/app/opentv/ui/player/PlayerScreen.kt), [VodPlayerScreen.kt](file:///c:/Users/EGE/Desktop/Tvapk/app/src/main/java/app/opentv/ui/vod/VodPlayerScreen.kt)):**
+    * Alt kontrol çubuğuna `BarChip` / `VodChip` ile `Yayın Özellikleri` / `Stats & Info` butonu (`Icons.Filled.Analytics`) eklendi.
+    * `BackHandler` entegrasyonu sağlandı (Geri tuşu önce açık paneli kapatır).
+  * **Ayarlar ve Dil Desteği ([AppSettings.kt](file:///c:/Users/EGE/Desktop/Tvapk/app/src/main/java/app/opentv/core/AppSettings.kt), [AppSettingsScreen.kt](file:///c:/Users/EGE/Desktop/Tvapk/app/src/main/java/app/opentv/ui/settings/AppSettingsScreen.kt)):**
+    * Ayarlar > Oynatma menüsüne `Oynatıcıda Güncel Saat` / `Show Current Time in Player` toggle'ı eklendi (varsayılan: açık).
+
 ---
 
 ## 📌 Hızlı Referans & Mimari Kurallar

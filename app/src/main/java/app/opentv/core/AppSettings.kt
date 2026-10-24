@@ -418,6 +418,27 @@ class AppSettings private constructor(context: Context) {
         _livePauseEnabled.value = enabled
     }
 
+    /**
+     * Hardware Audio/Video Tunneling (ExoPlayer setTunnelingEnabled).
+     * Bypasses Android framework audio/video routing to TV hardware DSP for perfect A/V sync and 60fps.
+     */
+    private val _tunnelingEnabled = MutableStateFlow(prefs.getBoolean(KEY_TUNNELING_ENABLED, false))
+    val tunnelingEnabled: StateFlow<Boolean> = _tunnelingEnabled.asStateFlow()
+
+    fun setTunnelingEnabled(enabled: Boolean) {
+        prefs.edit().putBoolean(KEY_TUNNELING_ENABLED, enabled).apply()
+        _tunnelingEnabled.value = enabled
+    }
+
+    /** Whether to display a sleek live clock in the top-right corner of the video player. */
+    private val _playerClockEnabled = MutableStateFlow(prefs.getBoolean(KEY_PLAYER_CLOCK_ENABLED, true))
+    val playerClockEnabled: StateFlow<Boolean> = _playerClockEnabled.asStateFlow()
+
+    fun setPlayerClockEnabled(enabled: Boolean) {
+        prefs.edit().putBoolean(KEY_PLAYER_CLOCK_ENABLED, enabled).apply()
+        _playerClockEnabled.value = enabled
+    }
+
     // ---- Content types -----------------------------------------------------------------------
 
     /**
@@ -724,6 +745,8 @@ class AppSettings private constructor(context: Context) {
         private const val KEY_VOD_BUFFER_MODE = "vod_buffer_mode"
         private const val KEY_MAX_MULTIVIEW_SLOTS = "max_multiview_slots"
         private const val KEY_ACTIVE_SOURCE_ID = "active_source_id"
+        private const val KEY_TUNNELING_ENABLED = "hardware_tunneling_enabled"
+        private const val KEY_PLAYER_CLOCK_ENABLED = "player_clock_enabled"
 
         @Volatile private var instance: AppSettings? = null
 

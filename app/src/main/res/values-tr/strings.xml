@@ -124,6 +124,17 @@
     <string name="player_aspect_ratio_title">En-boy oranı</string>
     <string name="player_none_available">Kullanılabilir seçenek yok</string>
     <string name="player_subtitles_off">Kapalı</string>
+    <string name="player_stats">Yayın Özellikleri</string>
+    <string name="player_stats_title">Yayın ve Donanım Analizi</string>
+    <string name="player_stats_video_specs">Video ve Çözünürlük</string>
+    <string name="player_stats_connection">Ağ ve Okuma Hızı</string>
+    <string name="player_stats_audio">Ses Sistemi</string>
+    <string name="player_stats_buffer">Tampon Sağlığı</string>
+    <string name="player_stats_tunneling">Donanım Tünelleme</string>
+    <string name="player_stats_file_size">Tahmini Dosya Boyutu</string>
+    <string name="player_stats_clock_toggle">Sağ Üst Saat</string>
+    <string name="settings_player_clock_title">Oynatıcıda Güncel Saat</string>
+    <string name="settings_player_clock_subtitle">Yayın ve video izlerken ekranın sağ üst köşesinde şık bir dijital saat gösterir.</string>
     <string name="settings_providers_title">Sağlayıcılar</string>
     <string name="settings_providers_subtitle">IPTV kaynaklarınızı ekleyin, kaldırın ve yeniden test edin</string>
     <string name="settings_addons_title">Eklentiler (Stremio)</string>
@@ -191,6 +202,8 @@
     <string name="settings_resume_subtitle">Uygulamayı rehber yerine doğrudan en son izlediğiniz kanalla açar. Rehbere ulaşmak için Geri\'ye basın.</string>
     <string name="settings_next_episode_title">Sonraki bölüm seçeneği</string>
     <string name="settings_next_episode_subtitle">Dizi bitimine 30-40 saniye kala sonraki bölüme geçme kartını gösterir.</string>
+    <string name="settings_tunneling_title">Donanım Tünelleme (A/V Tunneling)</string>
+    <string name="settings_tunneling_subtitle">Destekleyen Android TV\'lerde ses ve videoyu doğrudan donanım çipine tüneller. Kusursuz 60fps akıcılığı ve sıfır ses gecikmesi sağlar. Yayında siyah ekran olursa kapatın.</string>
     <string name="settings_sleep_timer">Uyku zamanlayıcısı</string>
     <string name="settings_sleep_off_desc">Kapalı — siz durdurana kadar oynatma devam eder.</string>
     <string name="settings_sleep_on_desc">Açık — oynatma yaklaşık %1$d dakika içinde duracak.</string>

@@ -47,6 +47,7 @@ import androidx.compose.foundation.verticalScroll
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Analytics
 import androidx.compose.material.icons.filled.Audiotrack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ChevronRight
@@ -74,6 +75,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
 import app.opentv.data.model.Episode
 import app.opentv.player.OnlineSubtitle
+import app.opentv.ui.player.PlayerClockBadge
+import app.opentv.ui.player.StreamStatsDialog
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -189,6 +192,8 @@ fun VodPlayerScreen(
     var durationMs by remember { mutableLongStateOf(0L) }
     var bufferedMs by remember { mutableLongStateOf(0L) }
     var skipOverlayText by remember { mutableStateOf<String?>(null) }
+    val playerClockEnabled by settings.playerClockEnabled.collectAsState()
+    var showStatsDialog by remember { mutableStateOf(false) }
     LaunchedEffect(skipOverlayText) {
         if (skipOverlayText != null) {
             delay(1000)
@@ -227,6 +232,7 @@ fun VodPlayerScreen(
     val state by controller.state.collectAsState()
     val tracks by controller.tracks.collectAsState()
     val nextEpisodePromptEnabled by settings.nextEpisodePromptEnabled.collectAsState()
+    val inPip by app.opentv.core.PipState.inPip.collectAsState()
 
     var paused by remember { mutableStateOf(false) }
     var vodPanel by remember { mutableStateOf(VodPanel.NONE) }
@@ -505,6 +511,7 @@ fun VodPlayerScreen(
         val activelyPlaying = state is PlayerController.State.Playing ||
             (growingRec && state is PlayerController.State.Buffering)
         when {
+            showStatsDialog -> showStatsDialog = false
             vodPanel != VodPanel.NONE -> vodPanel = VodPanel.NONE
             controlsVisible && activelyPlaying && !paused -> controlsVisible = false
             else -> onBack()
@@ -556,6 +563,16 @@ fun VodPlayerScreen(
                 }
             },
         )
+
+        // Top-Right Live Clock Badge
+        if (playerClockEnabled && !inPip) {
+            PlayerClockBadge(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(top = 28.dp, end = 32.dp),
+                onClick = { showStatsDialog = true },
+            )
+        }
 
         when (val current = state) {
             is PlayerController.State.Buffering ->
@@ -819,6 +836,10 @@ fun VodPlayerScreen(
                         vodPanel = if (vodPanel == VodPanel.QUALITY) VodPanel.NONE else VodPanel.QUALITY
                         interaction++
                     }
+                    VodChip(Icons.Filled.Analytics, stringResource(R.string.player_stats)) {
+                        showStatsDialog = true
+                        interaction++
+                    }
                     VodChip(Icons.Filled.Tv, stringResource(R.string.vod_external_player)) {
                         launchExternalPlayer()
                         interaction++
@@ -862,6 +883,14 @@ fun VodPlayerScreen(
                     onClick = { playNextEpisode() },
                 )
             }
+        }
+
+        if (showStatsDialog) {
+            StreamStatsDialog(
+                controller = controller,
+                settings = settings,
+                onDismiss = { showStatsDialog = false },
+            )
         }
     }
 }

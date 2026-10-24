@@ -137,6 +137,17 @@
     <string name="player_aspect_ratio_title">Aspect ratio</string>
     <string name="player_none_available">None available</string>
     <string name="player_subtitles_off">Off</string>
+    <string name="player_stats">Stats &amp; Info</string>
+    <string name="player_stats_title">Stream &amp; Hardware Analytics</string>
+    <string name="player_stats_video_specs">Video &amp; Resolution</string>
+    <string name="player_stats_connection">Network &amp; Read Speed</string>
+    <string name="player_stats_audio">Audio System</string>
+    <string name="player_stats_buffer">Buffer Health</string>
+    <string name="player_stats_tunneling">A/V Tunneling</string>
+    <string name="player_stats_file_size">Estimated File Size</string>
+    <string name="player_stats_clock_toggle">Top-Right Clock</string>
+    <string name="settings_player_clock_title">Show Current Time in Player</string>
+    <string name="settings_player_clock_subtitle">Displays a sleek digital clock in the top-right corner while watching videos and live TV.</string>
 
     <!-- ============================ Settings hub ============================ -->
     <string name="settings_providers_title">Providers</string>
@@ -209,6 +220,8 @@
     <string name="settings_resume_subtitle">Open the app straight into the channel you were last watching, instead of the guide. Press Back to reach the guide.</string>
     <string name="settings_next_episode_title">Next episode prompt</string>
     <string name="settings_next_episode_subtitle">Show next episode card 30-40 seconds before the series episode ends.</string>
+    <string name="settings_tunneling_title">Hardware A/V Tunneling</string>
+    <string name="settings_tunneling_subtitle">Bypasses OS audio/video routing on supported Android TVs for ultra-smooth 60fps and zero audio lag. Turn off if you get a black screen.</string>
     <string name="settings_sleep_timer">Sleep timer</string>
     <string name="settings_sleep_off_desc">Off — playback keeps going until you stop it.</string>
     <string name="settings_sleep_on_desc">On — playback will stop in about %1$d min.</string>

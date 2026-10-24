@@ -43,6 +43,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Analytics
 import androidx.compose.material.icons.filled.AspectRatio
 import androidx.compose.material.icons.filled.Audiotrack
 import androidx.compose.material.icons.filled.Check
@@ -204,6 +205,8 @@ fun PlayerScreen(
     var numberEntry by remember { mutableStateOf("") }
     var paused by remember { mutableStateOf(false) }
     var resizeMode by remember { mutableIntStateOf(settings.playerResizeMode.value) }
+    val playerClockEnabled by settings.playerClockEnabled.collectAsState()
+    var showStatsDialog by remember { mutableStateOf(false) }
 
     val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
@@ -377,6 +380,7 @@ fun PlayerScreen(
     // you wanted to dismiss the bar.
     BackHandler {
         when {
+            showStatsDialog -> showStatsDialog = false
             channelListVisible -> channelListVisible = false
             panel != Panel.NONE -> panel = Panel.NONE
             controlsVisible -> controlsVisible = false
@@ -477,6 +481,16 @@ fun PlayerScreen(
             },
             update = { it.resizeMode = resizeMode },
         )
+
+        // Top-Right Live Clock Badge
+        if (playerClockEnabled && !inPip && numberEntry.isEmpty()) {
+            PlayerClockBadge(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(top = 28.dp, end = 32.dp),
+                onClick = { showStatsDialog = true },
+            )
+        }
 
         // The channel number as you type it, top-right, until it resolves.
         if (numberEntry.isNotEmpty() && !inPip) {
@@ -621,6 +635,9 @@ fun PlayerScreen(
                     BarChip(Icons.Filled.AspectRatio, stringResource(R.string.player_aspect), panel == Panel.ASPECT) {
                         panel = if (panel == Panel.ASPECT) Panel.NONE else Panel.ASPECT; interaction++
                     }
+                    BarChip(Icons.Filled.Analytics, stringResource(R.string.player_stats), showStatsDialog) {
+                        showStatsDialog = true; interaction++
+                    }
                     val recordingThis = activeRecordings.any { it.channelId == currentId }
                     BarChip(
                         icon = Icons.Filled.FiberManualRecord,
@@ -721,6 +738,14 @@ fun PlayerScreen(
                 context.requestIgnoreBatteryOptimizations()
             },
             onDismiss = { showBackgroundPrompt = false },
+        )
+    }
+
+    if (showStatsDialog) {
+        StreamStatsDialog(
+            controller = controller,
+            settings = settings,
+            onDismiss = { showStatsDialog = false },
         )
     }
 }

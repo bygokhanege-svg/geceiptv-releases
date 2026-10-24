@@ -143,8 +143,11 @@ class PlayerController(
      * player's HTTP layer. Setting it on the factory applies it to data sources created for
      * subsequent loads, which is exactly the granularity we need.
      */
+    private val bandwidthMeter = androidx.media3.exoplayer.upstream.DefaultBandwidthMeter.getSingletonInstance(context)
+
     private val httpFactory = OkHttpDataSource.Factory(httpClient).apply {
         setDefaultRequestProperties(mapOf("User-Agent" to DEFAULT_USER_AGENT))
+        setTransferListener(bandwidthMeter)
     }
 
     private val dataSourceFactory: androidx.media3.datasource.DataSource.Factory =
@@ -206,8 +209,9 @@ class PlayerController(
     }
 
     private val appSettings = runCatching { app.opentv.core.AppSettings.get(context) }.getOrNull()
+    private val isTunnelingActive: Boolean = !preview && (appSettings?.tunnelingEnabled?.value == true)
 
-    private val trackSelector = DefaultTrackSelector(context).apply {
+    private val defaultTrackSelector = DefaultTrackSelector(context).apply {
         val prefLang = appSettings?.subtitleLanguage?.value?.takeIf { it.isNotBlank() && it != "auto" }
             ?: java.util.Locale.getDefault().language
         parameters = buildUponParameters()
@@ -216,7 +220,7 @@ class PlayerController(
             .setSelectUndeterminedTextLanguage(true)
             .setTrackTypeDisabled(C.TRACK_TYPE_TEXT, !subtitlesEnabled)
             .setExceedRendererCapabilitiesIfNecessary(true)
-            .setTunnelingEnabled(false)
+            .setTunnelingEnabled(isTunnelingActive)
             .build()
     }
 
@@ -240,6 +244,7 @@ class PlayerController(
     }
 
     val player: ExoPlayer = ExoPlayer.Builder(context, renderersFactory)
+        .setBandwidthMeter(bandwidthMeter)
         .setAudioAttributes(
             AudioAttributes.Builder()
                 .setUsage(C.USAGE_MEDIA)
@@ -253,7 +258,7 @@ class PlayerController(
             DefaultMediaSourceFactory(dataSourceFactory)
                 .setLoadErrorHandlingPolicy(loadErrorPolicy),
         )
-        .setTrackSelector(trackSelector)
+        .setTrackSelector(defaultTrackSelector)
         .setLoadControl(
             DefaultLoadControl.Builder()
                 .setBufferDurationsMs(
@@ -306,6 +311,21 @@ class PlayerController(
                 override fun onPlayerError(error: PlaybackException) {
                     val request = current
                     val altUrl = request?.url?.let { alternateStreamUrl(it) }
+
+                    // If tunneling was active and playback hit an error, automatically disable tunneling and retry with standard pipeline
+                    if (defaultTrackSelector.parameters.tunnelingEnabled) {
+                        android.util.Log.w("PlayerController", "Stream error on ${request?.url} with tunneling active (${error.errorCodeName}). Disabling tunneling for this session and retrying.")
+                        defaultTrackSelector.parameters = defaultTrackSelector.buildUponParameters()
+                            .setTunnelingEnabled(false)
+                            .build()
+                        scope.launch {
+                            delay(250)
+                            if (current == request && request != null) {
+                                play(request, debounce = false)
+                            }
+                        }
+                        return
+                    }
 
                     // Smart auto-format fallback: if .m3u8 fails (e.g. 404, parser error), automatically try .ts (and vice versa)
                     if (request != null && !triedAlternateFormat && altUrl != null) {
@@ -651,6 +671,144 @@ class PlayerController(
         unregister(this)
         switchJob?.cancel()
         player.release()
+    }
+
+    data class StreamStatsInfo(
+        val title: String,
+        val resolution: String,
+        val fps: String,
+        val videoCodec: String,
+        val videoBitrate: String,
+        val audioCodec: String,
+        val audioChannels: String,
+        val audioSampleRate: String,
+        val connectionSpeed: String,
+        val bufferDuration: String,
+        val bufferPercentage: Int,
+        val containerFormat: String,
+        val tunnelingActive: Boolean,
+        val estimatedFileSize: String?,
+        val streamUrl: String,
+    )
+
+    fun getStreamStats(): StreamStatsInfo {
+        val req = current
+        val vFormat = player.videoFormat
+        val aFormat = player.audioFormat
+
+        val width = vFormat?.width ?: 0
+        val height = vFormat?.height ?: 0
+        val resTag = when {
+            height >= 2160 -> "4K Ultra HD"
+            height >= 1080 -> "1080p Full HD"
+            height >= 720 -> "720p HD"
+            height >= 480 -> "480p SD"
+            height > 0 -> "${height}p"
+            else -> "Otomatik"
+        }
+        val resolution = if (width > 0 && height > 0) "$width x $height ($resTag)" else resTag
+
+        val frameRate = vFormat?.frameRate ?: 0f
+        val fps = if (frameRate > 0) String.format(Locale.US, "%.1f fps", frameRate) else "Otomatik"
+
+        val vBitrate = vFormat?.bitrate?.takeIf { it > 0 } ?: (vFormat?.peakBitrate?.takeIf { it > 0 } ?: 0)
+        val videoBitrate = when {
+            vBitrate >= 1_000_000 -> String.format(Locale.US, "%.1f Mbps", vBitrate / 1_000_000f)
+            vBitrate > 0 -> "${vBitrate / 1_000} kbps"
+            else -> "Dinamik Akış"
+        }
+
+        val vMime = vFormat?.sampleMimeType.orEmpty().lowercase()
+        val videoCodec = when {
+            vMime.contains("hevc") || vMime.contains("h265") -> "HEVC / H.265 (Donanım)"
+            vMime.contains("avc") || vMime.contains("h264") -> "AVC / H.264 (Donanım)"
+            vMime.contains("vp9") -> "VP9 (Donanım)"
+            vMime.contains("av01") || vMime.contains("av1") -> "AV1 (MediaCodec)"
+            vMime.contains("mpeg2") -> "MPEG-2"
+            vFormat?.codecs != null -> vFormat.codecs.orEmpty()
+            vMime.isNotBlank() -> vMime.removePrefix("video/")
+            else -> "Donanım Kod Çözücü"
+        }
+
+        val aMime = aFormat?.sampleMimeType.orEmpty().lowercase()
+        val audioCodec = when {
+            aMime.contains("eac3") -> "Dolby Digital Plus (E-AC-3)"
+            aMime.contains("ac3") -> "Dolby Digital (AC-3)"
+            aMime.contains("dts") -> "DTS Digital Surround"
+            aMime.contains("truehd") -> "Dolby TrueHD"
+            aMime.contains("mp4a") || aMime.contains("aac") -> "AAC Stereo/Audio"
+            aMime.contains("opus") -> "Opus Audio"
+            aMime.contains("flac") -> "FLAC Lossless"
+            aMime.contains("vorbis") -> "Vorbis"
+            aMime.contains("mpeg") -> "MP3 / MPEG Audio"
+            aMime.isNotBlank() -> aMime.removePrefix("audio/")
+            else -> "Standart Ses"
+        }
+
+        val channels = aFormat?.channelCount ?: 0
+        val audioChannels = when (channels) {
+            1 -> "Mono (1.0)"
+            2 -> "Stereo (2.0)"
+            6 -> "5.1 Surround (6 Kanal)"
+            8 -> "7.1 Surround (8 Kanal)"
+            else -> if (channels > 0) "$channels Kanal" else "Stereo"
+        }
+        val sampleRate = aFormat?.sampleRate ?: 0
+        val audioSampleRate = if (sampleRate > 0) String.format(Locale.US, "%.1f kHz", sampleRate / 1000f) else "48.0 kHz"
+
+        val bw = bandwidthMeter.bitrateEstimate
+        val connectionSpeed = when {
+            bw > 1_000_000 -> String.format(Locale.US, "%.1f Mbps", bw / 1_000_000f)
+            bw > 0 -> "${bw / 1000} kbps"
+            else -> "Hesaplanıyor…"
+        }
+
+        val totalBufferMs = player.totalBufferedDuration.coerceAtLeast(0L)
+        val bufferDuration = String.format(Locale.US, "%.1f sn", totalBufferMs / 1000f)
+        val bufferPercentage = player.bufferedPercentage.coerceIn(0, 100)
+
+        val url = req?.url.orEmpty()
+        val containerFormat = when {
+            url.contains(".m3u8", ignoreCase = true) -> "HLS (.m3u8 Canlı Akış)"
+            url.contains(".ts", ignoreCase = true) -> "MPEG-TS (.ts Taşıyıcı)"
+            url.contains(".mpd", ignoreCase = true) -> "DASH (.mpd Akış)"
+            url.contains(".mp4", ignoreCase = true) -> "MP4 Video Dosyası"
+            url.contains(".mkv", ignoreCase = true) -> "MKV Matroska Dosyası"
+            url.contains(".avi", ignoreCase = true) -> "AVI Video Dosyası"
+            else -> "HTTP Medya Akışı"
+        }
+
+        val durMs = player.duration
+        val isVodStream = (req != null && !req.isLive) || isVod
+        val estimatedFileSize = if (isVodStream && durMs > 0) {
+            val totalBr = (if (vBitrate > 0) vBitrate else 4_000_000) + (aFormat?.bitrate?.takeIf { it > 0 } ?: 192_000)
+            val bytes = (totalBr.toLong() * (durMs / 1000L)) / 8L
+            when {
+                bytes >= 1024L * 1024L * 1024L -> String.format(Locale.US, "%.2f GB", bytes / (1024f * 1024f * 1024f))
+                bytes > 0 -> String.format(Locale.US, "%d MB", bytes / (1024L * 1024L))
+                else -> null
+            }
+        } else null
+
+        val tunnelingActive = defaultTrackSelector.parameters.tunnelingEnabled
+
+        return StreamStatsInfo(
+            title = req?.title?.ifBlank { "Aktif Akış" } ?: "Aktif Akış",
+            resolution = resolution,
+            fps = fps,
+            videoCodec = videoCodec,
+            videoBitrate = videoBitrate,
+            audioCodec = audioCodec,
+            audioChannels = audioChannels,
+            audioSampleRate = audioSampleRate,
+            connectionSpeed = connectionSpeed,
+            bufferDuration = bufferDuration,
+            bufferPercentage = bufferPercentage,
+            containerFormat = containerFormat,
+            tunnelingActive = tunnelingActive,
+            estimatedFileSize = estimatedFileSize,
+            streamUrl = url,
+        )
     }
 
     companion object {

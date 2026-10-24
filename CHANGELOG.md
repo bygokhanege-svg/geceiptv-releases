@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.12.13
+
+- **Donanım Multimedya Tünelleme (Hardware A/V Tunneling):** Destekleyen Android TV'lerde ses ve görüntü doğrudan TV'nin donanım çipine tünellenerek dudak-ses kayması (lip-sync lag) sıfırlandı; 60fps ve 4K spor yayınları için kusursuz akıcılık sağlandı.
+- **Akıllı Otomatik Hata Kurtarma:** Tünelleme aktifken bir yayında kod çözücü hatası oluşursa motor anında standart boru hattına dönerek 250ms içinde yayını kesintisiz yeniden başlatır; kullanıcı asla siyah ekranda kalmaz.
+- **Canlı Yayın Özellikleri & İstatistik Paneli (Nerd Stats):** Video izlerken alt çubuktaki "Yayın Özellikleri" butonu ile bağlantı hızı (Mbps), video çözünürlüğü ve ebatları, FPS, video/ses codec'leri, tampon sağlık yüzdesi ve tahmini dosya boyutu canlı olarak analiz edilir.
+- **Sağ Üst Köşede Canlı Dijital Saat:** Canlı TV, film ve dizi izlerken ekranın sağ üst köşesinde şık, buzlu camlı ve her saniye güncellenen dijital saat hapı eklendi; Ayarlar > Oynatma menüsünden ve istatistik panelinden kolayca açılıp kapatılabilir.
+- **Optimizasyon Profilleri Entegrasyonu:** ULTRA donanım profili için donanım tünelleme otomatik aktifleşirken, giriş seviyesi cihazlarda güvenlik amacıyla varsayılan kapalı bırakıldı.
+
 ## 0.12.12
 
 - **Ana Dizin Gridleri Modernizasyonu:** Ana sayfadaki Canlı TV, Filmler ve Diziler alanları 82dp yükseklikte, camgöbeği/mor/indigo derin gradyanlı, buzlu cam ikon kutulu ve canlı/durum rozetli (`● CANLI`, `🎬 SİNEMA`, `🍿 SEZONLAR`) geniş ve şık kahraman kartlara dönüştürüldü.

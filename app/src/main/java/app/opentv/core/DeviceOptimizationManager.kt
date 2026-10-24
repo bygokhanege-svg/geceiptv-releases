@@ -63,7 +63,7 @@ object DeviceOptimizationManager {
             previewVideoEnabled = true,
             maxMultiViewSlots = 3,
             imageCacheMb = 60,
-            hwTunneling = true,
+            hwTunneling = false,
         ),
         ULTRA(
             titleRes = R.string.settings_profile_ultra,
@@ -150,5 +150,6 @@ object DeviceOptimizationManager {
         )
         settings.setGuidePreviewVideo(profile.previewVideoEnabled)
         settings.setMaxMultiViewSlots(profile.maxMultiViewSlots)
+        settings.setTunnelingEnabled(profile.hwTunneling)
     }
 }

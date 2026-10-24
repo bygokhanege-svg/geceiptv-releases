@@ -790,4 +790,70 @@
     <string name="vod_audio_num">Audio %1$d</string>
     <string name="channel_action_hide">👁️ Hide Channel in List</string>
     <string name="channel_action_hidden_toast">%1$s hidden in list</string>
+
+    <!-- ============================ Dashboard / Home Screen ============================ -->
+    <string name="dashboard_brand_subtitle">New content • Live streams</string>
+    <string name="dashboard_stat_series">TOTAL SERIES</string>
+    <string name="dashboard_stat_movies">TOTAL MOVIES</string>
+    <string name="dashboard_stat_channels">LIVE CHANNELS</string>
+    <string name="dashboard_stat_showcase">NEW CONTENT</string>
+    <string name="dashboard_unit_items">items</string>
+    <string name="dashboard_unit_channels">channels</string>
+    <string name="dashboard_unit_showcase">showcase</string>
+    <string name="dashboard_status_label">STATUS</string>
+    <string name="dashboard_expiry_lifetime">Lifetime</string>
+    <string name="dashboard_expiry_prefix">Subscription: %1$s</string>
+    <string name="dashboard_theme_dark">Dark</string>
+    <string name="dashboard_theme_light">Light</string>
+
+    <string name="dashboard_providers_title">PROVIDERS</string>
+    <string name="dashboard_providers_quick_switch">Quick Switch</string>
+    <string name="dashboard_provider_active">✔ ACTIVE</string>
+    <string name="dashboard_provider_add">Add New</string>
+    <string name="dashboard_provider_empty">No Providers · Add a Provider Now</string>
+    <string name="dashboard_provider_disconnected">⚠️ Disconnected</string>
+
+    <string name="dashboard_nav_live_tv">LIVE TV</string>
+    <string name="dashboard_nav_live_badge">● LIVE</string>
+    <string name="dashboard_nav_live_unit">%1$s Channels</string>
+    <string name="dashboard_nav_live_sub_fallback">Live Broadcasts</string>
+
+    <string name="dashboard_nav_movies">MOVIES</string>
+    <string name="dashboard_nav_movies_badge">🎬 CINEMA</string>
+    <string name="dashboard_nav_movies_unit">%1$s Movies</string>
+    <string name="dashboard_nav_movies_sub_fallback">Cinema &amp; VOD</string>
+
+    <string name="dashboard_nav_series">SERIES</string>
+    <string name="dashboard_nav_series_badge">🍿 SEASONS</string>
+    <string name="dashboard_nav_series_unit">%1$s Series</string>
+    <string name="dashboard_nav_series_sub_fallback">Seasons &amp; Shows</string>
+
+    <string name="dashboard_tool_multiview">Multi-View TV</string>
+    <string name="dashboard_tool_multiview_desc">Watch 2–4 streams at once</string>
+    <string name="dashboard_tool_search">Search</string>
+    <string name="dashboard_tool_search_desc">Search channels &amp; VOD</string>
+    <string name="dashboard_tool_qr">QR Connect</string>
+    <string name="dashboard_tool_qr_desc">Remote &amp; Web portal</string>
+    <string name="dashboard_tool_settings">Settings</string>
+    <string name="dashboard_tool_settings_desc">Player &amp; app settings</string>
+
+    <string name="dashboard_section_new_series">New Series</string>
+    <string name="dashboard_section_new_movies">New Movies</string>
+    <string name="dashboard_section_latest_badge">LATEST %1$d</string>
+    <string name="dashboard_section_continue_watching">Continue Watching</string>
+    <string name="dashboard_section_see_all">See All &gt;</string>
+    <string name="dashboard_section_daily_pick">Daily Pick</string>
+    <string name="dashboard_empty_series">No series available to display</string>
+    <string name="dashboard_empty_movies">No movies available to display</string>
+    <string name="dashboard_recommended">Recommended Content</string>
+    <string name="dashboard_watch_now">Watch Now</string>
+    <string name="dashboard_resume">Resume</string>
+    <string name="dashboard_resume_progress">▶ %1$d%% RESUME</string>
+    <string name="dashboard_watched_badge">%1$d%% WATCHED</string>
+    <string name="dashboard_content_count">%1$d ITEMS</string>
+    <string name="dashboard_tag_movie">MOVIE</string>
+    <string name="dashboard_tag_series">SERIES</string>
+    <string name="dashboard_alert_title">Provider Connection Alert</string>
+    <string name="dashboard_alert_desc">Please switch provider. No connection or credentials incorrect.</string>
+    <string name="dashboard_alert_error">Error Details: %1$s</string>
 </resources>

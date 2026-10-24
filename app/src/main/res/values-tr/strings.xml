@@ -724,4 +724,70 @@
     <string name="vod_audio_num">Ses %1$d</string>
     <string name="channel_action_hide">👁️ Kanalı Listede Gizle</string>
     <string name="channel_action_hidden_toast">%1$s listede gizlendi</string>
+
+    <!-- ============================ Dashboard / Home Screen ============================ -->
+    <string name="dashboard_brand_subtitle">Yeni içerikler • Canlı yayınlar</string>
+    <string name="dashboard_stat_series">TOPLAM DİZİ</string>
+    <string name="dashboard_stat_movies">TOPLAM FİLM</string>
+    <string name="dashboard_stat_channels">CANLI KANAL</string>
+    <string name="dashboard_stat_showcase">YENİ İÇERİK</string>
+    <string name="dashboard_unit_items">adet</string>
+    <string name="dashboard_unit_channels">kanal</string>
+    <string name="dashboard_unit_showcase">vitrin</string>
+    <string name="dashboard_status_label">DURUM</string>
+    <string name="dashboard_expiry_lifetime">Süresiz</string>
+    <string name="dashboard_expiry_prefix">Abonelik: %1$s</string>
+    <string name="dashboard_theme_dark">Gece</string>
+    <string name="dashboard_theme_light">Gündüz</string>
+
+    <string name="dashboard_providers_title">SAĞLAYICILAR</string>
+    <string name="dashboard_providers_quick_switch">Hızlı Geçiş</string>
+    <string name="dashboard_provider_active">✔ AKTİF</string>
+    <string name="dashboard_provider_add">Yeni Ekle</string>
+    <string name="dashboard_provider_empty">Yüklü Sağlayıcı Yok · Hemen Sağlayıcı Ekleyin</string>
+    <string name="dashboard_provider_disconnected">⚠️ Bağlantı Koptu</string>
+
+    <string name="dashboard_nav_live_tv">CANLI TV</string>
+    <string name="dashboard_nav_live_badge">● CANLI</string>
+    <string name="dashboard_nav_live_unit">%1$s Kanal</string>
+    <string name="dashboard_nav_live_sub_fallback">Canlı Yayınlar</string>
+
+    <string name="dashboard_nav_movies">FİLMLER</string>
+    <string name="dashboard_nav_movies_badge">🎬 SİNEMA</string>
+    <string name="dashboard_nav_movies_unit">%1$s Film</string>
+    <string name="dashboard_nav_movies_sub_fallback">Sinema &amp; VOD</string>
+
+    <string name="dashboard_nav_series">DİZİLER</string>
+    <string name="dashboard_nav_series_badge">🍿 SEZONLAR</string>
+    <string name="dashboard_nav_series_unit">%1$s Dizi</string>
+    <string name="dashboard_nav_series_sub_fallback">Sezonlar &amp; Diziler</string>
+
+    <string name="dashboard_tool_multiview">Çoklu Ekran</string>
+    <string name="dashboard_tool_multiview_desc">Aynı ekranda 2-4 yayın izle</string>
+    <string name="dashboard_tool_search">Arama</string>
+    <string name="dashboard_tool_search_desc">Kanal, film ve dizilerde ara</string>
+    <string name="dashboard_tool_qr">QR Bağlantı</string>
+    <string name="dashboard_tool_qr_desc">Kumanda &amp; Web Portalı</string>
+    <string name="dashboard_tool_settings">Ayarlar</string>
+    <string name="dashboard_tool_settings_desc">Oynatıcı ve sistem ayarları</string>
+
+    <string name="dashboard_section_new_series">Yeni Diziler</string>
+    <string name="dashboard_section_new_movies">Yeni Filmler</string>
+    <string name="dashboard_section_latest_badge">SON %1$d</string>
+    <string name="dashboard_section_continue_watching">İzlemeye Devam Et</string>
+    <string name="dashboard_section_see_all">Tümünü Gör &gt;</string>
+    <string name="dashboard_section_daily_pick">Günün Önerisi</string>
+    <string name="dashboard_empty_series">Görüntülenecek dizi bulunamadı</string>
+    <string name="dashboard_empty_movies">Görüntülenecek film bulunamadı</string>
+    <string name="dashboard_recommended">Önerilen İçerik</string>
+    <string name="dashboard_watch_now">Hemen İzle</string>
+    <string name="dashboard_resume">Devam Et</string>
+    <string name="dashboard_resume_progress">▶ %1$d%% KALDIĞIN YERDEN</string>
+    <string name="dashboard_watched_badge">%%%1$d İZLENDİ</string>
+    <string name="dashboard_content_count">%1$d İÇERİK</string>
+    <string name="dashboard_tag_movie">FİLM</string>
+    <string name="dashboard_tag_series">DİZİ</string>
+    <string name="dashboard_alert_title">Sağlayıcı Bağlantı Uyarısı</string>
+    <string name="dashboard_alert_desc">Lütfen sağlayıcı değiştiriniz. Sağlayıcı bağlantınız yok yada kullanıcı adı şifre yanlış.</string>
+    <string name="dashboard_alert_error">Hata Detayı: %1$s</string>
 </resources>

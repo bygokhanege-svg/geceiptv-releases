@@ -281,6 +281,31 @@
   * **Düşük RAM Kalkanı:** "Tüm Kanallar" seçili iken binlerce kanalın Compose listesine yığılmasını engellemek için ilk yükleme `list.take(200)` ile sınırlandırıldı; spesifik kategori seçildiğinde ise o kategorinin kanalları gösterildi.
   * **Güvenli Hata Yakalama:** `tuneSlot` ve `onSelectChannelForSlot` çağrıları `runCatching` kalkanına alındı; çift `controllers.release()` çağrısı temizlendi.
 
+### 21. Sağlayıcılar Arası Hızlı Geçiş (ProviderQuickChipsBar - Tek Tıkla Değişim)
+* **Kullanıcı İstekleri:**
+  * Ana sayfadaki sağlayıcılar arasında geçişin çok adımlı/yavaş akordiyon menü yerine hızlı, düzgün ve anlık olması.
+* **Teknik Çözüm ve Kararlar (`DashboardScreen.kt`):**
+  * Eski `ProviderAccordionBar` ve açma/kapatma durumu (`providerMenuExpanded`) kaldırıldı.
+  * Yerine her an görünür, tek tıkla/tek dokunuşla seçilebilen `ProviderQuickChipsBar` eklendi.
+  * Aktif sağlayıcı yeşil kenarlık ve `✔ AKTİF` rozeti ile belirtildi; D-pad kumanda odaklaması ve `➕ Yeni Ekle` butonu entegre edildi.
+
+---
+
+### 22. Ana Dizin Gridleri Modernizasyonu ve Türkçe/İngilizce Çift Dil Desteği
+* **Kullanıcı İstekleri:**
+  1. Ana sayfadaki Canlı TV, Filmler, Diziler gibi ana dizinlerin gridlerinin daha şık ve modern bir şekilde yerleştirilmesi.
+  2. Ana sayfayı İngilizce olarak kullananlar için İngilizce desteği eklenmesi (diğer dillere çeviri gerekmiyor).
+* **Teknik Çözüm ve Kararlar:**
+  * **Modern Ana Dizin Hero Grid (`DashboardMediaHubGrid`):**
+    * Canlı TV, Filmler ve Diziler 82dp yükseklikte, camgöbeği/mor/indigo derin gradyanlı, buzlu cam ikon kutulu (`46dp`) ve canlı/durum rozetli (`● CANLI`, `🎬 SİNEMA`, `🍿 SEZONLAR`) 3 geniş kahraman kart haline getirildi.
+  * **Hızlı Araçlar ve İşlem Çubuğu (`DashboardQuickToolsRow`):**
+    * Çoklu Ekran (Multi-View), Arama (Search), QR Bağlantı (Remote & Web) ve Ayarlar (Settings) 52dp yükseklikte 4 şık ve kompakt araca dönüştürüldü.
+  * **Mobil Ana Dizinler (`PhoneDashboardContent`):**
+    * 2x2 grid yapısında Canlı TV, Filmler, Diziler ve Çoklu Ekran modern 76dp kartlarla şıklaştırıldı.
+  * **İngilizce ve Türkçe Dil Desteği (`res/values/strings.xml`, `res/values-tr/strings.xml`):**
+    * Ana sayfadaki tüm sabit Türkçe metinler (başlıklar, istatistikler, durum etiketleri, sağlayıcı barı, içerik sütunları ve hata pencereleri) `dashboard_*` string kaynaklarına taşındı.
+    * Cihaz/uygulama dili İngilizce olduğunda tüm ana sayfa İngilizce, Türkçe olduğunda Türkçe olarak dinamik ve yerel ayarlara duyarlı (`Locale.getDefault()`) hale getirildi.
+
 ---
 
 ## 📌 Hızlı Referans & Mimari Kurallar

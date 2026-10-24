@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.12.12
+
+- **Ana Dizin Gridleri Modernizasyonu:** Ana sayfadaki Canlı TV, Filmler ve Diziler alanları 82dp yükseklikte, camgöbeği/mor/indigo derin gradyanlı, buzlu cam ikon kutulu ve canlı/durum rozetli (`● CANLI`, `🎬 SİNEMA`, `🍿 SEZONLAR`) geniş ve şık kahraman kartlara dönüştürüldü.
+- **Hızlı Araçlar ve İşlem Çubuğu:** Çoklu Ekran (Multi-View), Arama (Search), QR Bağlantı (Remote & Web) ve Ayarlar (Settings) 52dp kompakt ve şık araç paneline yerleştirildi.
+- **Sağlayıcılar Arası Tek Tıkla Anında Geçiş (Quick Chips):** Eski çok adımlı akordiyon menü yerine ana sayfada her an görünür yatay kaydırılabilir sağlayıcı çipleri eklendi; kumandadan veya ekrandan tek dokunuşla sıfır gecikmeyle aktif sağlayıcı değiştirilebilir hale getirildi.
+- **İngilizce ve Türkçe Tam Dil Desteği:** Ana sayfadaki tüm başlıklar, butonlar, istatistikler ve durum göstergeleri Türkçe ve İngilizce dillerine uyarlandı; cihaz dili veya ayarlar İngilizce olduğunda tüm ana sayfa İngilizce olarak görüntülenir.
+- **Mobil Arayüz Geliştirmeleri:** 2x2 grid yapısında Canlı TV, Filmler, Diziler ve Çoklu Ekran modern mobil kartlarla yenilendi.
+
 ## 0.12.11
 
 - **Çoklu Ekran (Multi-View) Çökme Onarımı:** Çoklu ekranda boş kutuya "+ Kanal Ekle"ye basıldığında veya kanal seçerken uygulamanın kapanmasına neden olan Jetpack Compose mükerrer anahtar (duplicate key) hatası giderildi.

@@ -31,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.material.icons.Icons
@@ -90,7 +91,6 @@ fun DashboardScreen(
     val activeSourceId by settings.activeSourceId.collectAsState()
     val sourcesUi by sourcesViewModel.ui.collectAsState()
     val activeHealth by sourcesViewModel.activeProviderHealth.collectAsState()
-    var providerMenuExpanded by remember { mutableStateOf(false) }
 
     val themeMode by settings.themeMode.collectAsState()
     val systemInDark = isSystemInDarkTheme()
@@ -122,21 +122,22 @@ fun DashboardScreen(
     }
     
     val timeFormatter = remember { SimpleDateFormat("HH:mm:ss", Locale.getDefault()) }
-    val dateFormatter = remember { SimpleDateFormat("dd MMMM yyyy EEEE", Locale("tr", "TR")) }
+    val dateFormatter = remember { SimpleDateFormat("dd MMMM yyyy EEEE", Locale.getDefault()) }
 
     val totalMoviesCount by vodViewModel.totalMoviesCount.collectAsState()
     val totalSeriesCount by vodViewModel.totalSeriesCount.collectAsState()
     val totalChannelsCount by vodViewModel.totalChannelsCount.collectAsState()
     val accountExpiryMillis by vodViewModel.accountExpiryMillis.collectAsState()
-    val expiryFormatter = remember { SimpleDateFormat("dd.MM.yyyy", Locale("tr", "TR")) }
-    val expiryDisplayText = remember(accountExpiryMillis, totalChannelsCount) {
+    val expiryFormatter = remember { SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()) }
+    val lifetimeText = stringResource(R.string.dashboard_expiry_lifetime)
+    val expiryDisplayText = remember(accountExpiryMillis, totalChannelsCount, lifetimeText) {
         when {
             accountExpiryMillis > 0L -> expiryFormatter.format(Date(accountExpiryMillis))
-            totalChannelsCount > 0 -> "Süresiz"
+            totalChannelsCount > 0 -> lifetimeText
             else -> "-"
         }
     }
-    val numberFormatter = remember { java.text.NumberFormat.getInstance(Locale("tr", "TR")) }
+    val numberFormatter = remember { java.text.NumberFormat.getInstance(Locale.getDefault()) }
     val formattedSeries = remember(totalSeriesCount) { numberFormatter.format(totalSeriesCount) }
     val formattedMovies = remember(totalMoviesCount) { numberFormatter.format(totalMoviesCount) }
     val formattedChannels = remember(totalChannelsCount) { numberFormatter.format(totalChannelsCount) }
@@ -169,6 +170,7 @@ fun DashboardScreen(
             onAddSource = onAddSource,
             activeProfileName = activeProfileName,
             onOpenProfiles = onOpenProfiles,
+            onOpenWebManager = onOpenWebManager,
             sources = sourcesUi.sources,
             activeSourceId = activeSourceId,
             onSelectSource = { settings.setActiveSourceId(it.id) },
@@ -229,7 +231,7 @@ fun DashboardScreen(
                             fontWeight = FontWeight.Bold,
                         )
                         Text(
-                            text = "Yeni içerikler • Canlı Yayınlar",
+                            text = stringResource(R.string.dashboard_brand_subtitle),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             style = MaterialTheme.typography.labelSmall,
                         )
@@ -243,10 +245,10 @@ fun DashboardScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
                 ) {
-                    StatCard("TOPLAM DİZİ", formattedSeries, "adet")
-                    StatCard("TOPLAM FİLM", formattedMovies, "adet")
-                    StatCard("CANLI KANAL", formattedChannels, "adet")
-                    StatCard("YENİ İÇERİK", formattedShowcase, "vitrin")
+                    StatCard(stringResource(R.string.dashboard_stat_series), formattedSeries, stringResource(R.string.dashboard_unit_items))
+                    StatCard(stringResource(R.string.dashboard_stat_movies), formattedMovies, stringResource(R.string.dashboard_unit_items))
+                    StatCard(stringResource(R.string.dashboard_stat_channels), formattedChannels, stringResource(R.string.dashboard_unit_channels))
+                    StatCard(stringResource(R.string.dashboard_stat_showcase), formattedShowcase, stringResource(R.string.dashboard_unit_showcase))
                     
                     // Active Status Card with Expiry Date & Quick License Access
                     val statusInteractionSource = remember { MutableInteractionSource() }
@@ -281,7 +283,7 @@ fun DashboardScreen(
                                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                             ) {
                                 Text(
-                                    "DURUM",
+                                    stringResource(R.string.dashboard_status_label),
                                     color = if (isStatusFocused) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                                     style = MaterialTheme.typography.labelSmall,
                                     fontSize = 7.5.sp,
@@ -376,7 +378,7 @@ fun DashboardScreen(
                                 modifier = Modifier.size(17.dp),
                             )
                             Text(
-                                text = if (isDark) "Gece" else "Gündüz",
+                                text = if (isDark) stringResource(R.string.dashboard_theme_dark) else stringResource(R.string.dashboard_theme_light),
                                 color = MaterialTheme.colorScheme.onSurface,
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.Bold,
@@ -389,37 +391,35 @@ fun DashboardScreen(
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            // Sağlayıcı Seçimi Akordiyon Menüsü (Kullanıcı seçebilir ve yeni ekleyebilir)
-            ProviderAccordionBar(
+            // Sağlayıcı Seçimi Hızlı Çip Menüsü (Tek tıkla anında geçiş)
+            ProviderQuickChipsBar(
                 sources = sourcesUi.sources,
                 activeSourceId = activeSourceId,
                 onSelectSource = { settings.setActiveSourceId(it.id) },
                 onAddSource = onAddSource,
-                expanded = providerMenuExpanded,
-                onToggleExpand = { providerMenuExpanded = !providerMenuExpanded },
                 health = activeHealth,
             )
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            // Şık Hızlı Gezinme Butonları (Canlı TV, Film, Video / Dizi, QR ile Bağlan)
-            DashboardNavCardsRow(
+            // Şık ve Modern Ana Dizin Gridleri (CANLI TV, FİLMLER, DİZİLER)
+            DashboardMediaHubGrid(
                 formattedChannels = formattedChannels,
                 formattedMovies = formattedMovies,
                 formattedSeries = formattedSeries,
                 onNavigateLive = { onNavigateTab?.invoke(Tab.LIVE) },
                 onNavigateMovies = { onNavigateTab?.invoke(Tab.MOVIES) },
                 onNavigateSeries = { onNavigateTab?.invoke(Tab.SHOWS) },
-                onOpenQr = onOpenWebManager,
             )
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            // Arama, Ayarlar ve Çoklu TV Özelleştirme Paneli (Canlı TV, Film, Dizi gridinin hemen altında)
-            BottomActionGrid(
-                onOpenSearch = onOpenSearch,
-                onOpenSettings = onOpenSettings,
+            // Hızlı Araçlar ve İşlem Paneli (Çoklu TV, Arama, QR ile Bağlan, Ayarlar)
+            DashboardQuickToolsRow(
                 onOpenMultiView = onOpenMultiView,
+                onOpenSearch = onOpenSearch,
+                onOpenQr = onOpenWebManager,
+                onOpenSettings = onOpenSettings,
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -432,8 +432,8 @@ fun DashboardScreen(
                 // Left Column: Yeni Diziler
                 Box(modifier = Modifier.weight(1f).fillMaxHeight()) {
                     ListColumn(
-                        title = "Yeni Diziler",
-                        badge = "SON ${recentSeries.take(10).size}",
+                        title = stringResource(R.string.dashboard_section_new_series),
+                        badge = stringResource(R.string.dashboard_section_latest_badge, recentSeries.take(10).size),
                         items = recentSeries.take(10),
                         isMovie = false,
                         onItemClick = { onOpenSeries(it as Series) },
@@ -453,8 +453,8 @@ fun DashboardScreen(
                 // Right Column: Yeni Filmler
                 Box(modifier = Modifier.weight(1f).fillMaxHeight()) {
                     ListColumn(
-                        title = "Yeni Filmler",
-                        badge = "SON ${recentMovies.take(10).size}",
+                        title = stringResource(R.string.dashboard_section_new_movies),
+                        badge = stringResource(R.string.dashboard_section_latest_badge, recentMovies.take(10).size),
                         items = recentMovies.take(10),
                         isMovie = true,
                         onItemClick = { onOpenMovie(it as Movie) },
@@ -493,7 +493,7 @@ fun DashboardScreen(
                     Spacer(modifier = Modifier.width(12.dp))
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = "Sağlayıcı Bağlantı Uyarısı",
+                            text = stringResource(R.string.dashboard_alert_title),
                             color = Color(0xFFFCA5A5),
                             style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.Bold,
@@ -501,7 +501,7 @@ fun DashboardScreen(
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "Lütfen sağlayıcı değiştiriniz. Sağlayıcı bağlantınız yok yada kullanıcı adı şifre yanlış.",
+                            text = stringResource(R.string.dashboard_alert_desc),
                             color = Color.White,
                             style = MaterialTheme.typography.bodySmall,
                             fontSize = 11.5.sp,
@@ -510,7 +510,7 @@ fun DashboardScreen(
                         if (!activeHealth?.errorMessage.isNullOrBlank()) {
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
-                                text = "Hata Detayı: ${activeHealth?.errorMessage}",
+                                text = stringResource(R.string.dashboard_alert_error, activeHealth?.errorMessage ?: ""),
                                 color = Color(0xFFF87171),
                                 style = MaterialTheme.typography.labelSmall,
                                 fontSize = 10.sp,
@@ -594,7 +594,7 @@ private fun ContinueWatchingColumn(
                 Text("⏱️", fontSize = 16.sp)
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
-                    "İzlemeye Devam Et",
+                    stringResource(R.string.dashboard_section_continue_watching),
                     color = MaterialTheme.colorScheme.onSurface,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
@@ -607,7 +607,7 @@ private fun ContinueWatchingColumn(
                     .padding(horizontal = 7.dp, vertical = 3.dp),
             ) {
                 Text(
-                    if (continueWatching.isNotEmpty()) "${continueWatching.size} İÇERİK" else "ÖNERİLEN",
+                    if (continueWatching.isNotEmpty()) stringResource(R.string.dashboard_content_count, continueWatching.size) else stringResource(R.string.dashboard_recommended).uppercase(),
                     color = MaterialTheme.colorScheme.primary,
                     style = MaterialTheme.typography.labelSmall,
                     fontWeight = FontWeight.Bold,
@@ -686,7 +686,7 @@ private fun ContinueWatchingColumn(
                         ) {
                             val percent = (primary.progress * 100).toInt().coerceIn(1, 99)
                             Text(
-                                "▶ KALDIĞIN YERDEN • %$percent",
+                                stringResource(R.string.dashboard_resume_progress, percent),
                                 color = MaterialTheme.colorScheme.primary,
                                 style = MaterialTheme.typography.labelSmall,
                                 fontSize = 8.5.sp,
@@ -706,7 +706,7 @@ private fun ContinueWatchingColumn(
                         Spacer(modifier = Modifier.height(4.dp))
 
                         Text(
-                            text = "İzlemeye devam etmek için tıklayın.",
+                            text = primary.title,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             style = MaterialTheme.typography.bodySmall,
                             maxLines = 2,
@@ -720,7 +720,7 @@ private fun ContinueWatchingColumn(
                                 .padding(horizontal = 12.dp, vertical = 5.dp),
                         ) {
                             Text(
-                                "▶ Hemen Oynat",
+                                "▶ " + stringResource(R.string.dashboard_resume),
                                 color = MaterialTheme.colorScheme.onPrimary,
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = FontWeight.Bold,
@@ -773,7 +773,7 @@ private fun ContinueWatchingColumn(
                             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.Center) {
                                 val percent = (item.progress * 100).toInt().coerceIn(1, 99)
                                 Text(
-                                    text = "%$percent İZLENDİ",
+                                    text = stringResource(R.string.dashboard_watched_badge, percent),
                                     color = if (subFocused) MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f) else MaterialTheme.colorScheme.primary,
                                     style = MaterialTheme.typography.labelSmall,
                                     fontSize = 8.sp,
@@ -845,7 +845,7 @@ private fun ContinueWatchingColumn(
                                     .padding(horizontal = 8.dp, vertical = 3.dp),
                             ) {
                                 Text(
-                                    "✨ ÖNERİLEN İÇERİK",
+                                    "✨ " + stringResource(R.string.dashboard_recommended).uppercase(),
                                     color = MaterialTheme.colorScheme.primary,
                                     style = MaterialTheme.typography.labelSmall,
                                     fontSize = 8.5.sp,
@@ -1000,9 +1000,10 @@ private fun ListItemCard(item: Any, isMovie: Boolean, onClick: () -> Unit) {
                 .background(Color.DarkGray),
         )
         Spacer(modifier = Modifier.width(10.dp))
+        val tagStr = if (isMovie) stringResource(R.string.dashboard_tag_movie) else stringResource(R.string.dashboard_tag_series)
         Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.Center) {
             Text(
-                text = "TR | $year | ${if (isMovie) "FİLM" else "DİZİ"}",
+                text = "TR | $year | $tagStr",
                 color = subColor,
                 style = MaterialTheme.typography.labelSmall,
                 maxLines = 1,
@@ -1049,6 +1050,7 @@ private fun PhoneDashboardContent(
     onAddSource: () -> Unit,
     activeProfileName: String,
     onOpenProfiles: () -> Unit,
+    onOpenWebManager: () -> Unit = {},
     sources: List<Source>,
     activeSourceId: Long,
     onSelectSource: (Source) -> Unit,
@@ -1056,7 +1058,6 @@ private fun PhoneDashboardContent(
     health: SourcesViewModel.ProviderHealth? = null,
 ) {
     val scrollState = rememberScrollState()
-    var phoneProviderMenuExpanded by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -1134,7 +1135,7 @@ private fun PhoneDashboardContent(
                                 )
                                 Spacer(modifier = Modifier.width(5.dp))
                                 Text(
-                                    text = "Abonelik: $expiryDisplayText",
+                                    text = stringResource(R.string.dashboard_expiry_prefix, expiryDisplayText),
                                     color = Color(0xFF22C55E),
                                     style = MaterialTheme.typography.labelSmall,
                                     fontSize = 11.sp,
@@ -1177,39 +1178,41 @@ private fun PhoneDashboardContent(
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            // 3. Sağlayıcı Seçimi Akordiyon Menüsü
-            ProviderAccordionBar(
+            // 3. Sağlayıcı Seçimi Hızlı Çip Menüsü (Tek dokunuşla anında geçiş)
+            ProviderQuickChipsBar(
                 sources = sources,
                 activeSourceId = activeSourceId,
                 onSelectSource = onSelectSource,
                 onAddSource = onAddSource,
-                expanded = phoneProviderMenuExpanded,
-                onToggleExpand = { phoneProviderMenuExpanded = !phoneProviderMenuExpanded },
                 health = health,
             )
 
             Spacer(modifier = Modifier.height(14.dp))
 
-            // 2. 2x2 Quick Navigation Menu Cards
+            // 2. 2x2 Şık ve Modern Ana Dizin Gridleri (CANLI TV, FİLMLER, DİZİLER, ÇOKLU TV)
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
             ) {
                 PhoneMenuCard(
-                    title = "CANLI TV",
+                    title = stringResource(R.string.dashboard_nav_live_tv),
                     count = formattedChannels,
-                    unit = "Kanal",
-                    icon = "📺",
-                    gradientColors = listOf(Color(0xFF0284C7), Color(0xFF0369A1)),
+                    unit = stringResource(R.string.dashboard_unit_channels),
+                    badge = stringResource(R.string.dashboard_nav_live_badge),
+                    icon = Icons.Outlined.LiveTv,
+                    gradientColors = listOf(Color(0xFF0369A1), Color(0xFF0284C7)),
+                    accentColor = Color(0xFF38BDF8),
                     modifier = Modifier.weight(1f),
                     onClick = { onNavigateTab?.invoke(Tab.LIVE) },
                 )
                 PhoneMenuCard(
-                    title = "FİLMLER",
+                    title = stringResource(R.string.dashboard_nav_movies),
                     count = formattedMovies,
-                    unit = "Film",
-                    icon = "🎬",
-                    gradientColors = listOf(Color(0xFF7E22CE), Color(0xFF6B21A8)),
+                    unit = stringResource(R.string.dashboard_unit_items),
+                    badge = stringResource(R.string.dashboard_nav_movies_badge),
+                    icon = Icons.Outlined.Movie,
+                    gradientColors = listOf(Color(0xFF4338CA), Color(0xFF6366F1)),
+                    accentColor = Color(0xFF818CF8),
                     modifier = Modifier.weight(1f),
                     onClick = { onNavigateTab?.invoke(Tab.MOVIES) },
                 )
@@ -1222,22 +1225,26 @@ private fun PhoneDashboardContent(
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
             ) {
                 PhoneMenuCard(
-                    title = "DİZİLER",
+                    title = stringResource(R.string.dashboard_nav_series),
                     count = formattedSeries,
-                    unit = "Dizi",
-                    icon = "🍿",
-                    gradientColors = listOf(Color(0xFFD97706), Color(0xFFB45309)),
+                    unit = stringResource(R.string.dashboard_unit_items),
+                    badge = stringResource(R.string.dashboard_nav_series_badge),
+                    icon = Icons.Outlined.VideoLibrary,
+                    gradientColors = listOf(Color(0xFF7C3AED), Color(0xFF8B5CF6)),
+                    accentColor = Color(0xFFA78BFA),
                     modifier = Modifier.weight(1f),
                     onClick = { onNavigateTab?.invoke(Tab.SHOWS) },
                 )
                 PhoneMenuCard(
-                    title = "YENİ VİTRİN",
-                    count = formattedShowcase,
-                    unit = "İçerik",
-                    icon = "✨",
-                    gradientColors = listOf(Color(0xFF059669), Color(0xFF047857)),
+                    title = stringResource(R.string.dashboard_tool_multiview),
+                    count = "4x",
+                    unit = "TV",
+                    badge = "MULTI",
+                    icon = Icons.Default.GridView,
+                    gradientColors = listOf(Color(0xFF047857), Color(0xFF10B981)),
+                    accentColor = Color(0xFF34D399),
                     modifier = Modifier.weight(1f),
-                    onClick = { onNavigateTab?.invoke(Tab.MOVIES) },
+                    onClick = onOpenMultiView,
                 )
             }
 
@@ -1257,7 +1264,7 @@ private fun PhoneDashboardContent(
                         Text("⏱️", fontSize = 16.sp)
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            "İzlemeye Devam Et",
+                            stringResource(R.string.dashboard_section_continue_watching),
                             color = MaterialTheme.colorScheme.onSurface,
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
@@ -1270,7 +1277,7 @@ private fun PhoneDashboardContent(
                             .padding(horizontal = 6.dp, vertical = 2.dp),
                     ) {
                         Text(
-                            "${continueWatching.size} İÇERİK",
+                            stringResource(R.string.dashboard_content_count, continueWatching.size),
                             color = MaterialTheme.colorScheme.primary,
                             style = MaterialTheme.typography.labelSmall,
                             fontWeight = FontWeight.Bold,
@@ -1327,7 +1334,7 @@ private fun PhoneDashboardContent(
                                     .padding(horizontal = 6.dp, vertical = 2.dp),
                             ) {
                                 Text(
-                                    "▶ %$percent KALDIĞIN YERDEN",
+                                    stringResource(R.string.dashboard_resume_progress, percent),
                                     color = MaterialTheme.colorScheme.primary,
                                     style = MaterialTheme.typography.labelSmall,
                                     fontSize = 9.sp,
@@ -1352,7 +1359,7 @@ private fun PhoneDashboardContent(
                                     .padding(horizontal = 10.dp, vertical = 4.dp),
                             ) {
                                 Text(
-                                    "▶ Hemen İzle",
+                                    "▶ " + stringResource(R.string.dashboard_watch_now),
                                     color = MaterialTheme.colorScheme.onPrimary,
                                     style = MaterialTheme.typography.labelSmall,
                                     fontWeight = FontWeight.Bold,
@@ -1373,7 +1380,7 @@ private fun PhoneDashboardContent(
                     Text("⭐", fontSize = 16.sp)
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
-                        "Günün Önerisi",
+                        stringResource(R.string.dashboard_section_daily_pick),
                         color = MaterialTheme.colorScheme.onSurface,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
@@ -1457,14 +1464,14 @@ private fun PhoneDashboardContent(
                         Text("📺", fontSize = 16.sp)
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            "Yeni Diziler",
+                            stringResource(R.string.dashboard_section_new_series),
                             color = MaterialTheme.colorScheme.onSurface,
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                         )
                     }
                     Text(
-                        text = "Tümünü Gör >",
+                        text = stringResource(R.string.dashboard_section_see_all),
                         color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold,
@@ -1502,14 +1509,14 @@ private fun PhoneDashboardContent(
                         Text("🎬", fontSize = 16.sp)
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            "Yeni Filmler",
+                            stringResource(R.string.dashboard_section_new_movies),
                             color = MaterialTheme.colorScheme.onSurface,
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                         )
                     }
                     Text(
-                        text = "Tümünü Gör >",
+                        text = stringResource(R.string.dashboard_section_see_all),
                         color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold,
@@ -1536,11 +1543,12 @@ private fun PhoneDashboardContent(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Alt Grid: Ayarlar, Arama, Çoklu TV Özelleştirme
-            BottomActionGrid(
-                onOpenSearch = onOpenSearch,
-                onOpenSettings = onOpenSettings,
+            // Alt Araçlar ve Hızlı İşlemler Paneli
+            DashboardQuickToolsRow(
                 onOpenMultiView = onOpenMultiView,
+                onOpenSearch = onOpenSearch,
+                onOpenQr = onOpenWebManager,
+                onOpenSettings = onOpenSettings,
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -1576,7 +1584,7 @@ private fun PhoneDashboardContent(
                     Spacer(modifier = Modifier.width(10.dp))
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = "Sağlayıcı Bağlantı Uyarısı",
+                            text = stringResource(R.string.dashboard_alert_title),
                             color = Color(0xFFFCA5A5),
                             style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.Bold,
@@ -1584,7 +1592,7 @@ private fun PhoneDashboardContent(
                         )
                         Spacer(modifier = Modifier.height(2.dp))
                         Text(
-                            text = "Lütfen sağlayıcı değiştiriniz. Sağlayıcı bağlantınız yok yada kullanıcı adı şifre yanlış.",
+                            text = stringResource(R.string.dashboard_alert_desc),
                             color = Color.White,
                             style = MaterialTheme.typography.bodySmall,
                             fontSize = 11.sp,
@@ -1602,56 +1610,97 @@ private fun PhoneMenuCard(
     title: String,
     count: String,
     unit: String,
-    icon: String,
+    badge: String,
+    icon: ImageVector,
     gradientColors: List<Color>,
+    accentColor: Color,
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
     Box(
         modifier = modifier
-            .height(68.dp)
-            .clip(RoundedCornerShape(12.dp))
+            .height(76.dp)
+            .clip(RoundedCornerShape(14.dp))
             .background(Brush.linearGradient(gradientColors))
-            .border(1.dp, Color.White.copy(alpha = 0.2f), RoundedCornerShape(12.dp))
+            .border(1.dp, Color.White.copy(alpha = 0.22f), RoundedCornerShape(14.dp))
             .clickable(onClick = onClick)
-            .padding(horizontal = 12.dp, vertical = 8.dp),
+            .padding(horizontal = 12.dp, vertical = 9.dp),
     ) {
-        Row(
+        Column(
             modifier = Modifier.fillMaxSize(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalArrangement = Arrangement.SpaceBetween,
         ) {
-            Column {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
                 Text(
                     text = title,
-                    color = Color.White.copy(alpha = 0.9f),
+                    color = Color.White.copy(alpha = 0.92f),
                     style = MaterialTheme.typography.labelSmall,
-                    fontSize = 10.sp,
-                    fontWeight = FontWeight.Bold,
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    letterSpacing = 0.5.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f, fill = false),
                 )
-                Spacer(modifier = Modifier.height(2.dp))
+                Spacer(modifier = Modifier.width(4.dp))
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(Color.Black.copy(alpha = 0.3f))
+                        .padding(horizontal = 5.dp, vertical = 1.5.dp),
+                ) {
+                    Text(
+                        text = badge,
+                        color = Color.White,
+                        style = MaterialTheme.typography.labelSmall,
+                        fontSize = 7.5.sp,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.Bottom,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
                 Row(verticalAlignment = Alignment.Bottom) {
                     Text(
                         text = count,
                         color = Color.White,
                         style = MaterialTheme.typography.titleMedium,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
+                        fontSize = 17.sp,
+                        fontWeight = FontWeight.ExtraBold,
                     )
-                    Spacer(modifier = Modifier.width(3.dp))
+                    Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = unit,
                         color = Color.White.copy(alpha = 0.75f),
                         style = MaterialTheme.typography.labelSmall,
-                        fontSize = 9.sp,
-                        modifier = Modifier.padding(bottom = 1.dp),
+                        fontSize = 9.5.sp,
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier.padding(bottom = 2.dp),
+                    )
+                }
+                Box(
+                    modifier = Modifier
+                        .size(30.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(Color.White.copy(alpha = 0.15f)),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = title,
+                        tint = Color.White,
+                        modifier = Modifier.size(18.dp),
                     )
                 }
             }
-            Text(
-                text = icon,
-                fontSize = 22.sp,
-            )
         }
     }
 }
@@ -1719,74 +1768,90 @@ private fun PhonePosterCard(
  * Hem TV kumandası D-Pad ile odaklanabilir (focus border, glow) hem de dokunmatik çalışır.
  */
 @Composable
-private fun BottomActionGrid(
-    onOpenSearch: () -> Unit,
-    onOpenSettings: () -> Unit,
+fun DashboardQuickToolsRow(
     onOpenMultiView: () -> Unit,
+    onOpenSearch: () -> Unit,
+    onOpenQr: () -> Unit,
+    onOpenSettings: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .height(64.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+            .height(52.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        BottomActionCard(
-            title = "Arama",
-            subtitle = "Tüm kanal, film ve dizilerde ara",
-            icon = "🔍",
-            gradientColors = listOf(Color(0xFF0F172A), Color(0xFF1E293B)),
-            borderColor = Color(0xFF38BDF8),
+        QuickToolCard(
+            title = stringResource(R.string.dashboard_tool_multiview),
+            subtitle = stringResource(R.string.dashboard_tool_multiview_desc),
+            icon = Icons.Default.GridView,
+            accentColor = Color(0xFF10B981),
+            modifier = Modifier.weight(1.1f),
+            onClick = onOpenMultiView,
+        )
+        QuickToolCard(
+            title = stringResource(R.string.dashboard_tool_search),
+            subtitle = stringResource(R.string.dashboard_tool_search_desc),
+            icon = Icons.Outlined.Search,
+            accentColor = Color(0xFF38BDF8),
             modifier = Modifier.weight(1f),
             onClick = onOpenSearch,
         )
-        BottomActionCard(
-            title = "Ayarlar",
-            subtitle = "Oynatıcı, ses ve sistem ayarları",
-            icon = "⚙️",
-            gradientColors = listOf(Color(0xFF0F172A), Color(0xFF1E293B)),
-            borderColor = Color(0xFFA855F7),
+        QuickToolCard(
+            title = stringResource(R.string.dashboard_tool_qr),
+            subtitle = stringResource(R.string.dashboard_tool_qr_desc),
+            icon = Icons.Filled.QrCode2,
+            accentColor = Color(0xFFF59E0B),
+            modifier = Modifier.weight(1f),
+            onClick = onOpenQr,
+        )
+        QuickToolCard(
+            title = stringResource(R.string.dashboard_tool_settings),
+            subtitle = stringResource(R.string.dashboard_tool_settings_desc),
+            icon = Icons.Outlined.Settings,
+            accentColor = Color(0xFFA855F7),
             modifier = Modifier.weight(1f),
             onClick = onOpenSettings,
-        )
-        BottomActionCard(
-            title = "Çoklu TV Özelleştirme",
-            subtitle = "Aynı ekranda birden fazla yayın izle",
-            icon = "📺",
-            gradientColors = listOf(Color(0xFF0F172A), Color(0xFF1E293B)),
-            borderColor = Color(0xFF10B981),
-            modifier = Modifier.weight(1.2f),
-            onClick = onOpenMultiView,
         )
     }
 }
 
 @Composable
-private fun BottomActionCard(
+private fun QuickToolCard(
     title: String,
     subtitle: String,
-    icon: String,
-    gradientColors: List<Color>,
-    borderColor: Color,
+    icon: ImageVector,
+    accentColor: Color,
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
 
+    val scale by animateFloatAsState(
+        targetValue = if (isFocused) 1.03f else 1.0f,
+        animationSpec = tween(durationMillis = 150),
+        label = "toolScale",
+    )
+
     Box(
         modifier = modifier
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .fillMaxHeight()
             .clip(RoundedCornerShape(10.dp))
             .background(
                 Brush.horizontalGradient(
-                    if (isFocused) listOf(borderColor.copy(alpha = 0.28f), Color(0xFF1E293B))
-                    else gradientColors
+                    if (isFocused) listOf(accentColor.copy(alpha = 0.35f), Color(0xFF1E293B))
+                    else listOf(Color(0xFF0F172A), Color(0xFF1E293B).copy(alpha = 0.8f))
                 )
             )
             .border(
-                if (isFocused) 2.dp else 1.dp,
-                if (isFocused) borderColor else borderColor.copy(alpha = 0.35f),
-                RoundedCornerShape(10.dp)
+                width = if (isFocused) 2.dp else 1.dp,
+                color = if (isFocused) accentColor else Color.White.copy(alpha = 0.12f),
+                shape = RoundedCornerShape(10.dp),
             )
             .clickable(
                 interactionSource = interactionSource,
@@ -1794,121 +1859,127 @@ private fun BottomActionCard(
                 onClick = onClick,
             )
             .focusable(interactionSource = interactionSource)
-            .padding(horizontal = 14.dp, vertical = 8.dp),
+            .padding(horizontal = 10.dp, vertical = 6.dp),
         contentAlignment = Alignment.CenterStart,
     ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(32.dp)
+                    .clip(RoundedCornerShape(6.dp))
+                    .background(accentColor.copy(alpha = if (isFocused) 0.35f else 0.18f)),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = title,
+                    tint = if (isFocused) Color.White else accentColor,
+                    modifier = Modifier.size(18.dp),
+                )
+            }
+            Column(verticalArrangement = Arrangement.Center) {
+                Text(
+                    text = title,
+                    color = Color.White,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 11.5.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                Text(
+                    text = subtitle,
+                    color = if (isFocused) Color.White.copy(alpha = 0.85f) else Color(0xFF94A3B8),
+                    style = MaterialTheme.typography.labelSmall,
+                    fontSize = 9.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+        }
+    }
+}
+
+/**
+ * Sağlayıcı Seçimi Hızlı Çip Menüsü (ProviderQuickChipsBar):
+ * Sağlayıcıları yatay kaydırılabilir çip kartları olarak tek tıkla/tek dokunuşla seçilebilir
+ * şekilde sunar. Eski akordiyon menüdeki gibi menüyü açma/kapama gereksizliğini ortadan kaldırır.
+ * Kumanda ile sağ-sol yapıp OK'a basıldığında veya ekrana dokunulduğunda anında geçiş yapar.
+ */
+@Composable
+private fun ProviderQuickChipsBar(
+    sources: List<Source>,
+    activeSourceId: Long,
+    onSelectSource: (Source) -> Unit,
+    onAddSource: () -> Unit,
+    health: SourcesViewModel.ProviderHealth? = null,
+    modifier: Modifier = Modifier,
+) {
+    if (sources.isEmpty()) {
+        Box(
+            modifier = modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(10.dp))
+                .background(Color(0xFF0D1527))
+                .border(1.dp, Color(0xFF38BDF8).copy(alpha = 0.25f), RoundedCornerShape(10.dp))
+                .clickable(onClick = onAddSource)
+                .padding(horizontal = 14.dp, vertical = 10.dp),
+            contentAlignment = Alignment.Center,
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("➕", fontSize = 14.sp)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    stringResource(R.string.dashboard_provider_empty),
+                    color = Color(0xFF38BDF8),
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 11.5.sp,
+                )
+            }
+        }
+        return
+    }
+
+    val activeSource = remember(sources, activeSourceId) {
+        sources.find { it.id == activeSourceId } ?: sources.firstOrNull()
+    }
+    val isDisconnected = health != null && !health.isConnected
+
+    val borderColor = if (isDisconnected) {
+        Color(0xFFEF4444)
+    } else {
+        Color(0xFF38BDF8).copy(alpha = 0.2f)
+    }
+
+    val barBg = if (isDisconnected) Color(0xFF1E1010) else Color(0xFF0D1527)
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(10.dp))
+            .background(barBg)
+            .border(
+                if (isDisconnected) 1.5.dp else 1.dp,
+                borderColor,
+                RoundedCornerShape(10.dp),
+            )
+            .padding(horizontal = 12.dp, vertical = 8.dp),
+    ) {
+        // Mini Başlık: İkon + Sağlayıcı Sayısı + Hız/Ping Rozeti
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier
-                        .size(34.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(if (isFocused) borderColor else Color.White.copy(alpha = 0.1f)),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        text = icon,
-                        fontSize = 18.sp,
-                    )
-                }
-                Spacer(modifier = Modifier.width(10.dp))
-                Column {
-                    Text(
-                        text = title,
-                        color = if (isFocused) Color.White else MaterialTheme.colorScheme.onSurface,
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 13.sp,
-                    )
-                    Text(
-                        text = subtitle,
-                        color = if (isFocused) Color.White.copy(alpha = 0.85f) else MaterialTheme.colorScheme.onSurfaceVariant,
-                        style = MaterialTheme.typography.bodySmall,
-                        fontSize = 9.5.sp,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
-            }
-            Text(
-                text = "▶",
-                color = if (isFocused) borderColor else Color.White.copy(alpha = 0.3f),
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Bold,
-            )
-        }
-    }
-}
-
-/**
- * Sağlayıcı Seçimi Akordiyon Menüsü:
- * Kullanıcının yüklediği sağlayıcıları listeler, aktif olanı seçtirir
- * ve panelden doğrudan "Yeni Sağlayıcı Ekle" seçeneği sunar.
- */
-@Composable
-private fun ProviderAccordionBar(
-    sources: List<Source>,
-    activeSourceId: Long,
-    onSelectSource: (Source) -> Unit,
-    onAddSource: () -> Unit,
-    expanded: Boolean,
-    onToggleExpand: () -> Unit,
-    health: SourcesViewModel.ProviderHealth? = null,
-) {
-    val activeSource = remember(sources, activeSourceId) {
-        sources.find { it.id == activeSourceId } ?: sources.firstOrNull()
-    }
-
-    val headerInteraction = remember { MutableInteractionSource() }
-    val isHeaderFocused by headerInteraction.collectIsFocusedAsState()
-
-    val isDisconnected = health != null && !health.isConnected
-
-    val borderColor = if (isDisconnected) {
-        Color(0xFFEF4444)
-    } else if (isHeaderFocused) {
-        Color(0xFF38BDF8)
-    } else {
-        Color(0xFF38BDF8).copy(alpha = 0.25f)
-    }
-
-    val barBg = if (isDisconnected) Color(0xFF1E1010) else Color(0xFF0D1527)
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(10.dp))
-            .background(barBg)
-            .border(
-                if (isHeaderFocused || isDisconnected) 1.5.dp else 1.dp,
-                borderColor,
-                RoundedCornerShape(10.dp),
-            )
-    ) {
-        // Accordion Header Bar
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(42.dp)
-                .clickable(
-                    interactionSource = headerInteraction,
-                    indication = null,
-                    onClick = onToggleExpand,
-                )
-                .focusable(interactionSource = headerInteraction)
-                .padding(horizontal = 14.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(if (isDisconnected) "⚠️" else "🌐", fontSize = 16.sp)
-                Spacer(modifier = Modifier.width(8.dp))
+                Text(if (isDisconnected) "⚠️" else "🌐", fontSize = 13.sp)
+                Spacer(modifier = Modifier.width(6.dp))
                 Text(
-                    "AKTİF SAĞLAYICI:",
+                    stringResource(R.string.dashboard_providers_title),
                     color = if (isDisconnected) Color(0xFFFCA5A5) else Color(0xFF94A3B8),
                     style = MaterialTheme.typography.labelSmall,
                     fontSize = 10.sp,
@@ -1916,221 +1987,179 @@ private fun ProviderAccordionBar(
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
-                    text = activeSource?.name ?: "Yüklü Sağlayıcı Yok",
-                    color = Color.White,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontSize = 12.5.sp,
-                    fontWeight = FontWeight.Bold,
+                    "(${sources.size})",
+                    color = Color(0xFF64748B),
+                    style = MaterialTheme.typography.labelSmall,
+                    fontSize = 9.5.sp,
                 )
-                if (activeSource != null) {
+
+                // Hız Sonucu Rozeti (Saatlik test sonucu)
+                if (health != null) {
                     Spacer(modifier = Modifier.width(8.dp))
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(4.dp))
                             .background(
-                                if (isDisconnected) Color(0xFFDC2626).copy(alpha = 0.25f)
-                                else Color(0xFF0284C7).copy(alpha = 0.25f)
+                                if (isDisconnected) Color(0xFFEF4444).copy(alpha = 0.18f)
+                                else Color(0xFF10B981).copy(alpha = 0.2f)
                             )
-                            .padding(horizontal = 6.dp, vertical = 2.dp),
+                            .border(
+                                1.dp,
+                                if (isDisconnected) Color(0xFFEF4444).copy(alpha = 0.4f)
+                                else Color(0xFF10B981).copy(alpha = 0.4f),
+                                RoundedCornerShape(4.dp)
+                            )
+                            .padding(horizontal = 6.dp, vertical = 1.5.dp),
                     ) {
                         Text(
-                            text = if (isDisconnected) "BAĞLANTI YOK" else activeSource.kind.name,
-                            color = if (isDisconnected) Color(0xFFEF4444) else Color(0xFF38BDF8),
+                            text = if (isDisconnected) stringResource(R.string.dashboard_provider_disconnected)
+                            else "⚡ ${health.speedMbps} Mbps • ${health.pingMs}ms",
+                            color = if (isDisconnected) Color(0xFFFCA5A5) else Color(0xFF34D399),
                             style = MaterialTheme.typography.labelSmall,
                             fontSize = 8.5.sp,
                             fontWeight = FontWeight.Bold,
                         )
                     }
-
-                    // Hız Sonucu Rozeti (Saatlik test sonucu)
-                    if (health != null) {
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(4.dp))
-                                .background(
-                                    if (isDisconnected) Color(0xFFEF4444).copy(alpha = 0.18f)
-                                    else Color(0xFF10B981).copy(alpha = 0.2f)
-                                )
-                                .border(
-                                    1.dp,
-                                    if (isDisconnected) Color(0xFFEF4444).copy(alpha = 0.4f)
-                                    else Color(0xFF10B981).copy(alpha = 0.4f),
-                                    RoundedCornerShape(4.dp)
-                                )
-                                .padding(horizontal = 7.dp, vertical = 2.dp),
-                        ) {
-                            Text(
-                                text = if (isDisconnected) "⚠️ Bağlantı Koptu"
-                                else "⚡ ${health.speedMbps} Mbps • ${health.pingMs}ms",
-                                color = if (isDisconnected) Color(0xFFFCA5A5) else Color(0xFF34D399),
-                                style = MaterialTheme.typography.labelSmall,
-                                fontSize = 9.sp,
-                                fontWeight = FontWeight.Bold,
-                            )
-                        }
-                    }
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    "(${sources.size} Sağlayıcı)",
-                    color = Color(0xFF64748B),
-                    style = MaterialTheme.typography.labelSmall,
-                    fontSize = 10.sp,
-                )
-            }
-
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(6.dp))
-                        .background(
-                            if (isHeaderFocused) {
-                                if (isDisconnected) Color(0xFFDC2626) else Color(0xFF0284C7)
-                            } else {
-                                if (isDisconnected) Color(0xFF3F1515) else Color(0xFF1E293B)
-                            }
-                        )
-                        .padding(horizontal = 8.dp, vertical = 4.dp),
-                ) {
-                    Text(
-                        if (expanded) "Menüyü Kapat ▲" else "Sağlayıcı Değiştir / Ekle ▼",
-                        color = Color.White,
-                        style = MaterialTheme.typography.labelSmall,
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.Bold,
-                    )
                 }
             }
+
+            Text(
+                text = stringResource(R.string.dashboard_providers_quick_switch),
+                color = Color(0xFF64748B),
+                style = MaterialTheme.typography.labelSmall,
+                fontSize = 9.sp,
+            )
         }
 
-        // Expanded Accordion Panel
-        if (expanded) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color(0xFF090E1A))
-                    .padding(horizontal = 12.dp, vertical = 10.dp)
-            ) {
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(10.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    items(sources, key = { it.id }) { src ->
-                        val isSelected = activeSource?.id == src.id
-                        val itemInteraction = remember { MutableInteractionSource() }
-                        val isItemFocused by itemInteraction.collectIsFocusedAsState()
+        Spacer(modifier = Modifier.height(7.dp))
 
-                        Box(
-                            modifier = Modifier
-                                .width(170.dp)
-                                .height(64.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(
-                                    if (isItemFocused) Color(0xFF0284C7).copy(alpha = 0.35f)
-                                    else if (isSelected) Color(0xFF1E293B)
-                                    else Color(0xFF141D2F)
-                                )
-                                .border(
-                                    if (isItemFocused) 2.dp else if (isSelected) 1.5.dp else 1.dp,
-                                    if (isItemFocused) Color(0xFF38BDF8)
-                                    else if (isSelected) Color(0xFF22C55E)
-                                    else Color.White.copy(alpha = 0.15f),
-                                    RoundedCornerShape(8.dp)
-                                )
-                                .clickable(
-                                    interactionSource = itemInteraction,
-                                    indication = null,
-                                    onClick = { onSelectSource(src) },
-                                )
-                                .focusable(interactionSource = itemInteraction)
-                                .padding(horizontal = 10.dp, vertical = 6.dp),
+        // Yatay Hızlı Sağlayıcı Çipleri
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            items(sources, key = { it.id }) { src ->
+                val isSelected = activeSource?.id == src.id
+                val itemInteraction = remember { MutableInteractionSource() }
+                val isItemFocused by itemInteraction.collectIsFocusedAsState()
+
+                Box(
+                    modifier = Modifier
+                        .widthIn(min = 140.dp, max = 180.dp)
+                        .height(50.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(
+                            when {
+                                isItemFocused -> Color(0xFF0284C7).copy(alpha = 0.35f)
+                                isSelected -> Color(0xFF1E293B)
+                                else -> Color(0xFF131C2E)
+                            }
+                        )
+                        .border(
+                            width = when {
+                                isItemFocused -> 2.dp
+                                isSelected -> 1.5.dp
+                                else -> 1.dp
+                            },
+                            color = when {
+                                isItemFocused -> Color(0xFF38BDF8)
+                                isSelected -> Color(0xFF22C55E)
+                                else -> Color.White.copy(alpha = 0.12f)
+                            },
+                            shape = RoundedCornerShape(8.dp),
+                        )
+                        .clickable(
+                            interactionSource = itemInteraction,
+                            indication = null,
+                            onClick = { onSelectSource(src) },
+                        )
+                        .focusable(interactionSource = itemInteraction)
+                        .padding(horizontal = 10.dp, vertical = 6.dp),
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.SpaceBetween,
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween,
                         ) {
-                            Column(
-                                modifier = Modifier.fillMaxSize(),
-                                verticalArrangement = Arrangement.SpaceBetween,
-                            ) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceBetween,
+                            Text(
+                                text = src.name,
+                                color = if (isSelected) Color.White else Color(0xFFE2E8F0),
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.Bold,
+                                fontSize = 11.5.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.weight(1f, fill = false),
+                            )
+                            if (isSelected) {
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(3.dp))
+                                        .background(Color(0xFF22C55E).copy(alpha = 0.22f))
+                                        .padding(horizontal = 4.dp, vertical = 1.dp),
                                 ) {
                                     Text(
-                                        text = src.name,
-                                        color = Color.White,
-                                        style = MaterialTheme.typography.titleSmall,
+                                        stringResource(R.string.dashboard_provider_active),
+                                        color = Color(0xFF22C55E),
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontSize = 7.5.sp,
                                         fontWeight = FontWeight.Bold,
-                                        fontSize = 12.sp,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                        modifier = Modifier.weight(1f),
                                     )
-                                    if (isSelected) {
-                                        Box(
-                                            modifier = Modifier
-                                                .clip(RoundedCornerShape(4.dp))
-                                                .background(Color(0xFF22C55E).copy(alpha = 0.2f))
-                                                .padding(horizontal = 4.dp, vertical = 1.dp),
-                                        ) {
-                                            Text(
-                                                "✔ AKTİF",
-                                                color = Color(0xFF22C55E),
-                                                style = MaterialTheme.typography.labelSmall,
-                                                fontSize = 8.sp,
-                                                fontWeight = FontWeight.Bold,
-                                            )
-                                        }
-                                    }
                                 }
-                                Text(
-                                    text = "${src.kind.name} · ${hostOf(src.url)}",
-                                    color = Color(0xFF94A3B8),
-                                    style = MaterialTheme.typography.labelSmall,
-                                    fontSize = 9.sp,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                )
                             }
                         }
+                        Text(
+                            text = "${src.kind.name} · ${hostOf(src.url)}",
+                            color = if (isSelected) Color(0xFF86EFAC) else Color(0xFF94A3B8),
+                            style = MaterialTheme.typography.labelSmall,
+                            fontSize = 8.5.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
                     }
+                }
+            }
 
-                    // Add Provider Card Button
-                    item {
-                        val addInteraction = remember { MutableInteractionSource() }
-                        val isAddFocused by addInteraction.collectIsFocusedAsState()
+            // Yeni Sağlayıcı Ekle Butonu
+            item {
+                val addInteraction = remember { MutableInteractionSource() }
+                val isAddFocused by addInteraction.collectIsFocusedAsState()
 
-                        Box(
-                            modifier = Modifier
-                                .width(150.dp)
-                                .height(64.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(if (isAddFocused) Color(0xFF0284C7).copy(alpha = 0.4f) else Color(0xFF0F172A))
-                                .border(
-                                    if (isAddFocused) 2.dp else 1.dp,
-                                    if (isAddFocused) Color(0xFF38BDF8) else Color(0xFF0284C7).copy(alpha = 0.4f),
-                                    RoundedCornerShape(8.dp)
-                                )
-                                .clickable(
-                                    interactionSource = addInteraction,
-                                    indication = null,
-                                    onClick = onAddSource,
-                                )
-                                .focusable(interactionSource = addInteraction)
-                                .padding(horizontal = 10.dp, vertical = 6.dp),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text("➕", fontSize = 14.sp)
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text(
-                                    "Yeni Sağlayıcı Ekle",
-                                    color = Color(0xFF38BDF8),
-                                    style = MaterialTheme.typography.labelMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 11.sp,
-                                )
-                            }
-                        }
+                Box(
+                    modifier = Modifier
+                        .height(50.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(if (isAddFocused) Color(0xFF0284C7).copy(alpha = 0.35f) else Color(0xFF0F172A))
+                        .border(
+                            if (isAddFocused) 2.dp else 1.dp,
+                            if (isAddFocused) Color(0xFF38BDF8) else Color(0xFF0284C7).copy(alpha = 0.35f),
+                            RoundedCornerShape(8.dp)
+                        )
+                        .clickable(
+                            interactionSource = addInteraction,
+                            indication = null,
+                            onClick = onAddSource,
+                        )
+                        .focusable(interactionSource = addInteraction)
+                        .padding(horizontal = 12.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text("➕", fontSize = 12.sp)
+                        Spacer(modifier = Modifier.width(5.dp))
+                        Text(
+                            stringResource(R.string.dashboard_provider_add),
+                            color = Color(0xFF38BDF8),
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 11.sp,
+                        )
                     }
                 }
             }
@@ -2260,6 +2289,80 @@ private fun PhoneActionBarCard(
     }
 }
 
+/**
+ * Modern Ana Dizin Hero Grid (CANLI TV, FİLMLER, DİZİLER):
+ * IPTV'nin en temel 3 medya alanını geniş, şık, camgöbeği/mor/indigo gradyanlı,
+ * zengin rozetli ve D-pad kumanda odak efektli olarak sunar.
+ */
+@Composable
+fun DashboardMediaHubGrid(
+    formattedChannels: String,
+    formattedMovies: String,
+    formattedSeries: String,
+    onNavigateLive: () -> Unit,
+    onNavigateMovies: () -> Unit,
+    onNavigateSeries: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        // 1. CANLI TV (LIVE TV)
+        DashboardMediaHeroCard(
+            modifier = Modifier.weight(1f),
+            title = stringResource(R.string.dashboard_nav_live_tv),
+            subtitle = if (formattedChannels.isNotBlank() && formattedChannels != "0") {
+                stringResource(R.string.dashboard_nav_live_unit, formattedChannels)
+            } else {
+                stringResource(R.string.dashboard_nav_live_sub_fallback)
+            },
+            badge = stringResource(R.string.dashboard_nav_live_badge),
+            isLiveBadge = true,
+            icon = Icons.Outlined.LiveTv,
+            gradientColors = listOf(Color(0xFF0369A1), Color(0xFF0284C7), Color(0xFF075985)),
+            accentColor = Color(0xFF38BDF8),
+            onClick = onNavigateLive,
+        )
+
+        // 2. FİLMLER (MOVIES)
+        DashboardMediaHeroCard(
+            modifier = Modifier.weight(1f),
+            title = stringResource(R.string.dashboard_nav_movies),
+            subtitle = if (formattedMovies.isNotBlank() && formattedMovies != "0") {
+                stringResource(R.string.dashboard_nav_movies_unit, formattedMovies)
+            } else {
+                stringResource(R.string.dashboard_nav_movies_sub_fallback)
+            },
+            badge = stringResource(R.string.dashboard_nav_movies_badge),
+            isLiveBadge = false,
+            icon = Icons.Outlined.Movie,
+            gradientColors = listOf(Color(0xFF4338CA), Color(0xFF6366F1), Color(0xFF312E81)),
+            accentColor = Color(0xFF818CF8),
+            onClick = onNavigateMovies,
+        )
+
+        // 3. DİZİLER (SERIES)
+        DashboardMediaHeroCard(
+            modifier = Modifier.weight(1f),
+            title = stringResource(R.string.dashboard_nav_series),
+            subtitle = if (formattedSeries.isNotBlank() && formattedSeries != "0") {
+                stringResource(R.string.dashboard_nav_series_unit, formattedSeries)
+            } else {
+                stringResource(R.string.dashboard_nav_series_sub_fallback)
+            },
+            badge = stringResource(R.string.dashboard_nav_series_badge),
+            isLiveBadge = false,
+            icon = Icons.Outlined.VideoLibrary,
+            gradientColors = listOf(Color(0xFF7C3AED), Color(0xFF8B5CF6), Color(0xFF4C1D95)),
+            accentColor = Color(0xFFA78BFA),
+            onClick = onNavigateSeries,
+        )
+    }
+}
+
+/** Eski referans uyumluluğu için yönlendirici fonksiyon */
 @Composable
 fun DashboardNavCardsRow(
     formattedChannels: String,
@@ -2268,65 +2371,27 @@ fun DashboardNavCardsRow(
     onNavigateLive: () -> Unit,
     onNavigateMovies: () -> Unit,
     onNavigateSeries: () -> Unit,
-    onOpenQr: () -> Unit,
+    onOpenQr: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        // 1. CANLI TV
-        DashboardNavCard(
-            modifier = Modifier.weight(1f),
-            title = "CANLI TV",
-            subtitle = if (formattedChannels.isNotBlank() && formattedChannels != "0") "$formattedChannels Kanal" else "Yayınlar",
-            icon = Icons.Outlined.LiveTv,
-            gradientColors = listOf(Color(0xFF0369A1), Color(0xFF0284C7), Color(0xFF0C4A6E)),
-            accentColor = Color(0xFF38BDF8),
-            onClick = onNavigateLive,
-        )
-
-        // 2. FİLM
-        DashboardNavCard(
-            modifier = Modifier.weight(1f),
-            title = "FİLM",
-            subtitle = if (formattedMovies.isNotBlank() && formattedMovies != "0") "$formattedMovies Film" else "Sinema",
-            icon = Icons.Outlined.Movie,
-            gradientColors = listOf(Color(0xFF4338CA), Color(0xFF6366F1), Color(0xFF312E81)),
-            accentColor = Color(0xFF818CF8),
-            onClick = onNavigateMovies,
-        )
-
-        // 3. VİDEO / DİZİ
-        DashboardNavCard(
-            modifier = Modifier.weight(1f),
-            title = "VİDEO / DİZİ",
-            subtitle = if (formattedSeries.isNotBlank() && formattedSeries != "0") "$formattedSeries Dizi" else "Sezonlar",
-            icon = Icons.Outlined.VideoLibrary,
-            gradientColors = listOf(Color(0xFF7C3AED), Color(0xFF8B5CF6), Color(0xFF4C1D95)),
-            accentColor = Color(0xFFA78BFA),
-            onClick = onNavigateSeries,
-        )
-
-        // 4. QR İLE BAĞLAN
-        DashboardNavCard(
-            modifier = Modifier.weight(1f),
-            title = "QR İLE BAĞLAN",
-            subtitle = "Kumanda & Web",
-            icon = Icons.Filled.QrCode2,
-            gradientColors = listOf(Color(0xFF059669), Color(0xFF10B981), Color(0xFF064E3B)),
-            accentColor = Color(0xFF34D399),
-            onClick = onOpenQr,
-        )
-    }
+    DashboardMediaHubGrid(
+        formattedChannels = formattedChannels,
+        formattedMovies = formattedMovies,
+        formattedSeries = formattedSeries,
+        onNavigateLive = onNavigateLive,
+        onNavigateMovies = onNavigateMovies,
+        onNavigateSeries = onNavigateSeries,
+        modifier = modifier,
+    )
 }
 
 @Composable
-private fun DashboardNavCard(
+private fun DashboardMediaHeroCard(
     modifier: Modifier = Modifier,
     title: String,
     subtitle: String,
+    badge: String,
+    isLiveBadge: Boolean,
     icon: ImageVector,
     gradientColors: List<Color>,
     accentColor: Color,
@@ -2338,7 +2403,7 @@ private fun DashboardNavCard(
     val scale by animateFloatAsState(
         targetValue = if (isFocused) 1.04f else 1.0f,
         animationSpec = tween(durationMillis = 150),
-        label = "navCardScale",
+        label = "mediaHeroScale",
     )
 
     Box(
@@ -2347,18 +2412,18 @@ private fun DashboardNavCard(
                 scaleX = scale
                 scaleY = scale
             }
-            .height(56.dp)
-            .clip(RoundedCornerShape(12.dp))
+            .height(78.dp)
+            .clip(RoundedCornerShape(14.dp))
             .background(
                 Brush.horizontalGradient(
                     if (isFocused) gradientColors.map { it.copy(alpha = 0.95f) }
-                    else gradientColors.map { it.copy(alpha = 0.45f) }
+                    else gradientColors.map { it.copy(alpha = 0.50f) }
                 )
             )
             .border(
                 width = if (isFocused) 2.5.dp else 1.dp,
-                color = if (isFocused) Color.White else accentColor.copy(alpha = 0.35f),
-                shape = RoundedCornerShape(12.dp),
+                color = if (isFocused) Color.White else accentColor.copy(alpha = 0.40f),
+                shape = RoundedCornerShape(14.dp),
             )
             .clickable(
                 interactionSource = interactionSource,
@@ -2366,47 +2431,93 @@ private fun DashboardNavCard(
                 onClick = onClick,
             )
             .focusable(interactionSource = interactionSource)
-            .padding(horizontal = 14.dp, vertical = 7.dp),
+            .padding(horizontal = 14.dp, vertical = 10.dp),
         contentAlignment = Alignment.CenterStart,
     ) {
         Row(
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            Box(
-                modifier = Modifier
-                    .size(36.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(Color.Black.copy(alpha = 0.35f)),
-                contentAlignment = Alignment.Center,
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.weight(1f),
             ) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = title,
-                    tint = if (isFocused) Color.White else accentColor,
-                    modifier = Modifier.size(22.dp),
-                )
+                // Elevated Frosted Glass Icon
+                Box(
+                    modifier = Modifier
+                        .size(46.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(
+                            if (isFocused) Color.White.copy(alpha = 0.25f)
+                            else Color.Black.copy(alpha = 0.35f)
+                        )
+                        .border(
+                            1.dp,
+                            if (isFocused) Color.White.copy(alpha = 0.6f)
+                            else accentColor.copy(alpha = 0.35f),
+                            RoundedCornerShape(10.dp),
+                        ),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = title,
+                        tint = if (isFocused) Color.White else accentColor,
+                        modifier = Modifier.size(26.dp),
+                    )
+                }
+
+                Column(verticalArrangement = Arrangement.Center) {
+                    Text(
+                        text = title,
+                        color = Color.White,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.ExtraBold,
+                        fontSize = 15.sp,
+                        letterSpacing = 0.5.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Text(
+                        text = subtitle,
+                        color = if (isFocused) Color.White.copy(alpha = 0.92f) else Color.White.copy(alpha = 0.70f),
+                        style = MaterialTheme.typography.labelSmall,
+                        fontSize = 11.5.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
             }
 
-            Column(
-                verticalArrangement = Arrangement.Center,
+            // Right Status Badge Pill
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(6.dp))
+                    .background(
+                        if (isFocused) Color.White.copy(alpha = 0.22f)
+                        else if (isLiveBadge) Color(0xFF22C55E).copy(alpha = 0.25f)
+                        else accentColor.copy(alpha = 0.22f)
+                    )
+                    .border(
+                        1.dp,
+                        if (isFocused) Color.White.copy(alpha = 0.6f)
+                        else if (isLiveBadge) Color(0xFF22C55E).copy(alpha = 0.5f)
+                        else accentColor.copy(alpha = 0.4f),
+                        RoundedCornerShape(6.dp),
+                    )
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
             ) {
                 Text(
-                    text = title,
-                    color = Color.White,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 13.sp,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                Text(
-                    text = subtitle,
-                    color = if (isFocused) Color.White.copy(alpha = 0.9f) else Color.White.copy(alpha = 0.65f),
+                    text = badge,
+                    color = if (isFocused) Color.White
+                    else if (isLiveBadge) Color(0xFF4ADE80)
+                    else Color.White,
                     style = MaterialTheme.typography.labelSmall,
-                    fontSize = 10.sp,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
+                    fontSize = 9.sp,
+                    fontWeight = FontWeight.Bold,
                 )
             }
         }

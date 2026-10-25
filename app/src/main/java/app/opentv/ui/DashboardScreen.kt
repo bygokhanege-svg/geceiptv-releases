@@ -1229,11 +1229,30 @@ private fun ListItemCard(item: Any, isMovie: Boolean, onClick: () -> Unit) {
         }
     }
 }
+// ==============================================================================
+// TELEFON VE TABLET İÇİN 3-RENKLİ MODERN TASARIM SİSTEMİ (3-COLOR DESIGN SYSTEM)
+// ==============================================================================
+// 1. ZEMİN (CANVAS)
+private val MobileCanvasBg = Color(0xFF090A0F)         // Renk 1: Saf derin obsidyen gece siyahı
+
+// 2. KART & YÜZEY (SURFACE)
+private val MobileCardSurface = Color(0xFF131722)      // Renk 2: Grafit kart/panel yüzeyi
+private val MobileCardBorder = Color(0xFF22283A)       // Renk 2 Alt: Zarif mikro kart çerçevesi
+private val MobileCardElevated = Color(0xFF1A1F2E)     // Renk 2 Alt: İkincil hafif kabarık yüzey
+
+// 3. VURGU (ACCENT)
+private val MobileAccent = Color(0xFFF59E0B)           // Renk 3: Canlı asil kehribar/altın vurgu rengi
+private val MobileAccentSubtle = Color(0x26F59E0B)     // Renk 3 (%15 opaklık): Rozet ve hafif zemin vurgusu
+
+// ZIT RENK VE KONTRAST KURALLARI (HIGH CONTRAST RULES)
+private val MobileTextPrimary = Color(0xFFFFFFFF)      // Koyu zemin üzerinde bembeyaz, kristal netliğinde başlıklar
+private val MobileTextSecondary = Color(0xFF94A3B8)    // Koyu zemin üzerinde gümüş/gri okunaklı alt metinler
+private val MobileOnAccent = Color(0xFF000000)         // VURGULU (ALTIN) BUTON VE ÇİPLERDE SİMSİYAH ZIT METİN!
 
 /**
- * Mobile smartphone optimized Dashboard layout.
- * Features a single-column, vertically scrollable feed with touch cards,
- * continue-watching hero, and horizontal carousels (LazyRow).
+ * Telefon ve Tablet İçin Baştan Sona Modernize Edilmiş Ana Sayfa Beslemesi.
+ * Sadece 3 ana renkten oluşan, göz yormayan, zıt kontrast buton/metin hiyerarşisine sahip,
+ * gerçek bir mobil yayın deneyimi sunan arayüz.
  */
 @Composable
 private fun PhoneDashboardContent(
@@ -1271,128 +1290,37 @@ private fun PhoneDashboardContent(
     health: SourcesViewModel.ProviderHealth? = null,
 ) {
     val scrollState = rememberScrollState()
+    val configuration = androidx.compose.ui.platform.LocalConfiguration.current
+    val isTablet = configuration.screenWidthDp >= 600
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFF0F172A),
-                        Color(0xFF0A0F1D),
-                        MaterialTheme.colorScheme.background,
-                    )
-                )
-            ),
+            .background(MobileCanvasBg),
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .statusBarsPadding()
                 .verticalScroll(scrollState)
-                .padding(horizontal = 14.dp, vertical = 12.dp),
+                .padding(horizontal = if (isTablet) 24.dp else 14.dp, vertical = 12.dp),
         ) {
-            // 1. Welcome & Status Card
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(14.dp))
-                    .background(
-                        Brush.horizontalGradient(
-                            listOf(
-                                Color(0xFF1E293B),
-                                Color(0xFF0F172A),
-                            )
-                        )
-                    )
-                    .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.35f), RoundedCornerShape(14.dp))
-                    .clickable(onClick = onOpenLicense)
-                    .padding(14.dp),
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Box(
-                            modifier = Modifier
-                                .size(38.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(Color(0xFF090D16))
-                                .border(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.45f), RoundedCornerShape(8.dp)),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            Image(
-                                painter = painterResource(R.drawable.ic_opentv_logo),
-                                contentDescription = "Logo",
-                                modifier = Modifier.fillMaxSize(),
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(10.dp))
-                        Column {
-                            Text(
-                                text = "GECE İPTV Player",
-                                color = Color.White,
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 15.sp,
-                            )
-                            Spacer(modifier = Modifier.height(2.dp))
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(6.5.dp)
-                                        .clip(CircleShape)
-                                        .background(Color(0xFF22C55E)),
-                                )
-                                Spacer(modifier = Modifier.width(5.dp))
-                                Text(
-                                    text = stringResource(R.string.dashboard_expiry_prefix, expiryDisplayText),
-                                    color = Color(0xFF22C55E),
-                                    style = MaterialTheme.typography.labelSmall,
-                                    fontSize = 11.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                )
-                            }
-                        }
-                    }
-
-                    Column(horizontalAlignment = Alignment.End) {
-                        Text(
-                            text = timeFormatter.format(currentTime),
-                            color = Color.White,
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 15.sp,
-                        )
-                        Text(
-                            text = dateFormatter.format(currentTime),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            style = MaterialTheme.typography.labelSmall,
-                            fontSize = 9.5.sp,
-                            maxLines = 1,
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            // 2. ALT GRİD: Logo, Profil, Arama, Çoklu TV ve Ayarlar Barı (Kullanıcı isteğiyle üste abonelik/saat, alta bu bar alındı)
-            PhoneActionBarCard(
+            // 1. ÜST HEADER: Logo, Marka İsmi, Durum Rozeti ve Dokunmatik Hızlı Butonlar
+            PhoneHeaderBar(
                 title = "GECE İPTV Player",
                 activeProfileName = activeProfileName,
+                expiryDisplayText = expiryDisplayText,
+                onOpenLicense = onOpenLicense,
                 onOpenSearch = onOpenSearch,
                 onOpenMultiView = onOpenMultiView,
                 onOpenSettings = onOpenSettings,
                 onOpenProfiles = onOpenProfiles,
             )
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
-            // 3. Sağlayıcı Seçimi Hızlı Çip Menüsü (Tek dokunuşla anında geçiş)
-            ProviderQuickChipsBar(
+            // 2. SAĞLAYICI SEÇİCİ ÇİP BARI (Tek Dokunuşla Anında Kaynak Değişimi)
+            PhoneProviderQuickChipsBar(
                 sources = sources,
                 activeSourceId = activeSourceId,
                 onSelectSource = onSelectSource,
@@ -1400,158 +1328,134 @@ private fun PhoneDashboardContent(
                 health = health,
             )
 
-            Spacer(modifier = Modifier.height(14.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            // 2. 2x2 Şık ve Modern Ana Dizin Gridleri (CANLI TV, FİLMLER, DİZİLER, ÇOKLU TV)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-            ) {
-                PhoneMenuCard(
-                    title = stringResource(R.string.dashboard_nav_live_tv),
-                    count = formattedChannels,
-                    unit = stringResource(R.string.dashboard_unit_channels),
-                    badge = stringResource(R.string.dashboard_nav_live_badge),
-                    icon = Icons.Outlined.LiveTv,
-                    gradientColors = listOf(Color(0xFF0369A1), Color(0xFF0284C7)),
-                    accentColor = Color(0xFF38BDF8),
-                    modifier = Modifier.weight(1f),
-                    onClick = { onNavigateTab?.invoke(Tab.LIVE) },
-                )
-                PhoneMenuCard(
-                    title = stringResource(R.string.dashboard_nav_movies),
-                    count = formattedMovies,
-                    unit = stringResource(R.string.dashboard_unit_items),
-                    badge = stringResource(R.string.dashboard_nav_movies_badge),
-                    icon = Icons.Outlined.Movie,
-                    gradientColors = listOf(Color(0xFF4338CA), Color(0xFF6366F1)),
-                    accentColor = Color(0xFF818CF8),
-                    modifier = Modifier.weight(1f),
-                    onClick = { onNavigateTab?.invoke(Tab.MOVIES) },
-                )
-            }
+            // 3. 4 TEMEL MEDYA HUB DİZİNİ (CANLI TV, FİLMLER, DİZİLER, ÇOKLU TV)
+            // Gökkuşağı renk karmaşası yerine tek tip zarif grafit kartlar, altın sarısı ikonlar ve zıt beyaz başlıklar!
+            PhoneMainNavigationCards(
+                isTablet = isTablet,
+                formattedChannels = formattedChannels,
+                formattedMovies = formattedMovies,
+                formattedSeries = formattedSeries,
+                onNavigateTab = onNavigateTab,
+                onOpenMultiView = onOpenMultiView,
+            )
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(18.dp))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-            ) {
-                PhoneMenuCard(
-                    title = stringResource(R.string.dashboard_nav_series),
-                    count = formattedSeries,
-                    unit = stringResource(R.string.dashboard_unit_items),
-                    badge = stringResource(R.string.dashboard_nav_series_badge),
-                    icon = Icons.Outlined.VideoLibrary,
-                    gradientColors = listOf(Color(0xFF7C3AED), Color(0xFF8B5CF6)),
-                    accentColor = Color(0xFFA78BFA),
-                    modifier = Modifier.weight(1f),
-                    onClick = { onNavigateTab?.invoke(Tab.SHOWS) },
-                )
-                PhoneMenuCard(
-                    title = stringResource(R.string.dashboard_tool_multiview),
-                    count = "4x",
-                    unit = "TV",
-                    badge = "MULTI",
-                    icon = Icons.Default.GridView,
-                    gradientColors = listOf(Color(0xFF047857), Color(0xFF10B981)),
-                    accentColor = Color(0xFF34D399),
-                    modifier = Modifier.weight(1f),
-                    onClick = onOpenMultiView,
-                )
-            }
-
-            // 3. Continue Watching Hero
+            // 4. İZLEMEYE DEVAM ET (HERO KART) VEYA GÜNÜN ÖNE ÇIKANI
             if (continueWatching.isNotEmpty()) {
                 val primary = continueWatching.first()
                 val percent = (primary.progress * 100).toInt().coerceIn(1, 99)
 
+                // Bölüm Başlığı
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 18.dp, bottom = 8.dp),
+                        .padding(bottom = 10.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("⏱️", fontSize = 16.sp)
-                        Spacer(modifier = Modifier.width(6.dp))
+                        Box(
+                            modifier = Modifier
+                                .size(6.dp)
+                                .clip(CircleShape)
+                                .background(MobileAccent),
+                        )
+                        Spacer(modifier = Modifier.width(7.dp))
                         Text(
-                            stringResource(R.string.dashboard_section_continue_watching),
-                            color = MaterialTheme.colorScheme.onSurface,
+                            text = stringResource(R.string.dashboard_section_continue_watching),
+                            color = MobileTextPrimary,
                             style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
+                            fontWeight = FontWeight.ExtraBold,
+                            fontSize = 15.sp,
                         )
                     }
+
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
+                        // Temizle Butonu
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(6.dp))
-                                .background(Color(0xFFEF4444).copy(alpha = 0.15f))
-                                .border(1.dp, Color(0xFFEF4444).copy(alpha = 0.35f), RoundedCornerShape(6.dp))
+                                .background(MobileCardElevated)
+                                .border(1.dp, MobileCardBorder, RoundedCornerShape(6.dp))
                                 .clickable { onClearContinueWatching() }
-                                .padding(horizontal = 6.dp, vertical = 2.dp),
+                                .padding(horizontal = 8.dp, vertical = 4.dp),
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(
                                     imageVector = Icons.Outlined.DeleteSweep,
                                     contentDescription = stringResource(R.string.continue_watching_clear_all),
-                                    tint = Color(0xFFEF4444),
-                                    modifier = Modifier.size(11.dp),
+                                    tint = MobileTextSecondary,
+                                    modifier = Modifier.size(13.dp),
                                 )
-                                Spacer(modifier = Modifier.width(2.dp))
+                                Spacer(modifier = Modifier.width(3.dp))
                                 Text(
-                                    stringResource(R.string.continue_watching_clear_all),
-                                    color = Color(0xFFEF4444),
+                                    text = stringResource(R.string.continue_watching_clear_all),
+                                    color = MobileTextSecondary,
                                     style = MaterialTheme.typography.labelSmall,
                                     fontWeight = FontWeight.Bold,
-                                    fontSize = 8.5.sp,
+                                    fontSize = 9.sp,
                                 )
                             }
                         }
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(6.dp))
-                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f))
-                                .clickable { onShowAllContinueWatching() }
-                                .padding(horizontal = 6.dp, vertical = 2.dp),
-                        ) {
-                            Text(
-                                stringResource(R.string.dashboard_content_count, continueWatching.size) + " ▶",
-                                color = MaterialTheme.colorScheme.primary,
-                                style = MaterialTheme.typography.labelSmall,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 9.sp,
-                            )
+
+                        // Tümünü Gör Butonu
+                        if (continueWatching.size > 1) {
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(6.dp))
+                                    .background(MobileAccentSubtle)
+                                    .border(1.dp, MobileAccent.copy(alpha = 0.4f), RoundedCornerShape(6.dp))
+                                    .clickable { onShowAllContinueWatching() }
+                                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.dashboard_content_count, continueWatching.size) + " ▶",
+                                    color = MobileAccent,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    fontSize = 9.5.sp,
+                                )
+                            }
                         }
                     }
                 }
 
+                // Devam Et Hero Kartı
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(MaterialTheme.colorScheme.surface)
-                        .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.35f), RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(14.dp))
+                        .background(MobileCardSurface)
+                        .border(1.dp, MobileCardBorder, RoundedCornerShape(14.dp))
                         .clickable { onResume(primary.mediaKey, primary.streamUrl, primary.title) }
-                        .padding(10.dp),
+                        .padding(12.dp),
                 ) {
-                    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        // Sol: Poster & İlerleme Çubuğu
                         Box(
                             modifier = Modifier
-                                .width(70.dp)
-                                .height(98.dp)
-                                .clip(RoundedCornerShape(8.dp)),
+                                .width(if (isTablet) 86.dp else 72.dp)
+                                .height(if (isTablet) 120.dp else 100.dp)
+                                .clip(RoundedCornerShape(10.dp)),
                         ) {
                             AsyncImage(
                                 model = primary.posterUrl,
                                 contentDescription = null,
                                 contentScale = ContentScale.Crop,
-                                modifier = Modifier.fillMaxSize().background(Color.DarkGray),
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(MobileCardElevated),
                             )
+                            // İlerleme Barı (Altın Sarısı Dolgu)
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -1562,215 +1466,247 @@ private fun PhoneDashboardContent(
                                 LinearProgressIndicator(
                                     progress = { primary.progress },
                                     modifier = Modifier.fillMaxSize(),
-                                    color = MaterialTheme.colorScheme.primary,
-                                    trackColor = Color.White.copy(alpha = 0.2f),
+                                    color = MobileAccent,
+                                    trackColor = Color.White.copy(alpha = 0.15f),
                                 )
                             }
                         }
 
-                        Spacer(modifier = Modifier.width(12.dp))
+                        Spacer(modifier = Modifier.width(14.dp))
 
+                        // Sağ: Başlık, Yüzde ve Zıt Vurgu Butonu
                         Column(modifier = Modifier.weight(1f)) {
                             Box(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(4.dp))
-                                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f))
-                                    .padding(horizontal = 6.dp, vertical = 2.dp),
+                                    .background(MobileAccentSubtle)
+                                    .border(0.5.dp, MobileAccent.copy(alpha = 0.4f), RoundedCornerShape(4.dp))
+                                    .padding(horizontal = 7.dp, vertical = 2.dp),
                             ) {
                                 Text(
-                                    stringResource(R.string.dashboard_resume_progress, percent),
-                                    color = MaterialTheme.colorScheme.primary,
+                                    text = stringResource(R.string.dashboard_resume_progress, percent),
+                                    color = MobileAccent,
                                     style = MaterialTheme.typography.labelSmall,
-                                    fontSize = 9.sp,
-                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 9.5.sp,
+                                    fontWeight = FontWeight.ExtraBold,
                                 )
                             }
-                            Spacer(modifier = Modifier.height(4.dp))
+
+                            Spacer(modifier = Modifier.height(6.dp))
+
                             Text(
                                 text = primary.title,
-                                color = MaterialTheme.colorScheme.onSurface,
+                                color = MobileTextPrimary,
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
-                                fontSize = 13.5.sp,
+                                fontSize = 14.sp,
                                 maxLines = 2,
                                 overflow = TextOverflow.Ellipsis,
                             )
-                            Spacer(modifier = Modifier.height(8.dp))
+
+                            Spacer(modifier = Modifier.height(10.dp))
+
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
                             ) {
+                                // VURGULU ZIT BUTON: Zemin Altın Sarısı, Yazı Simsiyah!
                                 Box(
                                     modifier = Modifier
-                                        .clip(RoundedCornerShape(6.dp))
-                                        .background(MaterialTheme.colorScheme.primary)
-                                        .padding(horizontal = 10.dp, vertical = 4.dp),
-                                ) {
-                                    Text(
-                                        "▶ " + stringResource(R.string.dashboard_watch_now),
-                                        color = MaterialTheme.colorScheme.onPrimary,
-                                        style = MaterialTheme.typography.labelSmall,
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 11.sp,
-                                    )
-                                }
-                                Box(
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(6.dp))
-                                        .background(Color.White.copy(alpha = 0.08f))
-                                        .border(1.dp, Color.White.copy(alpha = 0.15f), RoundedCornerShape(6.dp))
-                                        .clickable { onRemoveResumeItem(primary) }
-                                        .padding(horizontal = 8.dp, vertical = 4.dp),
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .background(MobileAccent)
+                                        .clickable { onResume(primary.mediaKey, primary.streamUrl, primary.title) }
+                                        .padding(horizontal = 14.dp, vertical = 6.dp),
                                 ) {
                                     Row(verticalAlignment = Alignment.CenterVertically) {
                                         Icon(
-                                            imageVector = Icons.Outlined.DeleteOutline,
-                                            contentDescription = stringResource(R.string.continue_watching_remove_item),
-                                            tint = Color(0xFFEF4444),
-                                            modifier = Modifier.size(11.dp),
+                                            imageVector = Icons.Default.PlayArrow,
+                                            contentDescription = null,
+                                            tint = MobileOnAccent,
+                                            modifier = Modifier.size(15.dp),
                                         )
-                                        Spacer(modifier = Modifier.width(2.dp))
+                                        Spacer(modifier = Modifier.width(4.dp))
                                         Text(
-                                            stringResource(R.string.continue_watching_remove_item),
-                                            color = Color(0xFFEF4444),
+                                            text = stringResource(R.string.dashboard_watch_now),
+                                            color = MobileOnAccent,
                                             style = MaterialTheme.typography.labelSmall,
-                                            fontWeight = FontWeight.Medium,
-                                            fontSize = 9.sp,
+                                            fontWeight = FontWeight.ExtraBold,
+                                            fontSize = 11.5.sp,
                                         )
                                     }
+                                }
+
+                                // Listeden Sil Butonu
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .background(MobileCardElevated)
+                                        .border(1.dp, MobileCardBorder, RoundedCornerShape(8.dp))
+                                        .clickable { onRemoveResumeItem(primary) }
+                                        .padding(horizontal = 10.dp, vertical = 6.dp),
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.DeleteOutline,
+                                        contentDescription = stringResource(R.string.continue_watching_remove_item),
+                                        tint = MobileTextSecondary,
+                                        modifier = Modifier.size(15.dp),
+                                    )
                                 }
                             }
                         }
                     }
                 }
-                if (continueWatching.size > 1) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.12f))
-                            .border(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.35f), RoundedCornerShape(8.dp))
-                            .clickable { onShowAllContinueWatching() }
-                            .padding(vertical = 8.dp),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Text(
-                            text = stringResource(R.string.continue_watching_see_all_more, continueWatching.size - 1),
-                            color = MaterialTheme.colorScheme.primary,
-                            style = MaterialTheme.typography.labelSmall,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 11.sp,
-                        )
-                    }
-                }
             } else if (recommendedMovies.isNotEmpty()) {
                 val rec = recommendedMovies.first()
+                // Günün Önerisi Hero
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 18.dp, bottom = 8.dp),
+                        .padding(bottom = 10.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text("⭐", fontSize = 16.sp)
-                    Spacer(modifier = Modifier.width(6.dp))
+                    Box(
+                        modifier = Modifier
+                            .size(6.dp)
+                            .clip(CircleShape)
+                            .background(MobileAccent),
+                    )
+                    Spacer(modifier = Modifier.width(7.dp))
                     Text(
-                        stringResource(R.string.dashboard_section_daily_pick),
-                        color = MaterialTheme.colorScheme.onSurface,
+                        text = stringResource(R.string.dashboard_section_daily_pick),
+                        color = MobileTextPrimary,
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.ExtraBold,
+                        fontSize = 15.sp,
                     )
                 }
 
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(MaterialTheme.colorScheme.surface)
-                        .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.35f), RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(14.dp))
+                        .background(MobileCardSurface)
+                        .border(1.dp, MobileCardBorder, RoundedCornerShape(14.dp))
                         .clickable { onOpenMovie(rec) }
-                        .padding(10.dp),
+                        .padding(12.dp),
                 ) {
-                    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
                         Box(
                             modifier = Modifier
-                                .width(70.dp)
-                                .height(98.dp)
-                                .clip(RoundedCornerShape(8.dp)),
+                                .width(if (isTablet) 86.dp else 72.dp)
+                                .height(if (isTablet) 120.dp else 100.dp)
+                                .clip(RoundedCornerShape(10.dp)),
                         ) {
                             AsyncImage(
                                 model = rec.posterUrl,
                                 contentDescription = null,
                                 contentScale = ContentScale.Crop,
-                                modifier = Modifier.fillMaxSize().background(Color.DarkGray),
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(MobileCardElevated),
                             )
                         }
 
-                        Spacer(modifier = Modifier.width(12.dp))
+                        Spacer(modifier = Modifier.width(14.dp))
 
                         Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = "TR | ${rec.year ?: ""} | ÖNERİLEN",
-                                color = MaterialTheme.colorScheme.primary,
-                                style = MaterialTheme.typography.labelSmall,
-                                fontSize = 9.sp,
-                                fontWeight = FontWeight.Bold,
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(4.dp))
+                                    .background(MobileAccentSubtle)
+                                    .border(0.5.dp, MobileAccent.copy(alpha = 0.4f), RoundedCornerShape(4.dp))
+                                    .padding(horizontal = 7.dp, vertical = 2.dp),
+                            ) {
+                                Text(
+                                    text = "GÜNÜN ÖNERİSİ • ${rec.year ?: "2026"}",
+                                    color = MobileAccent,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontSize = 9.sp,
+                                    fontWeight = FontWeight.ExtraBold,
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(6.dp))
+
                             Text(
                                 text = rec.displayTitle,
-                                color = MaterialTheme.colorScheme.onSurface,
+                                color = MobileTextPrimary,
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
-                                fontSize = 13.5.sp,
+                                fontSize = 14.sp,
                                 maxLines = 2,
                                 overflow = TextOverflow.Ellipsis,
                             )
-                            Spacer(modifier = Modifier.height(8.dp))
+
+                            Spacer(modifier = Modifier.height(10.dp))
+
+                            // ZIT BUTON: Zemin Altın Sarısı, Yazı Simsiyah!
                             Box(
                                 modifier = Modifier
-                                    .clip(RoundedCornerShape(6.dp))
-                                    .background(MaterialTheme.colorScheme.primary)
-                                    .padding(horizontal = 10.dp, vertical = 4.dp),
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .background(MobileAccent)
+                                    .clickable { onOpenMovie(rec) }
+                                    .padding(horizontal = 14.dp, vertical = 6.dp),
                             ) {
-                                Text(
-                                    "▶ Detayları Gör",
-                                    color = MaterialTheme.colorScheme.onPrimary,
-                                    style = MaterialTheme.typography.labelSmall,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 11.sp,
-                                )
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(
+                                        imageVector = Icons.Default.PlayArrow,
+                                        contentDescription = null,
+                                        tint = MobileOnAccent,
+                                        modifier = Modifier.size(15.dp),
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(
+                                        text = "Hemen İncele",
+                                        color = MobileOnAccent,
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontWeight = FontWeight.ExtraBold,
+                                        fontSize = 11.5.sp,
+                                    )
+                                }
                             }
                         }
                     }
                 }
             }
 
-            // 4. Yeni Diziler Carousel (LazyRow)
+            Spacer(modifier = Modifier.height(18.dp))
+
+            // 5. YENİ DİZİLER (YATAY KAYAN KARUSEL)
             if (recentSeries.isNotEmpty()) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 18.dp, bottom = 8.dp),
+                        .padding(bottom = 10.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("📺", fontSize = 16.sp)
-                        Spacer(modifier = Modifier.width(6.dp))
+                        Box(
+                            modifier = Modifier
+                                .size(6.dp)
+                                .clip(CircleShape)
+                                .background(MobileAccent),
+                        )
+                        Spacer(modifier = Modifier.width(7.dp))
                         Text(
-                            stringResource(R.string.dashboard_section_new_series),
-                            color = MaterialTheme.colorScheme.onSurface,
+                            text = stringResource(R.string.dashboard_section_new_series),
+                            color = MobileTextPrimary,
                             style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
+                            fontWeight = FontWeight.ExtraBold,
+                            fontSize = 15.sp,
                         )
                     }
+
                     Text(
-                        text = stringResource(R.string.dashboard_section_see_all),
-                        color = MaterialTheme.colorScheme.primary,
+                        text = stringResource(R.string.dashboard_section_see_all) + " ▶",
+                        color = MobileAccent,
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 11.sp,
+                        fontSize = 12.sp,
                         modifier = Modifier.clickable { onNavigateTab?.invoke(Tab.SHOWS) },
                     )
                 }
@@ -1779,8 +1715,9 @@ private fun PhoneDashboardContent(
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
                     modifier = Modifier.fillMaxWidth(),
                 ) {
-                    items(recentSeries.take(12)) { series ->
+                    items(recentSeries.take(16)) { series ->
                         PhonePosterCard(
+                            isTablet = isTablet,
                             title = series.name,
                             posterUrl = series.posterUrl,
                             tag = "DİZİ",
@@ -1789,33 +1726,42 @@ private fun PhoneDashboardContent(
                         )
                     }
                 }
+
+                Spacer(modifier = Modifier.height(18.dp))
             }
 
-            // 5. Yeni Filmler Carousel (LazyRow)
+            // 6. YENİ FİLMLER (YATAY KAYAN KARUSEL)
             if (recentMovies.isNotEmpty()) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 18.dp, bottom = 8.dp),
+                        .padding(bottom = 10.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("🎬", fontSize = 16.sp)
-                        Spacer(modifier = Modifier.width(6.dp))
+                        Box(
+                            modifier = Modifier
+                                .size(6.dp)
+                                .clip(CircleShape)
+                                .background(MobileAccent),
+                        )
+                        Spacer(modifier = Modifier.width(7.dp))
                         Text(
-                            stringResource(R.string.dashboard_section_new_movies),
-                            color = MaterialTheme.colorScheme.onSurface,
+                            text = stringResource(R.string.dashboard_section_new_movies),
+                            color = MobileTextPrimary,
                             style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
+                            fontWeight = FontWeight.ExtraBold,
+                            fontSize = 15.sp,
                         )
                     }
+
                     Text(
-                        text = stringResource(R.string.dashboard_section_see_all),
-                        color = MaterialTheme.colorScheme.primary,
+                        text = stringResource(R.string.dashboard_section_see_all) + " ▶",
+                        color = MobileAccent,
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 11.sp,
+                        fontSize = 12.sp,
                         modifier = Modifier.clickable { onNavigateTab?.invoke(Tab.MOVIES) },
                     )
                 }
@@ -1824,8 +1770,9 @@ private fun PhoneDashboardContent(
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
                     modifier = Modifier.fillMaxWidth(),
                 ) {
-                    items(recentMovies.take(12)) { movie ->
+                    items(recentMovies.take(16)) { movie ->
                         PhonePosterCard(
+                            isTablet = isTablet,
                             title = movie.displayTitle,
                             posterUrl = movie.posterUrl,
                             tag = "FİLM",
@@ -1834,12 +1781,12 @@ private fun PhoneDashboardContent(
                         )
                     }
                 }
+
+                Spacer(modifier = Modifier.height(18.dp))
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Alt Araçlar ve Hızlı İşlemler Paneli
-            DashboardQuickToolsRow(
+            // 7. HIZLI İŞLEM ARAÇLARI (QUICK TOOLS)
+            PhoneQuickToolsBar(
                 onOpenMultiView = onOpenMultiView,
                 onOpenSearch = onOpenSearch,
                 onOpenFavorites = onOpenFavorites,
@@ -1847,41 +1794,33 @@ private fun PhoneDashboardContent(
                 onOpenSettings = onOpenSettings,
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(28.dp))
         }
 
-        // Sağ Alt Köşe / Mobil Bildirim Paneli
+        // Sağlayıcı Çevrimdışı Uyarısı
         AnimatedVisibility(
             visible = health?.isConnected == false,
             enter = fadeIn() + slideInVertically { it / 2 },
             exit = fadeOut() + slideOutVertically { it / 2 },
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(16.dp)
+                .padding(16.dp),
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(12.dp))
-                    .background(Color(0xFF1E0A0A).copy(alpha = 0.96f))
-                    .border(1.5.dp, Color(0xFFEF4444), RoundedCornerShape(12.dp))
+                    .background(MobileCardSurface)
+                    .border(1.5.dp, MobileAccent, RoundedCornerShape(12.dp))
                     .padding(12.dp),
             ) {
-                Row(verticalAlignment = Alignment.Top) {
-                    Box(
-                        modifier = Modifier
-                            .size(34.dp)
-                            .clip(CircleShape)
-                            .background(Color(0xFFEF4444).copy(alpha = 0.2f)),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Text("⚠️", fontSize = 16.sp)
-                    }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("⚠️", fontSize = 18.sp)
                     Spacer(modifier = Modifier.width(10.dp))
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text = stringResource(R.string.dashboard_alert_title),
-                            color = Color(0xFFFCA5A5),
+                            color = MobileAccent,
                             style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.Bold,
                             fontSize = 12.5.sp,
@@ -1889,10 +1828,9 @@ private fun PhoneDashboardContent(
                         Spacer(modifier = Modifier.height(2.dp))
                         Text(
                             text = stringResource(R.string.dashboard_alert_desc),
-                            color = Color.White,
+                            color = MobileTextSecondary,
                             style = MaterialTheme.typography.bodySmall,
                             fontSize = 11.sp,
-                            lineHeight = 15.sp,
                         )
                     }
                 }
@@ -1901,6 +1839,445 @@ private fun PhoneDashboardContent(
     }
 }
 
+/**
+ * Modern Mobil Üst Barı (Header):
+ * Logo, GECE İPTV Player başlığı, durum rozeti ve hızlı dokunmatik butonlar.
+ */
+@Composable
+private fun PhoneHeaderBar(
+    title: String,
+    activeProfileName: String,
+    expiryDisplayText: String,
+    onOpenLicense: () -> Unit,
+    onOpenSearch: () -> Unit,
+    onOpenMultiView: () -> Unit,
+    onOpenSettings: () -> Unit,
+    onOpenProfiles: () -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(56.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        // Sol: Logo + İsim + Durum Rozeti
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .clip(RoundedCornerShape(12.dp))
+                .clickable(onClick = onOpenLicense)
+                .padding(vertical = 4.dp, horizontal = 2.dp),
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(38.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(MobileCardSurface)
+                    .border(1.dp, MobileCardBorder, RoundedCornerShape(10.dp)),
+                contentAlignment = Alignment.Center,
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.ic_opentv_logo),
+                    contentDescription = "Logo",
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
+            Spacer(modifier = Modifier.width(10.dp))
+            Column {
+                Text(
+                    text = title,
+                    color = MobileTextPrimary,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 15.sp,
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        modifier = Modifier
+                            .size(6.dp)
+                            .clip(CircleShape)
+                            .background(MobileAccent),
+                    )
+                    Spacer(modifier = Modifier.width(5.dp))
+                    Text(
+                        text = expiryDisplayText,
+                        color = MobileAccent,
+                        style = MaterialTheme.typography.labelSmall,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                    if (activeProfileName.isNotBlank() && activeProfileName != "Varsayılan") {
+                        Text(
+                            text = " • $activeProfileName",
+                            color = MobileTextSecondary,
+                            style = MaterialTheme.typography.labelSmall,
+                            fontSize = 10.sp,
+                        )
+                    }
+                }
+            }
+        }
+
+        // Sağ: Hızlı İşlem Butonları (Arama, Çoklu TV, Ayarlar)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            PhoneHeaderButton(
+                icon = Icons.Outlined.Search,
+                contentDescription = "Arama",
+                onClick = onOpenSearch,
+            )
+            PhoneHeaderButton(
+                icon = Icons.Default.GridView,
+                contentDescription = "Çoklu TV",
+                onClick = onOpenMultiView,
+            )
+            PhoneHeaderButton(
+                icon = Icons.Outlined.Settings,
+                contentDescription = "Ayarlar",
+                onClick = onOpenSettings,
+            )
+        }
+    }
+}
+
+@Composable
+private fun PhoneHeaderButton(
+    icon: ImageVector,
+    contentDescription: String,
+    onClick: () -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .size(38.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .background(MobileCardSurface)
+            .border(1.dp, MobileCardBorder, RoundedCornerShape(10.dp))
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = contentDescription,
+            tint = MobileAccent,
+            modifier = Modifier.size(19.dp),
+        )
+    }
+}
+
+/**
+ * Sağlayıcı Hızlı Çip Seçim Barı (Tek Dokunuşla Geçiş):
+ * Seçili çip altın sarısı vurgu zemininde SİMSİYAH zıt metinle parlar.
+ */
+@Composable
+private fun PhoneProviderQuickChipsBar(
+    sources: List<Source>,
+    activeSourceId: Long,
+    onSelectSource: (Source) -> Unit,
+    onAddSource: () -> Unit,
+    health: SourcesViewModel.ProviderHealth? = null,
+) {
+    if (sources.isEmpty()) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(12.dp))
+                .background(MobileCardSurface)
+                .border(1.dp, MobileCardBorder, RoundedCornerShape(12.dp))
+                .clickable(onClick = onAddSource)
+                .padding(horizontal = 14.dp, vertical = 10.dp),
+            contentAlignment = Alignment.Center,
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("➕", fontSize = 14.sp)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = stringResource(R.string.dashboard_provider_empty),
+                    color = MobileAccent,
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 11.5.sp,
+                )
+            }
+        }
+        return
+    }
+
+    val activeSource = remember(sources, activeSourceId) {
+        sources.find { it.id == activeSourceId } ?: sources.firstOrNull()
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(MobileCardSurface)
+            .border(1.dp, MobileCardBorder, RoundedCornerShape(12.dp))
+            .padding(horizontal = 12.dp, vertical = 8.dp),
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("🌐", fontSize = 12.sp)
+                Spacer(modifier = Modifier.width(6.dp))
+                Text(
+                    text = stringResource(R.string.dashboard_providers_title) + " (${sources.size})",
+                    color = MobileTextSecondary,
+                    style = MaterialTheme.typography.labelSmall,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Bold,
+                )
+                if (health != null && health.isConnected) {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(4.dp))
+                            .background(MobileAccentSubtle)
+                            .border(0.5.dp, MobileAccent.copy(alpha = 0.4f), RoundedCornerShape(4.dp))
+                            .padding(horizontal = 5.dp, vertical = 1.dp),
+                    ) {
+                        Text(
+                            text = "⚡ ${health.speedMbps} Mbps • ${health.pingMs}ms",
+                            color = MobileAccent,
+                            style = MaterialTheme.typography.labelSmall,
+                            fontSize = 8.5.sp,
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
+                }
+            }
+
+            Text(
+                text = "Hızlı Geçiş",
+                color = MobileTextSecondary.copy(alpha = 0.7f),
+                style = MaterialTheme.typography.labelSmall,
+                fontSize = 9.sp,
+            )
+        }
+
+        Spacer(modifier = Modifier.height(7.dp))
+
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            items(sources, key = { it.id }) { src ->
+                val isSelected = activeSource?.id == src.id
+                Box(
+                    modifier = Modifier
+                        .widthIn(min = 130.dp, max = 175.dp)
+                        .height(48.dp)
+                        .clip(RoundedCornerShape(9.dp))
+                        .background(
+                            if (isSelected) MobileAccent else MobileCardElevated
+                        )
+                        .border(
+                            1.dp,
+                            if (isSelected) MobileAccent else MobileCardBorder,
+                            RoundedCornerShape(9.dp),
+                        )
+                        .clickable { onSelectSource(src) }
+                        .padding(horizontal = 10.dp, vertical = 6.dp),
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.SpaceBetween,
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                        ) {
+                            Text(
+                                text = src.name,
+                                color = if (isSelected) MobileOnAccent else MobileTextPrimary,
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.Bold,
+                                fontSize = 11.5.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.weight(1f, fill = false),
+                            )
+                            if (isSelected) {
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(3.dp))
+                                        .background(MobileOnAccent.copy(alpha = 0.15f))
+                                        .padding(horizontal = 4.dp, vertical = 1.dp),
+                                ) {
+                                    Text(
+                                        text = "AKTİF",
+                                        color = MobileOnAccent,
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontSize = 7.5.sp,
+                                        fontWeight = FontWeight.ExtraBold,
+                                    )
+                                }
+                            }
+                        }
+                        Text(
+                            text = "${src.kind.name} · ${hostOf(src.url)}",
+                            color = if (isSelected) MobileOnAccent.copy(alpha = 0.75f) else MobileTextSecondary,
+                            style = MaterialTheme.typography.labelSmall,
+                            fontSize = 8.5.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+                }
+            }
+
+            item {
+                Box(
+                    modifier = Modifier
+                        .height(48.dp)
+                        .clip(RoundedCornerShape(9.dp))
+                        .background(MobileCardElevated)
+                        .border(1.dp, MobileCardBorder, RoundedCornerShape(9.dp))
+                        .clickable(onClick = onAddSource)
+                        .padding(horizontal = 12.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text("➕", fontSize = 11.sp)
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = "Ekle",
+                            color = MobileAccent,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+/**
+ * 4 Temel Medya Dizini (Canlı TV, Filmler, Diziler, Çoklu TV):
+ * Tablette tek satırda 4 kart, telefonda 2x2 grid olarak responsive uyum sağlar.
+ */
+@Composable
+private fun PhoneMainNavigationCards(
+    isTablet: Boolean,
+    formattedChannels: String,
+    formattedMovies: String,
+    formattedSeries: String,
+    onNavigateTab: ((Tab) -> Unit)?,
+    onOpenMultiView: () -> Unit,
+) {
+    if (isTablet) {
+        // TABLET: Tek satırda 4 sütun
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            PhoneMenuCard(
+                title = stringResource(R.string.dashboard_nav_live_tv),
+                count = formattedChannels,
+                unit = stringResource(R.string.dashboard_unit_channels),
+                badge = stringResource(R.string.dashboard_nav_live_badge),
+                icon = Icons.Outlined.LiveTv,
+                modifier = Modifier.weight(1f),
+                onClick = { onNavigateTab?.invoke(Tab.LIVE) },
+            )
+            PhoneMenuCard(
+                title = stringResource(R.string.dashboard_nav_movies),
+                count = formattedMovies,
+                unit = stringResource(R.string.dashboard_unit_items),
+                badge = stringResource(R.string.dashboard_nav_movies_badge),
+                icon = Icons.Outlined.Movie,
+                modifier = Modifier.weight(1f),
+                onClick = { onNavigateTab?.invoke(Tab.MOVIES) },
+            )
+            PhoneMenuCard(
+                title = stringResource(R.string.dashboard_nav_series),
+                count = formattedSeries,
+                unit = stringResource(R.string.dashboard_unit_items),
+                badge = stringResource(R.string.dashboard_nav_series_badge),
+                icon = Icons.Outlined.VideoLibrary,
+                modifier = Modifier.weight(1f),
+                onClick = { onNavigateTab?.invoke(Tab.SHOWS) },
+            )
+            PhoneMenuCard(
+                title = stringResource(R.string.dashboard_tool_multiview),
+                count = "4x",
+                unit = "TV",
+                badge = "MULTI",
+                icon = Icons.Default.GridView,
+                modifier = Modifier.weight(1f),
+                onClick = onOpenMultiView,
+            )
+        }
+    } else {
+        // TELEFON: 2x2 Grid
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                PhoneMenuCard(
+                    title = stringResource(R.string.dashboard_nav_live_tv),
+                    count = formattedChannels,
+                    unit = stringResource(R.string.dashboard_unit_channels),
+                    badge = stringResource(R.string.dashboard_nav_live_badge),
+                    icon = Icons.Outlined.LiveTv,
+                    modifier = Modifier.weight(1f),
+                    onClick = { onNavigateTab?.invoke(Tab.LIVE) },
+                )
+                PhoneMenuCard(
+                    title = stringResource(R.string.dashboard_nav_movies),
+                    count = formattedMovies,
+                    unit = stringResource(R.string.dashboard_unit_items),
+                    badge = stringResource(R.string.dashboard_nav_movies_badge),
+                    icon = Icons.Outlined.Movie,
+                    modifier = Modifier.weight(1f),
+                    onClick = { onNavigateTab?.invoke(Tab.MOVIES) },
+                )
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                PhoneMenuCard(
+                    title = stringResource(R.string.dashboard_nav_series),
+                    count = formattedSeries,
+                    unit = stringResource(R.string.dashboard_unit_items),
+                    badge = stringResource(R.string.dashboard_nav_series_badge),
+                    icon = Icons.Outlined.VideoLibrary,
+                    modifier = Modifier.weight(1f),
+                    onClick = { onNavigateTab?.invoke(Tab.SHOWS) },
+                )
+                PhoneMenuCard(
+                    title = stringResource(R.string.dashboard_tool_multiview),
+                    count = "4x",
+                    unit = "TV",
+                    badge = "MULTI",
+                    icon = Icons.Default.GridView,
+                    modifier = Modifier.weight(1f),
+                    onClick = onOpenMultiView,
+                )
+            }
+        }
+    }
+}
+
+/**
+ * 3-Renk Sistemine Göre Tasarlanmış Menü Kartı:
+ * Yüzey: Grafit, İkon & Rozet: Altın Sarısı, Başlık: Bembeyaz yüksek kontrast!
+ */
 @Composable
 private fun PhoneMenuCard(
     title: String,
@@ -1908,19 +2285,17 @@ private fun PhoneMenuCard(
     unit: String,
     badge: String,
     icon: ImageVector,
-    gradientColors: List<Color>,
-    accentColor: Color,
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
     Box(
         modifier = modifier
-            .height(76.dp)
+            .height(82.dp)
             .clip(RoundedCornerShape(14.dp))
-            .background(Brush.linearGradient(gradientColors))
-            .border(1.dp, Color.White.copy(alpha = 0.22f), RoundedCornerShape(14.dp))
+            .background(MobileCardSurface)
+            .border(1.dp, MobileCardBorder, RoundedCornerShape(14.dp))
             .clickable(onClick = onClick)
-            .padding(horizontal = 12.dp, vertical = 9.dp),
+            .padding(horizontal = 12.dp, vertical = 10.dp),
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -1931,30 +2306,35 @@ private fun PhoneMenuCard(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                Text(
-                    text = title,
-                    color = Color.White.copy(alpha = 0.92f),
-                    style = MaterialTheme.typography.labelSmall,
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    letterSpacing = 0.5.sp,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f, fill = false),
-                )
-                Spacer(modifier = Modifier.width(4.dp))
+                Box(
+                    modifier = Modifier
+                        .size(32.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(MobileCardElevated)
+                        .border(0.5.dp, MobileCardBorder, RoundedCornerShape(8.dp)),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = title,
+                        tint = MobileAccent,
+                        modifier = Modifier.size(18.dp),
+                    )
+                }
+
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(4.dp))
-                        .background(Color.Black.copy(alpha = 0.3f))
-                        .padding(horizontal = 5.dp, vertical = 1.5.dp),
+                        .background(MobileAccentSubtle)
+                        .border(0.8.dp, MobileAccent.copy(alpha = 0.4f), RoundedCornerShape(4.dp))
+                        .padding(horizontal = 6.dp, vertical = 2.dp),
                 ) {
                     Text(
                         text = badge,
-                        color = Color.White,
+                        color = MobileAccent,
                         style = MaterialTheme.typography.labelSmall,
-                        fontSize = 7.5.sp,
-                        fontWeight = FontWeight.Bold,
+                        fontSize = 8.sp,
+                        fontWeight = FontWeight.ExtraBold,
                     )
                 }
             }
@@ -1964,63 +2344,67 @@ private fun PhoneMenuCard(
                 verticalAlignment = Alignment.Bottom,
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                Row(verticalAlignment = Alignment.Bottom) {
+                Column {
                     Text(
-                        text = count,
-                        color = Color.White,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontSize = 17.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = unit,
-                        color = Color.White.copy(alpha = 0.75f),
+                        text = title,
+                        color = MobileTextPrimary,
                         style = MaterialTheme.typography.labelSmall,
-                        fontSize = 9.5.sp,
-                        fontWeight = FontWeight.Medium,
-                        modifier = Modifier.padding(bottom = 2.dp),
+                        fontSize = 12.5.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                     )
-                }
-                Box(
-                    modifier = Modifier
-                        .size(30.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(Color.White.copy(alpha = 0.15f)),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = title,
-                        tint = Color.White,
-                        modifier = Modifier.size(18.dp),
-                    )
+                    Spacer(modifier = Modifier.height(1.dp))
+                    Row(verticalAlignment = Alignment.Bottom) {
+                        Text(
+                            text = count,
+                            color = MobileTextPrimary,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                        )
+                        Spacer(modifier = Modifier.width(3.dp))
+                        Text(
+                            text = unit,
+                            color = MobileTextSecondary,
+                            style = MaterialTheme.typography.labelSmall,
+                            fontSize = 9.sp,
+                            fontWeight = FontWeight.Medium,
+                        )
+                    }
                 }
             }
         }
     }
 }
 
+/**
+ * 3-Renk Düzeninde Modern Mobil/Tablet Poster Kartı
+ */
 @Composable
 private fun PhonePosterCard(
+    isTablet: Boolean,
     title: String,
     posterUrl: String?,
     tag: String,
     year: String,
     onClick: () -> Unit,
 ) {
+    val cardWidth = if (isTablet) 120.dp else 105.dp
+    val cardHeight = if (isTablet) 175.dp else 152.dp
+
     Column(
         modifier = Modifier
-            .width(105.dp)
+            .width(cardWidth)
             .clickable(onClick = onClick),
     ) {
         Box(
             modifier = Modifier
-                .width(105.dp)
-                .height(150.dp)
-                .clip(RoundedCornerShape(10.dp))
-                .background(Color(0xFF141926))
-                .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.25f), RoundedCornerShape(10.dp)),
+                .width(cardWidth)
+                .height(cardHeight)
+                .clip(RoundedCornerShape(12.dp))
+                .background(MobileCardElevated)
+                .border(1.dp, MobileCardBorder, RoundedCornerShape(12.dp)),
         ) {
             AsyncImage(
                 model = posterUrl,
@@ -2033,25 +2417,115 @@ private fun PhonePosterCard(
                     .padding(5.dp)
                     .align(Alignment.TopStart)
                     .clip(RoundedCornerShape(4.dp))
-                    .background(Color.Black.copy(alpha = 0.75f))
+                    .background(Color.Black.copy(alpha = 0.8f))
+                    .border(0.5.dp, MobileAccent.copy(alpha = 0.4f), RoundedCornerShape(4.dp))
                     .padding(horizontal = 5.dp, vertical = 2.dp),
             ) {
                 Text(
                     text = if (year.isNotBlank()) "$year • $tag" else tag,
-                    color = Color.White,
+                    color = MobileAccent,
                     style = MaterialTheme.typography.labelSmall,
                     fontSize = 8.sp,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.ExtraBold,
                 )
             }
         }
+        Spacer(modifier = Modifier.height(5.dp))
+        Text(
+            text = title,
+            color = MobileTextPrimary,
+            style = MaterialTheme.typography.labelMedium,
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 11.5.sp,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+    }
+}
+
+/**
+ * Telefon ve Tablet Alt Hızlı İşlemler Paneli:
+ * Favoriler, Arama, Çoklu TV, Kumanda (QR) ve Ayarlar hızlı erişim butonları.
+ */
+@Composable
+private fun PhoneQuickToolsBar(
+    onOpenMultiView: () -> Unit,
+    onOpenSearch: () -> Unit,
+    onOpenFavorites: () -> Unit,
+    onOpenQr: () -> Unit,
+    onOpenSettings: () -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(14.dp))
+            .background(MobileCardSurface)
+            .border(1.dp, MobileCardBorder, RoundedCornerShape(14.dp))
+            .padding(horizontal = 6.dp, vertical = 10.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        PhoneQuickToolItem(
+            title = stringResource(R.string.dashboard_tool_favorites),
+            icon = Icons.Filled.Star,
+            onClick = onOpenFavorites,
+            modifier = Modifier.weight(1f),
+        )
+        PhoneQuickToolItem(
+            title = stringResource(R.string.dashboard_tool_search),
+            icon = Icons.Outlined.Search,
+            onClick = onOpenSearch,
+            modifier = Modifier.weight(1f),
+        )
+        PhoneQuickToolItem(
+            title = stringResource(R.string.dashboard_tool_multiview),
+            icon = Icons.Default.GridView,
+            onClick = onOpenMultiView,
+            modifier = Modifier.weight(1f),
+        )
+        PhoneQuickToolItem(
+            title = stringResource(R.string.dashboard_tool_qr),
+            icon = Icons.Filled.QrCode2,
+            onClick = onOpenQr,
+            modifier = Modifier.weight(1f),
+        )
+        PhoneQuickToolItem(
+            title = stringResource(R.string.dashboard_tool_settings),
+            icon = Icons.Outlined.Settings,
+            onClick = onOpenSettings,
+            modifier = Modifier.weight(1f),
+        )
+    }
+}
+
+@Composable
+private fun PhoneQuickToolItem(
+    title: String,
+    icon: ImageVector,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .clip(RoundedCornerShape(8.dp))
+            .clickable(onClick = onClick)
+            .padding(vertical = 4.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = title,
+            tint = MobileAccent,
+            modifier = Modifier.size(20.dp),
+        )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = title,
-            color = MaterialTheme.colorScheme.onSurface,
-            style = MaterialTheme.typography.labelMedium,
-            fontWeight = FontWeight.SemiBold,
-            fontSize = 11.sp,
+            color = MobileTextPrimary,
+            style = MaterialTheme.typography.labelSmall,
+            fontSize = 10.sp,
+            fontWeight = FontWeight.Medium,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )

@@ -565,10 +565,47 @@
 
 ---
 
+### 26. Telefon ve Tablet Ana Sayfası - 3 Renkli Modern Mobil Deneyim Revizyonu
+* **Kullanıcı İstekleri:**
+  * Ana sayfa kısmının telefon ve tablet için **sadece 3 renkten oluşan**, göz yormayan, zıt renkli (yüksek kontrastlı) metin ve butonlara sahip modern bir renk düzeniyle yenilenmesi istendi.
+  * Telefon ve tablet için gerçek bir mobil yayın deneyimi yaşatacak şekilde arayüzün modernize edilmesi istendi.
+* **Tasarım Sistemi & 3 Renkli Renk Paleti:**
+  * **1. Zemin (Canvas):** `MobileCanvasBg = Color(0xFF090A0F)` (Derin obsidyen gece siyahı - AMOLED dostu, gözü yormayan saf koyu temel).
+  * **2. Kart & Yüzey (Surface):** `MobileCardSurface = Color(0xFF131722)` (Grafit kart yüzeyi), `MobileCardBorder = Color(0xFF22283A)` (Ultra ince mikro çerçeve), `MobileCardElevated = Color(0xFF1A1F2E)` (İkincil yüzey).
+  * **3. Vurgu (Accent):** `MobileAccent = Color(0xFFF59E0B)` (Asil amber altın vurgu) ve `MobileAccentSubtle = Color(0x26F59E0B)` (%15 saydam rozet zemini).
+  * **Zıt Kontrast (High Contrast) Kuralları:**
+    * Koyu Kartlar/Zemin üzerinde: `MobileTextPrimary = Color(0xFFFFFFFF)` (Bembeyaz kristal netliğinde başlıklar) ve `MobileTextSecondary = Color(0xFF94A3B8)` (Gümüş/arduvaz okunaklı alt metinler).
+    * Altın Vurgulu Butonlar ve Aktif Çiplerde: `MobileOnAccent = Color(0xFF000000)` (**Simsiyah zıt metin/ikon**). Örneğin: Altın renkli *"▶ Şimdi Devam Et"* butonunun üzerindeki metin simsiyah olup anında okunabilir hale getirildi.
+* **Teknik Çözüm ve Mobil Modernizasyon:**
+  * **`PhoneDashboardContent` (Yenilenmiş Akıcı Akış):**
+    - Durum çubuğu boşluğu (`statusBarsPadding()`) ve alt gezinme boşluğu (`navigationBarsPadding()`) eklendi.
+    - Eski çift logo ve mükerrer başlık karmaşası kaldırıldı; yerine tek satırda entegre kompakt `PhoneHeaderBar` getirildi (Logo, GECE İPTV Player başlığı, aktif profil/abonelik etiketi ve Arama, Çoklu TV, Ayarlar dokunmatik hızlı işlem ikonları).
+  * **Oynatma Listesi / Kaynak Çipler (`PhoneProviderQuickChipsBar`):**
+    - Yatay kaydırılabilir, tek dokunuşla kaynak değiştiren modern çipler. Seçili çip altın zemin üzerine simsiyah zıt metinle parlar.
+  * **4 Ana Yayın Merkezi Kartları (`PhoneMainNavigationCards`):**
+    - Canlı TV, Filmler, Diziler, Çoklu TV kartları:
+      - **Telefonda:** Ergonomik 2x2 grid.
+      - **Tablette (`screenWidthDp >= 600 && !isTv`):** Yan yana 4 sütunlu tek satır halinde geniş ekran alanını kusursuz değerlendiren düzen.
+    - Kartlarda gömülü altın ikonlar, beyaz başlıklar, gri alt açıklamalar ve aktif kanal/içerik sayaç rozetleri.
+  * **"İzlemeye Devam Et" Hero Kartı (`PhoneContinueWatchingHero`):**
+    - Kullanıcının yarıda bıraktığı son içeriği öne çıkaran, dinamik afişli, ince altın ilerleme çubuklu ve yüksek kontrastlı "▶ Şimdi Devam Et" butonlu özel kart.
+  * **Yatay İçerik Şeritleri & Afiş Kartları (`PhonePosterCard`):**
+    - Trend Filmler, Popüler Diziler ve Son Eklenen Kanallar için 105x152dp (telefonda) / 120x175dp (tablette) yumuşak köşeli afiş kartları.
+  * **Hızlı Erişim Alt Araç Çubuğu (`PhoneQuickToolsBar`):**
+    - Favoriler, Arama, Çoklu TV, Uzaktan Kumanda ve Ayarlar tek dokunuşla başparmak erişimine sunuldu.
+  * **TV Deneyimi Korundu:**
+    - `isTelevision == true` olan tüm TV arayüzü, D-pad kumanda gezinmesi, 5 sütunlu gridler ve odak çerçeveleri sıfır değişiklikle korundu.
+* **Doğrulama:**
+  - `.\gradlew compileDebugKotlin`: Başarılı (0 hata).
+  - `.\gradlew assembleRelease`: Başarılı. Yeni APK boyutu: 13.45 MB (`GECEiptv-release.apk`).
+
+---
+
 ## 📌 Hızlı Referans & Mimari Kurallar
 1. **Ekran Genişliği Sınırı (Mobil Breakpoint):**
    * `LocalConfiguration.current.screenWidthDp < 600` mobil/telefon cihazları temsil eder.
-   * `>= 600dp` veya `isTv` televizyon ve büyük ekranları temsil eder (D-pad gezinmesi ve yan raylar bu ekranda aktiftir).
+   * Tablet: `screenWidthDp >= 600 && !isTelevision`.
+   * Televizyon: `isTelevision == true`. D-pad gezinmesi ve TV rayları aktiftir.
 2. **GitHub Bilgileri:**
    * Kaynak Kod Reposu (Private): `https://github.com/bygokhanege-svg/geceiptv.git`
    * Güncelleme / Dağıtım Reposu (Public): `https://github.com/bygokhanege-svg/geceiptv-releases.git`
@@ -579,3 +616,4 @@
    * Kod Doğrulama: `.\gradlew compileDebugKotlin`
    * Release APK Üretimi: `.\gradlew assembleRelease`
    * Çıktı Yolu: `app\build\outputs\apk\release\GECEiptv-release.apk`
+

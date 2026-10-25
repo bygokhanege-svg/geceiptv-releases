@@ -36,7 +36,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.GridView
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.QrCode2
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material.icons.outlined.LiveTv
@@ -115,6 +121,7 @@ fun DashboardScreen(
     var showFavoritesDialog by remember { mutableStateOf(false) }
     var showClearAllConfirm by remember { mutableStateOf(false) }
     var itemToRemove by remember { mutableStateOf<VodViewModel.ResumeItem?>(null) }
+    var showAllContinueWatching by remember { mutableStateOf(false) }
 
     val hasSources = sourcesUi.sources.isNotEmpty()
     LaunchedEffect(hasSources) {
@@ -177,6 +184,7 @@ fun DashboardScreen(
             onOpenLicense = onOpenLicense,
             onOpenSearch = onOpenSearch,
             onOpenFavorites = { showFavoritesDialog = true },
+            onShowAllContinueWatching = { showAllContinueWatching = true },
             onRemoveResumeItem = { itemToRemove = it },
             onClearContinueWatching = { showClearAllConfirm = true },
             onOpenSettings = onOpenSettings,
@@ -462,6 +470,7 @@ fun DashboardScreen(
                         onOpenMovie = onOpenMovie,
                         onRemoveItem = { itemToRemove = it },
                         onClearAll = { showClearAllConfirm = true },
+                        onShowAll = { showAllContinueWatching = true },
                     )
                 }
 
@@ -581,6 +590,24 @@ fun DashboardScreen(
             onDismiss = { itemToRemove = null },
         )
     }
+
+    if (showAllContinueWatching) {
+        AllContinueWatchingDialog(
+            continueWatching = continueWatching,
+            onResume = { mediaKey, url, title ->
+                showAllContinueWatching = false
+                onResume(mediaKey, url, title)
+            },
+            onRemoveItem = { item ->
+                itemToRemove = item
+            },
+            onClearAll = {
+                showClearAllConfirm = true
+            },
+            onDismiss = { showAllContinueWatching = false },
+            isTelevision = isTelevision,
+        )
+    }
 }
 
 @Composable
@@ -637,6 +664,7 @@ private fun ContinueWatchingColumn(
     onOpenMovie: (Movie) -> Unit,
     onRemoveItem: (VodViewModel.ResumeItem) -> Unit = {},
     onClearAll: () -> Unit = {},
+    onShowAll: () -> Unit = {},
 ) {
     Column(
         modifier = Modifier
@@ -693,15 +721,24 @@ private fun ContinueWatchingColumn(
                         }
                     }
                 }
+                var badgeFocused by remember { mutableStateOf(false) }
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(8.dp))
-                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f))
+                        .background(if (badgeFocused) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primary.copy(alpha = 0.15f))
+                        .border(
+                            width = 1.dp,
+                            color = if (badgeFocused) Color.White else MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+                            shape = RoundedCornerShape(8.dp),
+                        )
+                        .clickable(enabled = continueWatching.isNotEmpty(), onClick = onShowAll)
+                        .onFocusChanged { badgeFocused = it.isFocused }
+                        .focusable(enabled = continueWatching.isNotEmpty())
                         .padding(horizontal = 7.dp, vertical = 3.dp),
                 ) {
                     Text(
-                        if (continueWatching.isNotEmpty()) stringResource(R.string.dashboard_content_count, continueWatching.size) else stringResource(R.string.dashboard_recommended).uppercase(),
-                        color = MaterialTheme.colorScheme.primary,
+                        if (continueWatching.isNotEmpty()) stringResource(R.string.dashboard_content_count, continueWatching.size) + " ▶" else stringResource(R.string.dashboard_recommended).uppercase(),
+                        color = if (badgeFocused) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,
                     )
@@ -931,6 +968,35 @@ private fun ContinueWatchingColumn(
                                     contentDescription = stringResource(R.string.continue_watching_remove_item),
                                     tint = if (subFocused) Color.White else Color(0xFFEF4444),
                                     modifier = Modifier.size(13.dp),
+                                )
+                            }
+                        }
+                    }
+                    if (continueWatching.size > 3) {
+                        item {
+                            var moreFocused by remember { mutableStateOf(false) }
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(34.dp)
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .background(if (moreFocused) MaterialTheme.colorScheme.primary else Color.White.copy(alpha = 0.08f))
+                                    .border(
+                                        width = if (moreFocused) 1.5.dp else 1.dp,
+                                        color = if (moreFocused) Color.White else Color.White.copy(alpha = 0.15f),
+                                        shape = RoundedCornerShape(8.dp),
+                                    )
+                                    .clickable { onShowAll() }
+                                    .onFocusChanged { moreFocused = it.isFocused }
+                                    .focusable()
+                                    .padding(horizontal = 8.dp),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.continue_watching_see_all_more, continueWatching.size - 3),
+                                    color = if (moreFocused) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
                                 )
                             }
                         }
@@ -1186,6 +1252,7 @@ private fun PhoneDashboardContent(
     onOpenLicense: () -> Unit,
     onOpenSearch: () -> Unit,
     onOpenFavorites: () -> Unit = {},
+    onShowAllContinueWatching: () -> Unit = {},
     onRemoveResumeItem: (VodViewModel.ResumeItem) -> Unit = {},
     onClearContinueWatching: () -> Unit = {},
     onOpenSettings: () -> Unit,
@@ -1446,10 +1513,11 @@ private fun PhoneDashboardContent(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(6.dp))
                                 .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f))
+                                .clickable { onShowAllContinueWatching() }
                                 .padding(horizontal = 6.dp, vertical = 2.dp),
                         ) {
                             Text(
-                                stringResource(R.string.dashboard_content_count, continueWatching.size),
+                                stringResource(R.string.dashboard_content_count, continueWatching.size) + " ▶",
                                 color = MaterialTheme.colorScheme.primary,
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = FontWeight.Bold,
@@ -1570,6 +1638,27 @@ private fun PhoneDashboardContent(
                                 }
                             }
                         }
+                    }
+                }
+                if (continueWatching.size > 1) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.12f))
+                            .border(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.35f), RoundedCornerShape(8.dp))
+                            .clickable { onShowAllContinueWatching() }
+                            .padding(vertical = 8.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            text = stringResource(R.string.continue_watching_see_all_more, continueWatching.size - 1),
+                            color = MaterialTheme.colorScheme.primary,
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 11.sp,
+                        )
                     }
                 }
             } else if (recommendedMovies.isNotEmpty()) {
@@ -2905,6 +2994,386 @@ private fun DashboardMediaHeroCard(
                     fontSize = 9.sp,
                     fontWeight = FontWeight.Bold,
                 )
+            }
+        }
+    }
+}
+
+@Composable
+private fun AllContinueWatchingDialog(
+    continueWatching: List<VodViewModel.ResumeItem>,
+    onResume: (mediaKey: String, url: String, title: String) -> Unit,
+    onRemoveItem: (VodViewModel.ResumeItem) -> Unit,
+    onClearAll: () -> Unit,
+    onDismiss: () -> Unit,
+    isTelevision: Boolean = true,
+) {
+    androidx.activity.compose.BackHandler(onBack = onDismiss)
+
+    val firstItemFocus = remember { FocusRequester() }
+    LaunchedEffect(Unit) {
+        kotlinx.coroutines.delay(120)
+        runCatching { firstItemFocus.requestFocus() }
+    }
+
+    androidx.compose.ui.window.Dialog(
+        onDismissRequest = onDismiss,
+        properties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false),
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.88f))
+                .then(
+                    if (!isTelevision) Modifier.clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                        onClick = onDismiss,
+                    ) else Modifier
+                ),
+            contentAlignment = Alignment.Center,
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize(if (isTelevision) 0.94f else 0.98f)
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(
+                        Brush.verticalGradient(
+                            listOf(Color(0xFF0F172A), Color(0xFF0A0F1D))
+                        )
+                    )
+                    .border(
+                        1.5.dp,
+                        Brush.linearGradient(
+                            listOf(
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+                                Color(0xFF38BDF8).copy(alpha = 0.2f),
+                                Color.White.copy(alpha = 0.05f),
+                            )
+                        ),
+                        RoundedCornerShape(20.dp),
+                    )
+                    .padding(if (isTelevision) 24.dp else 16.dp),
+            ) {
+                Column(modifier = Modifier.fillMaxSize()) {
+                    // Header Row
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(
+                                modifier = Modifier
+                                    .size(44.dp)
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(
+                                        Brush.linearGradient(
+                                            listOf(MaterialTheme.colorScheme.primary, Color(0xFF0284C7))
+                                        )
+                                    ),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                Text("⏱️", fontSize = 22.sp)
+                            }
+
+                            Spacer(modifier = Modifier.width(14.dp))
+
+                            Column {
+                                Text(
+                                    text = stringResource(R.string.continue_watching_all_title),
+                                    style = MaterialTheme.typography.titleLarge,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White,
+                                )
+                                Text(
+                                    text = stringResource(R.string.dashboard_content_count, continueWatching.size),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color(0xFF94A3B8),
+                                )
+                            }
+                        }
+
+                        // Right actions (Clear All & Close)
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        ) {
+                            if (continueWatching.isNotEmpty()) {
+                                var clearFocused by remember { mutableStateOf(false) }
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .background(if (clearFocused) Color(0xFFEF4444) else Color(0xFFEF4444).copy(alpha = 0.15f))
+                                        .border(1.dp, Color(0xFFEF4444).copy(alpha = 0.4f), RoundedCornerShape(8.dp))
+                                        .clickable { onClearAll() }
+                                        .onFocusChanged { clearFocused = it.isFocused }
+                                        .focusable()
+                                        .padding(horizontal = 10.dp, vertical = 6.dp),
+                                    contentAlignment = Alignment.Center,
+                                ) {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Icon(
+                                            imageVector = Icons.Outlined.DeleteSweep,
+                                            contentDescription = stringResource(R.string.continue_watching_clear_all),
+                                            tint = if (clearFocused) Color.White else Color(0xFFEF4444),
+                                            modifier = Modifier.size(16.dp),
+                                        )
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Text(
+                                            text = stringResource(R.string.continue_watching_clear_all),
+                                            color = if (clearFocused) Color.White else Color(0xFFEF4444),
+                                            style = MaterialTheme.typography.labelSmall,
+                                            fontWeight = FontWeight.Bold,
+                                        )
+                                    }
+                                }
+                            }
+
+                            var closeFocused by remember { mutableStateOf(false) }
+                            IconButton(
+                                onClick = onDismiss,
+                                modifier = Modifier
+                                    .size(38.dp)
+                                    .onFocusChanged { closeFocused = it.isFocused }
+                                    .clip(CircleShape)
+                                    .background(if (closeFocused) MaterialTheme.colorScheme.primary else Color.White.copy(alpha = 0.08f))
+                                    .border(
+                                        width = if (closeFocused) 2.dp else 1.dp,
+                                        color = if (closeFocused) MaterialTheme.colorScheme.primary else Color.White.copy(alpha = 0.15f),
+                                        shape = CircleShape,
+                                    )
+                                    .focusable(),
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Close,
+                                    contentDescription = "Close",
+                                    tint = if (closeFocused) MaterialTheme.colorScheme.onPrimary else Color.White,
+                                )
+                            }
+                        }
+                    }
+
+                    // Content: Empty State or Grid
+                    if (continueWatching.isEmpty()) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center,
+                            ) {
+                                Text("⏱️", fontSize = 42.sp)
+                                Spacer(modifier = Modifier.height(12.dp))
+                                Text(
+                                    text = stringResource(R.string.continue_watching_empty),
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = Color(0xFF94A3B8),
+                                    fontWeight = FontWeight.Medium,
+                                )
+                            }
+                        }
+                    } else {
+                        val columns = if (isTelevision) 4 else 2
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(columns),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp),
+                            modifier = Modifier.fillMaxSize(),
+                        ) {
+                            items(continueWatching, key = { it.mediaKey }) { item ->
+                                val isFirst = continueWatching.firstOrNull()?.mediaKey == item.mediaKey
+                                AllContinueWatchingCard(
+                                    item = item,
+                                    isTelevision = isTelevision,
+                                    focusRequester = if (isFirst) firstItemFocus else null,
+                                    onResume = { onResume(item.mediaKey, item.streamUrl, item.title) },
+                                    onRemove = { onRemoveItem(item) },
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun AllContinueWatchingCard(
+    item: VodViewModel.ResumeItem,
+    isTelevision: Boolean,
+    focusRequester: FocusRequester? = null,
+    onResume: () -> Unit,
+    onRemove: () -> Unit,
+) {
+    var playFocused by remember { mutableStateOf(false) }
+    var deleteFocused by remember { mutableStateOf(false) }
+
+    val isAnyFocused = playFocused || deleteFocused
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(if (isAnyFocused) MaterialTheme.colorScheme.primary.copy(alpha = 0.15f) else Color(0xFF1E293B).copy(alpha = 0.7f))
+            .border(
+                width = if (isAnyFocused) 2.dp else 1.dp,
+                color = if (isAnyFocused) MaterialTheme.colorScheme.primary else Color.White.copy(alpha = 0.1f),
+                shape = RoundedCornerShape(12.dp),
+            )
+            .padding(10.dp),
+    ) {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            // Poster with embedded progress bar & badge (Clickable to Play)
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(1.5f)
+                    .clip(RoundedCornerShape(8.dp))
+                    .clickable { onResume() },
+            ) {
+                AsyncImage(
+                    model = item.posterUrl,
+                    contentDescription = item.title,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize().background(Color(0xFF0F172A)),
+                )
+
+                // Dark gradient overlay
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            Brush.verticalGradient(
+                                colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.8f)),
+                                startY = 40f,
+                            )
+                        )
+                )
+
+                // Percent badge (top right)
+                val percent = (item.progress * 100).toInt().coerceIn(1, 99)
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(6.dp)
+                        .clip(RoundedCornerShape(6.dp))
+                        .background(Color.Black.copy(alpha = 0.75f))
+                        .border(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f), RoundedCornerShape(6.dp))
+                        .padding(horizontal = 6.dp, vertical = 2.dp),
+                ) {
+                    Text(
+                        text = "%$percent",
+                        color = MaterialTheme.colorScheme.primary,
+                        style = MaterialTheme.typography.labelSmall,
+                        fontSize = 9.sp,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
+
+                // Play icon overlay in center
+                Box(
+                    modifier = Modifier
+                        .size(34.dp)
+                        .align(Alignment.Center)
+                        .clip(CircleShape)
+                        .background(if (playFocused) MaterialTheme.colorScheme.primary else Color.Black.copy(alpha = 0.6f)),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.PlayArrow,
+                        contentDescription = "Play",
+                        tint = Color.White,
+                        modifier = Modifier.size(20.dp),
+                    )
+                }
+
+                // Progress Bar along the bottom
+                LinearProgressIndicator(
+                    progress = { item.progress },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(4.dp)
+                        .align(Alignment.BottomCenter),
+                    color = MaterialTheme.colorScheme.primary,
+                    trackColor = Color.White.copy(alpha = 0.25f),
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Title
+            Text(
+                text = item.title,
+                color = if (isAnyFocused) Color.White else Color(0xFFF1F5F9),
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.Bold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Action row (Resume button & Delete button)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                // Resume button (D-pad focusable)
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .then(if (focusRequester != null) Modifier.focusRequester(focusRequester) else Modifier)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(if (playFocused) MaterialTheme.colorScheme.primary else Color.White.copy(alpha = 0.1f))
+                        .border(
+                            width = if (playFocused) 1.5.dp else 1.dp,
+                            color = if (playFocused) Color.White else Color.White.copy(alpha = 0.15f),
+                            shape = RoundedCornerShape(8.dp),
+                        )
+                        .clickable { onResume() }
+                        .onFocusChanged { playFocused = it.isFocused }
+                        .focusable()
+                        .padding(vertical = 6.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = "▶ " + stringResource(R.string.dashboard_resume),
+                        color = if (playFocused) MaterialTheme.colorScheme.onPrimary else Color.White,
+                        style = MaterialTheme.typography.labelSmall,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
+
+                // Delete button (D-pad focusable)
+                Box(
+                    modifier = Modifier
+                        .size(32.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(if (deleteFocused) Color(0xFFEF4444) else Color(0xFFEF4444).copy(alpha = 0.15f))
+                        .border(
+                            width = if (deleteFocused) 1.5.dp else 1.dp,
+                            color = if (deleteFocused) Color.White else Color(0xFFEF4444).copy(alpha = 0.35f),
+                            shape = RoundedCornerShape(8.dp),
+                        )
+                        .clickable { onRemove() }
+                        .onFocusChanged { deleteFocused = it.isFocused }
+                        .focusable(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.DeleteOutline,
+                        contentDescription = stringResource(R.string.continue_watching_remove_item),
+                        tint = if (deleteFocused) Color.White else Color(0xFFEF4444),
+                        modifier = Modifier.size(17.dp),
+                    )
+                }
             }
         }
     }

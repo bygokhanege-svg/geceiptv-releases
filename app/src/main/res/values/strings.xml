@@ -138,7 +138,7 @@
     <string name="player_aspect_ratio_title">Aspect ratio</string>
     <string name="player_none_available">None available</string>
     <string name="player_subtitles_off">Off</string>
-    <string name="player_stats">Stats &amp; Info</string>
+    <string name="player_stats">Info</string>
     <string name="player_speed">Playback Speed</string>
     <string name="player_episodes">Episodes</string>
     <string name="vod_external_chooser_title">Choose External Player</string>
@@ -877,6 +877,9 @@
     <string name="continue_watching_clear_confirm_desc">All titles will be removed from your Continue Watching list.</string>
     <string name="continue_watching_remove_confirm_title">Remove Title?</string>
     <string name="continue_watching_remove_confirm_desc">Are you sure you want to remove \"%1$s\" from Continue Watching?</string>
+    <string name="continue_watching_all_title">Continue Watching</string>
+    <string name="continue_watching_see_all_more">+%1$d More (See All)</string>
+    <string name="continue_watching_empty">No titles in continue watching list</string>
 
     <string name="dashboard_section_new_series">New Series</string>
     <string name="dashboard_section_new_movies">New Movies</string>

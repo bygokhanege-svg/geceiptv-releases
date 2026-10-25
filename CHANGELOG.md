@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.12.15
+
+- **Favoriler Menüsü Kumanda (D-pad) Gezinme Düzeltmesi:** Favoriler menüsü açıldığında kumanda odağının doğrudan "TÜMÜ" sekmesine konumlanması sağlandı; menü içi odak tuzakları temizlendi ve kumanda ile sorunsuz gezinme garantilendi.
+- **Tüm İzlemeye Devam Et Menüsü & Tekil Silme:** Ana sayfadaki "İzlemeye Devam Et" başlığındaki içerik sayısına (veya "+ X İçerik Daha" butonuna) tıklandığında tüm devam edilen içerikleri listeleyen modern cam ızgara menü açılır; buradan içerikler tek tek veya topluca silinebilir.
+- **Video Oynatıcı Alt Menü Düzeni:** İleri/geri sarma ve oynat/duraklat butonlarının ardından boşluk bırakılarak sırasıyla Altyazı, Ses, Oynatma Hızı, Sığdır, Harici Oynatıcı, Info, Tüm Bölümler ve Sonraki Bölüm butonları konumlandırıldı.
+- **Yayın Özellikleri → Info:** Yayın özellikleri butonunun etiketi kullanıcı isteğine göre "Info" olarak sadeleştirildi.
+- **Kompakt Buton & Font Optimizasyonu:** Oynatıcı çubuğundaki tüm butonlar ve yazı boyutları TV ekranına ve yatay mobil görünüme tek bir satırda tam sığacak şekilde optimize edildi.
+
 ## 0.12.14
 
 - **Netflix Tarzı Yuvarlak Oynatıcı Butonları:** İleri (+15s) ve geri (-15s) sarma ile oynat/duraklat butonları tamamen yuvarlak, yazısız, zarif Netflix tarzı ikonlarla yenilendi. Odaklandığında büyüyen ve parlayan D-pad kumanda uyumlu yapı kuruldu.

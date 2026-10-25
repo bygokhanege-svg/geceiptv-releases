@@ -449,6 +449,49 @@
   * **Doğrulama:**
     * `.\gradlew compileDebugKotlin` ve `.\gradlew assembleRelease` başarıyla tamamlandı; `app\build\outputs\apk\release\GECEiptv-release.apk` sorunsuz üretildi.
 
+### 28. Favoriler Kumanda Gezinmesi Düzeltmesi, Tüm İzlemeye Devam Et Menüsü & Video Oynatıcı Kontrol Çubuğu Düzeni
+* **Tarih:** 25 Ekim 2026
+* **Kullanıcı İsteği:**
+  1. *Görev 1:* Favoriler menüsüne tıklandığında kumanda ile gezinme zorluğu/geçememe sorununun giderilmesi (D-pad gezinme ve odaklanma düzeltmesi).
+  2. *Görev 2:* Anasayfadaki "İzlemeye Devam Et" kısmında toplam içerik sayısına (10-15 içerik vb.) tıklandığında tüm izlemeye devam et listesini gösteren tam menü/diyalog açılması ve buradan tekil silme / tümünü temizleme işlemlerinin yapılabilmesi.
+  3. *Görev 3:* Video oynatıcı alt menü düzeni:
+     - İleri - geri ve play/pause olduğu yerde kalsın.
+     - Ardından biraz boşluk bırakılsın.
+     - Sırasıyla: Altyazı, Ses, Oynatma Hızı, Sığdır, Harici Oynatıcı, Info ("Yayın Özellikleri" yazısı "Info" olarak değiştirilsin), Tüm Bölümler (dizi ise), Sonraki Bölüm.
+     - Yazı karakterleri ve butonlar tek bir sayfaya sığacak şekilde kompakt boyutlandırılsın.
+* **Uygulanan Çözüm & Mimari:**
+  * **Görev 1 - Favoriler Kumanda (D-pad) Odaklanma Düzeltmesi (`FavoritesOverlay.kt`):**
+    - `FavoritesDialog` açıldığında ilk sekme olan "TÜMÜ" butonuna otomatik odaklanması için `firstTabFocus = remember { FocusRequester() }` ve `LaunchedEffect(Unit) { delay(120); firstTabFocus.requestFocus() }` eklendi.
+    - İç konteynerdeki odak tuzağı oluşturan boş `Modifier.clickable(onClick = {})` kaldırıldı.
+    - Dış karartma tıklandığında kapatma işlemi televizyon dışındaki cihazlara (`!isTelevision`) sınırlandırılarak kumanda odağının dış çerçeveye kaçması engellendi.
+    - Kapatma `IconButton` ve sekme butonları (`FavTabButton`) görsel odak kenarlığı (`border`), odak arka planı ve `.focusable()` ile donatıldı.
+    - Film ve dizi kartlarındaki favoriden çıkarma yıldız butonları dokunmatik odak etkileşimiyle izole edildi; D-pad odağı kartın bütününe ve ardından eylemlerine doğru yönlendirildi.
+  * **Görev 2 - Tüm İzlemeye Devam Et Yöneticisi & Tekil Silme (`AllContinueWatchingDialog`):**
+    - `DashboardScreen.kt` içerisine `showAllContinueWatching` state'i ve `AllContinueWatchingDialog` composable'ı eklendi.
+    - Hem TV arayüzündeki `ContinueWatchingColumn` başlığındaki "X İÇERİK ▶" rozeti hem de mobil arayüzdeki rozet ve kart altı "+ X İçerik Daha" butonları tıklanabilir ve odaklanabilir hale getirildi.
+    - TV'de 4 sütunlu (`GridCells.Fixed(4)`), mobilde 2 sütunlu (`GridCells.Fixed(2)`) şık, modern cam efektli grid görünümü sağlandı.
+    - Her içerik kartında: Önizleme görseli (poster), izleme ilerleme çubuğu (`LinearProgressIndicator`), yüzde rozeti (örn. `%65`), içerik başlığı, "▶ Devam Et" butonu ve "🗑️ Sil" butonu yer alır.
+    - Kumanda ile gezinirken ilk karta `firstItemFocus` ile odaklanılır; kart üzerindeki "Devam Et" ve "Sil" butonlarına kumanda sağ/sol tuşlarıyla doğrudan geçilebilir.
+    - "Sil" butonuna tıklandığında `ContinueWatchingRemoveConfirmDialog` açılır ve onaylandığında Room veritabanından silinerek liste anlık ve reaktif olarak güncellenir.
+    - Sağ üst kısımda ayrıca tüm listeyi tek seferde silmeyi sağlayan "Tümünü Temizle" butonu mevcuttur.
+  * **Görev 3 - Video Oynatıcı Buton Sıralaması & Kompakt Tasarım (`VodPlayerScreen.kt`):**
+    - Alt kontrol çubuğu satırı (`Row`) tam olarak istenen sırada yeniden düzenlendi:
+      1. Geri Sar (-15s) - Dairesel Netflix butonu (`size = 38.dp, iconSize = 20.dp`)
+      2. Oynat / Duraklat (Play/Pause) - Dairesel büyük buton (`size = 46.dp, iconSize = 26.dp`)
+      3. İleri Sar (+15s) - Dairesel Netflix butonu (`size = 38.dp, iconSize = 20.dp`)
+      4. `Spacer(Modifier.width(10.dp))` (İstenen boşluk)
+      5. Altyazı (`ClosedCaption`, `player_subtitles`)
+      6. Ses (`Audiotrack`, `player_audio`)
+      7. Oynatma Hızı (`Speed`, `player_speed` / `${speed}x`)
+      8. Sığdır (`AspectRatio`, `aspectMode.shortLabel`)
+      9. Harici Oynatıcı (`OpenInNew`, `vod_external_player`)
+      10. Info (`Analytics`, label = "Info", `player_stats`) -> "Yayın Özellikleri" yazısı "Info" olarak güncellendi.
+      11. Tüm Bölümler (`VideoLibrary`, `player_episodes`, dizi içeriğiyse)
+      12. Sonraki Bölüm (`SkipNext`, `vod_next_episode_tag`, dizi ve sonraki bölüm varsa)
+    - `VodChip` butonlarının padding'i `horizontal = 7.dp, vertical = 5.dp`, yazı boyutu `11.sp`, ikon boyutu `14.dp`, çip arası boşluk `6.dp` olarak optimize edildi; böylece TV ekranında ve telefon yatay modunda kaydırmaya ihtiyaç duymadan tüm butonlar tek satıra tam sığar hale getirildi.
+  * **Doğrulama:**
+    - `.\gradlew compileDebugKotlin` çalıştırıldı ve `BUILD SUCCESSFUL in 56s` sonucuyla 0 hata ile doğrulandı.
+
 ---
 
 ## 📌 Hızlı Referans & Mimari Kurallar

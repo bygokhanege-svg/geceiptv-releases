@@ -41,6 +41,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,6 +50,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -67,6 +70,7 @@ import app.opentv.R
 import app.opentv.data.model.Movie
 import app.opentv.data.model.Series
 import coil.compose.AsyncImage
+import kotlinx.coroutines.delay
 
 enum class FavTab {
     ALL, MOVIES, SERIES
@@ -87,6 +91,12 @@ fun FavoritesDialog(
 
     var selectedTab by remember { mutableStateOf(FavTab.ALL) }
     val totalCount = favouriteMovies.size + favouriteSeries.size
+    val firstTabFocus = remember { FocusRequester() }
+
+    LaunchedEffect(Unit) {
+        delay(120)
+        runCatching { firstTabFocus.requestFocus() }
+    }
 
     Dialog(
         onDismissRequest = onDismiss,
@@ -96,10 +106,12 @@ fun FavoritesDialog(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.Black.copy(alpha = 0.88f))
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null,
-                    onClick = onDismiss,
+                .then(
+                    if (!isTelevision) Modifier.clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                        onClick = onDismiss,
+                    ) else Modifier
                 ),
             contentAlignment = Alignment.Center,
         ) {
@@ -122,11 +134,6 @@ fun FavoritesDialog(
                             )
                         ),
                         RoundedCornerShape(20.dp),
-                    )
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null,
-                        onClick = {}, // Absorb click inside dialog
                     )
                     .padding(if (isTelevision) 24.dp else 16.dp),
             ) {
@@ -178,17 +185,25 @@ fun FavoritesDialog(
                         }
 
                         // Close button
+                        var closeFocused by remember { mutableStateOf(false) }
                         IconButton(
                             onClick = onDismiss,
                             modifier = Modifier
                                 .size(38.dp)
+                                .onFocusChanged { closeFocused = it.isFocused }
                                 .clip(CircleShape)
-                                .background(Color.White.copy(alpha = 0.08f)),
+                                .background(if (closeFocused) MaterialTheme.colorScheme.primary else Color.White.copy(alpha = 0.08f))
+                                .border(
+                                    width = if (closeFocused) 2.dp else 1.dp,
+                                    color = if (closeFocused) MaterialTheme.colorScheme.primary else Color.White.copy(alpha = 0.15f),
+                                    shape = CircleShape,
+                                )
+                                .focusable(),
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Close,
                                 contentDescription = "Close",
-                                tint = Color.White,
+                                tint = if (closeFocused) MaterialTheme.colorScheme.onPrimary else Color.White,
                             )
                         }
                     }
@@ -205,6 +220,7 @@ fun FavoritesDialog(
                             icon = Icons.Filled.Star,
                             selected = selectedTab == FavTab.ALL,
                             accentColor = Color(0xFFF59E0B),
+                            focusRequester = firstTabFocus,
                             onClick = { selectedTab = FavTab.ALL },
                         )
                         FavTabButton(
@@ -410,32 +426,34 @@ private fun FavTabButton(
     icon: ImageVector,
     selected: Boolean,
     accentColor: Color,
+    focusRequester: FocusRequester? = null,
     onClick: () -> Unit,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
 
     val scale by animateFloatAsState(
-        targetValue = if (isFocused) 1.05f else 1.0f,
+        targetValue = if (isFocused) 1.08f else 1.0f,
         animationSpec = tween(durationMillis = 150),
         label = "tabScale",
     )
 
     Row(
         modifier = Modifier
+            .then(if (focusRequester != null) Modifier.focusRequester(focusRequester) else Modifier)
             .graphicsLayer {
                 scaleX = scale
                 scaleY = scale
             }
             .clip(RoundedCornerShape(10.dp))
             .background(
-                if (selected) accentColor.copy(alpha = 0.22f)
-                else if (isFocused) Color.White.copy(alpha = 0.15f)
+                if (isFocused) accentColor
+                else if (selected) accentColor.copy(alpha = 0.22f)
                 else Color.White.copy(alpha = 0.05f)
             )
             .border(
                 width = if (isFocused) 2.dp else if (selected) 1.5.dp else 1.dp,
-                color = if (isFocused) accentColor else if (selected) accentColor.copy(alpha = 0.7f) else Color.White.copy(alpha = 0.1f),
+                color = if (isFocused) Color.White else if (selected) accentColor.copy(alpha = 0.7f) else Color.White.copy(alpha = 0.1f),
                 shape = RoundedCornerShape(10.dp),
             )
             .clickable(
@@ -443,6 +461,7 @@ private fun FavTabButton(
                 indication = null,
                 onClick = onClick,
             )
+            .focusable(interactionSource = interactionSource)
             .padding(horizontal = 14.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
@@ -538,8 +557,11 @@ private fun MovieFavCard(
                     .padding(6.dp)
                     .size(28.dp)
                     .clip(CircleShape)
-                    .background(Color.Black.copy(alpha = 0.7f))
-                    .clickable { onToggleFav() },
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                        onClick = onToggleFav,
+                    ),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
@@ -646,8 +668,11 @@ private fun SeriesFavCard(
                     .padding(6.dp)
                     .size(28.dp)
                     .clip(CircleShape)
-                    .background(Color.Black.copy(alpha = 0.7f))
-                    .clickable { onToggleFav() },
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                        onClick = onToggleFav,
+                    ),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(

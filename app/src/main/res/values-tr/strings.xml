@@ -125,7 +125,7 @@
     <string name="player_aspect_ratio_title">En-boy oranı</string>
     <string name="player_none_available">Kullanılabilir seçenek yok</string>
     <string name="player_subtitles_off">Kapalı</string>
-    <string name="player_stats">Yayın Özellikleri</string>
+    <string name="player_stats">Info</string>
     <string name="player_speed">Oynatma Hızı</string>
     <string name="player_episodes">Tüm Bölümler</string>
     <string name="vod_external_chooser_title">Harici Oynatıcı Seçin</string>
@@ -811,6 +811,9 @@
     <string name="continue_watching_clear_confirm_desc">İzlemeye devam et listesindeki tüm içerikler kaldırılacaktır.</string>
     <string name="continue_watching_remove_confirm_title">İçerik Kaldırılsın mı?</string>
     <string name="continue_watching_remove_confirm_desc">\"%1$s\" içeriğini izlemeye devam et listesinden kaldırmak istediğinizden emin misiniz?</string>
+    <string name="continue_watching_all_title">Tüm İzlemeye Devam Edilenler</string>
+    <string name="continue_watching_see_all_more">+%1$d İçerik Daha (Tümünü Gör)</string>
+    <string name="continue_watching_empty">İzlemeye devam edilen içerik bulunmuyor</string>
 
     <string name="dashboard_section_new_series">Yeni Diziler</string>
     <string name="dashboard_section_new_movies">Yeni Filmler</string>

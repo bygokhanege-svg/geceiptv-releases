@@ -1008,13 +1008,13 @@ fun VodPlayerScreen(
                         .fillMaxWidth()
                         .horizontalScroll(rememberScrollState()),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
                 ) {
                     RoundMediaButton(
                         icon = Icons.Filled.FastRewind,
                         contentDescription = stringResource(R.string.player_rewind),
-                        size = 42.dp,
-                        iconSize = 22.dp,
+                        size = 38.dp,
+                        iconSize = 20.dp,
                         onClick = {
                             seekRelative(-15_000)
                             interaction++
@@ -1023,8 +1023,8 @@ fun VodPlayerScreen(
                     RoundMediaButton(
                         icon = if (paused) Icons.Filled.PlayArrow else Icons.Filled.Pause,
                         contentDescription = if (paused) stringResource(R.string.common_play) else stringResource(R.string.player_pause),
-                        size = 50.dp,
-                        iconSize = 28.dp,
+                        size = 46.dp,
+                        iconSize = 26.dp,
                         isPrimary = true,
                         focusRequester = barFocus,
                         onClick = {
@@ -1036,42 +1036,16 @@ fun VodPlayerScreen(
                     RoundMediaButton(
                         icon = Icons.Filled.FastForward,
                         contentDescription = stringResource(R.string.player_forward),
-                        size = 42.dp,
-                        iconSize = 22.dp,
+                        size = 38.dp,
+                        iconSize = 20.dp,
                         onClick = {
                             seekRelative(15_000)
                             interaction++
                         },
                     )
 
-                    Spacer(Modifier.width(4.dp))
+                    Spacer(Modifier.width(10.dp))
 
-                    VodChip(
-                        icon = Icons.Filled.Speed,
-                        label = if (playbackSpeed == 1.0f) stringResource(R.string.player_speed) else "${playbackSpeed}x",
-                        onClick = {
-                            vodPanel = if (vodPanel == VodPanel.SPEED) VodPanel.NONE else VodPanel.SPEED
-                            interaction++
-                        },
-                    )
-                    VodChip(
-                        icon = Icons.Filled.AspectRatio,
-                        label = aspectMode.shortLabel,
-                        onClick = {
-                            vodPanel = if (vodPanel == VodPanel.ASPECT) VodPanel.NONE else VodPanel.ASPECT
-                            interaction++
-                        },
-                    )
-                    if (seriesEpisodes.isNotEmpty()) {
-                        VodChip(
-                            icon = Icons.Filled.VideoLibrary,
-                            label = stringResource(R.string.player_episodes),
-                            onClick = {
-                                showEpisodesDrawer = !showEpisodesDrawer
-                                interaction++
-                            },
-                        )
-                    }
                     VodChip(
                         icon = Icons.Filled.ClosedCaption,
                         label = stringResource(R.string.player_subtitles),
@@ -1089,18 +1063,18 @@ fun VodPlayerScreen(
                         },
                     )
                     VodChip(
-                        icon = Icons.Filled.HighQuality,
-                        label = stringResource(R.string.player_quality),
+                        icon = Icons.Filled.Speed,
+                        label = if (playbackSpeed == 1.0f) stringResource(R.string.player_speed) else "${playbackSpeed}x",
                         onClick = {
-                            vodPanel = if (vodPanel == VodPanel.QUALITY) VodPanel.NONE else VodPanel.QUALITY
+                            vodPanel = if (vodPanel == VodPanel.SPEED) VodPanel.NONE else VodPanel.SPEED
                             interaction++
                         },
                     )
                     VodChip(
-                        icon = Icons.Filled.Analytics,
-                        label = stringResource(R.string.player_stats),
+                        icon = Icons.Filled.AspectRatio,
+                        label = aspectMode.shortLabel,
                         onClick = {
-                            showStatsDialog = true
+                            vodPanel = if (vodPanel == VodPanel.ASPECT) VodPanel.NONE else VodPanel.ASPECT
                             interaction++
                         },
                     )
@@ -1112,6 +1086,24 @@ fun VodPlayerScreen(
                             interaction++
                         },
                     )
+                    VodChip(
+                        icon = Icons.Filled.Analytics,
+                        label = "Info",
+                        onClick = {
+                            showStatsDialog = true
+                            interaction++
+                        },
+                    )
+                    if (seriesEpisodes.isNotEmpty()) {
+                        VodChip(
+                            icon = Icons.Filled.VideoLibrary,
+                            label = stringResource(R.string.player_episodes),
+                            onClick = {
+                                showEpisodesDrawer = !showEpisodesDrawer
+                                interaction++
+                            },
+                        )
+                    }
                     if (nextEpisodePromptEnabled && nextEpisode != null) {
                         VodChip(
                             icon = Icons.Filled.SkipNext,
@@ -1218,19 +1210,27 @@ private fun VodChip(
         modifier = Modifier
             .then(if (focusRequester != null) Modifier.focusRequester(focusRequester) else Modifier)
             .onFocusChanged { focused = it.isFocused }
-            .clip(RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(7.dp))
             .background(container)
             .then(
-                if (focused) Modifier.border(1.5.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(8.dp))
+                if (focused) Modifier.border(1.5.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(7.dp))
                 else Modifier,
             )
             .clickable(onClick = onClick)
-            .padding(horizontal = 10.dp, vertical = 6.dp),
+            .focusable()
+            .padding(horizontal = 7.dp, vertical = 5.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(icon, contentDescription = label, tint = content, modifier = Modifier.size(16.dp))
-        Spacer(Modifier.width(5.dp))
-        Text(label, style = MaterialTheme.typography.labelMedium, color = content, maxLines = 1)
+        Icon(icon, contentDescription = label, tint = content, modifier = Modifier.size(14.dp))
+        Spacer(Modifier.width(4.dp))
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelSmall,
+            fontSize = 11.sp,
+            color = content,
+            maxLines = 1,
+            fontWeight = FontWeight.Medium,
+        )
     }
 }
 

@@ -516,14 +516,36 @@
 
 ---
 
+### 24. Kod Güvenliği (Private Repo) ve Otomatik Güncelleme Ayrımı (geceiptv-releases)
+* **Kullanıcı İstekleri:**
+  * GitHub üzerindeki kaynak kodların gizlenmesi istendi.
+  * Kodlar gizlenirken cihazlardaki otomatik güncelleme sisteminin kesintisiz çalışması istendi.
+  * Telefonda `0.12.15` sürümü varken "Güncelle" dendiğinde "Sürümünüz güncel" uyarısı vermesinin sebebi ve cihazların elle güncellenip güncellenmeyeceği soruldu.
+* **Teknik Neden & Çözüm:**
+  * **Neden "Sürümünüz güncel" dedi?**
+    - `0.12.15` sürümü `UpdateChecker.kt` içinde kaynak kodu barındıran `bygokhanege-svg/geceiptv` reposunu sorguluyordu. Kodlar gizlenip ana repo **Private** yapılınca, şifresiz sorgu yapan eski uygulama GitHub API'sinden 404 (bulunamadı) hatası aldı ve bu durumu "yeni sürüm yok" kabul etti.
+  * **Mimari Çözüm (Çift Repo Yapısı):**
+    - **1. Kaynak Kod Deposu (ÖZEL / PRIVATE):** `https://github.com/bygokhanege-svg/geceiptv.git` (Tüm kodlar, modeller ve geliştirmeler gizlidir, kimse göremez).
+    - **2. Güncelleme Dağıtım Deposu (AÇIK / PUBLIC):** `https://github.com/bygokhanege-svg/geceiptv-releases.git` (İçinde kesinlikle kaynak kod yoktur; sadece derlenmiş `.apk` dosyasını ve sürüm notlarını barındırır).
+  * **Uygulama İçi Yönlendirme:**
+    - `UpdateChecker.kt` dosyası güncellenerek `REPO_SLUG = "bygokhanege-svg/geceiptv-releases"` yapıldı.
+    - `0.12.16` APK'sı bu adresle yeniden derlendi (`assembleRelease`) ve `geceiptv-releases` deposuna yüklendi.
+  * **Cihaz Güncelleme Durumu:**
+    - **Bu sefere mahsus (0.12.15 -> 0.12.16 geçişi):** Eski sürüm (0.12.15) Private depoya baktığı için telefon, tablet ve TV'ye `0.12.16` sürümü **bir defalık elden / manuel** kurulmalıdır.
+    - **Sonraki Tüm Güncellemeler (0.12.17 ve sonrası):** `0.12.16` kurulduktan sonra uygulama doğrudan açık olan `geceiptv-releases` deposunu dinleyeceği için artık hiçbir cihaza el sürmeden doğrudan uygulama içerisinden "Güncelle" butonuyla otomatik olarak indirip kuracaktır.
+
+---
+
 ## 📌 Hızlı Referans & Mimari Kurallar
 1. **Ekran Genişliği Sınırı (Mobil Breakpoint):**
    * `LocalConfiguration.current.screenWidthDp < 600` mobil/telefon cihazları temsil eder.
    * `>= 600dp` veya `isTv` televizyon ve büyük ekranları temsil eder (D-pad gezinmesi ve yan raylar bu ekranda aktiftir).
 2. **GitHub Bilgileri:**
-   * Repo: `https://github.com/bygokhanege-svg/geceiptv.git`
+   * Kaynak Kod Reposu (Private): `https://github.com/bygokhanege-svg/geceiptv.git`
+   * Güncelleme / Dağıtım Reposu (Public): `https://github.com/bygokhanege-svg/geceiptv-releases.git`
+   * Release APK İndirme Bağlantısı: `https://github.com/bygokhanege-svg/geceiptv-releases/releases/download/v0.12.16/GECEiptv-release.apk`
    * Release APK Adı: `GECEiptv-release.apk`
-   * E-posta: `geceiptv@gmail.com`
+   * Destek E-postası: `geceiptv@gmail.com`
 3. **Derleme Komutları:**
    * Kod Doğrulama: `.\gradlew compileDebugKotlin`
    * Release APK Üretimi: `.\gradlew assembleRelease`

@@ -530,9 +530,13 @@
   * **Uygulama İçi Yönlendirme:**
     - `UpdateChecker.kt` dosyası güncellenerek `REPO_SLUG = "bygokhanege-svg/geceiptv-releases"` yapıldı.
     - `0.12.16` APK'sı bu adresle yeniden derlendi (`assembleRelease`) ve `geceiptv-releases` deposuna yüklendi.
-  * **Cihaz Güncelleme Durumu:**
-    - **Bu sefere mahsus (0.12.15 -> 0.12.16 geçişi):** Eski sürüm (0.12.15) Private depoya baktığı için telefon, tablet ve TV'ye `0.12.16` sürümü **bir defalık elden / manuel** kurulmalıdır.
-    - **Sonraki Tüm Güncellemeler (0.12.17 ve sonrası):** `0.12.16` kurulduktan sonra uygulama doğrudan açık olan `geceiptv-releases` deposunu dinleyeceği için artık hiçbir cihaza el sürmeden doğrudan uygulama içerisinden "Güncelle" butonuyla otomatik olarak indirip kuracaktır.
+  * **Geçiş Stratejisi (Köprü Güncellemesi - Dışarıdan Yükleme İhtiyacını Sıfırlama):**
+    - Kullanıcının cihazlara manuel APK yüklemek zorunda kalmaması için `bygokhanege-svg/geceiptv` reposu geçici olarak tekrar **PUBLIC** yapıldı.
+    - `0.12.16` sürümü (içinde yeni `geceiptv-releases` yönlendirmesi bulunan yeni derlenmiş APK ile) `bygokhanege-svg/geceiptv` release bölümüne yüklendi.
+    - Böylece cihazlardaki `0.12.15` sürümü doğrudan uygulama içinden "Güncelle" dediğinde `0.12.16`yı görecek ve **otomatik olarak** güncellenecektir.
+    - Cihazlar `0.12.16`ya geçtikten sonra artık otomatik olarak yeni adres olan `geceiptv-releases` deposunu dinlemeye başlayacaktır.
+    - Geçiş tamamlandıktan sonra `bygokhanege-svg/geceiptv` reposu kalıcı olarak tekrar **PRIVATE** yapılacaktır.
+    - Gelecek olan `0.12.17` ve sonraki tüm sürümler sadece `geceiptv-releases` deposundan yayınlanacaktır.
 
 ---
 

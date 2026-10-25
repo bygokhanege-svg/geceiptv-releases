@@ -614,6 +614,49 @@
 
 ---
 
+### 28. Versiyon 0.12.19 - Uygulamanın Tamamında 3-Renkli Kurumsal Palet & Yüksek Kontrast Revizyonu
+* **Kullanıcı İstekleri:**
+  * Ayarlar ve ayarların içindeki menüler, Canlı TV, Filmler, Diziler ve Kumanda menülerinin tamamının belirlenen 3-renkli renk skalasına (`GecePalette`) göre renklendirilmesi istendi.
+* **Tasarım Kuralları & 3-Renkli Renk Sistemi:**
+  * **1. Zemin (Canvas):** `GecePalette.CanvasBg = Color(0xFF090A0F)` (Derin Obsidyen Gece Siyahı).
+  * **2. Kart & Yüzey (Surface):** `GecePalette.CardSurface = Color(0xFF131722)` (Grafit kart yüzeyi), `GecePalette.CardBorder = Color(0xFF22283A)` (Ultra ince mikro çerçeve), `GecePalette.CardElevated = Color(0xFF1A1F2E)` (Kabarık yüzey).
+  * **3. Vurgu (Accent):** `GecePalette.Accent = Color(0xFFF59E0B)` (Asil Kehribar Altın) ve `GecePalette.AccentSubtle = Color(0x26F59E0B)` (%15 saydam rozet zemini).
+  * **Zıt Kontrast (High Contrast) Kuralları:**
+    * Koyu Kartlar/Zemin üzerinde: `GecePalette.TextPrimary = Color(0xFFFFFFFF)` (Saf Kar Beyazı başlıklar) ve `GecePalette.TextSecondary = Color(0xFF94A3B8)` (Arduvaz gümüşü alt metinler).
+    * Altın Vurgulu Butonlar ve Odaklı Çiplerde: `GecePalette.OnAccent = Color(0xFF000000)` (**Simsiyah zıt metin/ikon**).
+* **Uygulanan Değişiklikler:**
+  1. **Genel Tema Sistemi (`Theme.kt`):**
+     - Global `object GecePalette` eklendi.
+     - Varsayılan tema olan `AppSettings.AppColorTheme.OBSIDIAN`, doğrudan `GecePalette` token'larına bağlandı.
+  2. **Ayarlar ve Tüm Alt Menüler:**
+     - **`SettingsHubScreen.kt`:** 17 adet ayar kartındaki dağınık gökkuşağı renkleri kaldırılarak kehribar altın (`#F59E0B`), grafit kartlar ve altın ambiyans ışıması ile modernize edildi.
+     - **`AppSettingsScreen.kt`:** Donanım tarayıcı çipleri, AV tünelleme ve önerilen profil rozetleri `GecePalette` altın/siyah zıt renk skalasına uyarlandı.
+     - **`ProvidersScreen.kt`:** Hız testi, ping/gecikme, bant genişliği ve sunucu metrik kartları paletle birebir eşitlendi.
+     - **`AdminPanelScreen.kt`:** Gizli konsol, güvenlik denetimleri ve lisans yönetim kartları palete dahil edildi.
+     - **`WebManagerScreen.kt` & `DeviceLicenseScreen.kt`:** Durum pilleri, onay ve lisans kartları grafit-altın uyumuyla güncellendi.
+     - **`RecordingSettingsScreen.kt`:** Arka plan kayıt izin ve durum kartları palete uyarlandı.
+  3. **Canlı TV ve Yayın Menüleri:**
+     - **`ChannelManagerScreen.kt`:** Kategori görünürlük rozetleri, "Tümünü Göster" kumanda butonları ve odak çerçeveleri altın/siyah zıt renk kontrastıyla yenilendi.
+     - **`StreamStatsOverlay.kt`:** Hız, FPS, donanım tünelleme, ses formatı ve tampon ilerleme çubuğu kehribar altın temasına kavuşturuldu.
+     - **`MultiViewScreen.kt`:** Çoklu kanal izleme kılavuzları, odak çerçeveleri, ses geçiş rozetleri ve kanal arama menüsü tamamen 3-renk temasına taşındı.
+     - **`GuidePreview.kt` & `FavoritesOverlay.kt`:** PIP video çerçevesi ve kategori çipleri paletle eşitlendi.
+  4. **Filmler & Diziler (VOD):**
+     - **`VodScreens.kt` & `VodDetailScreens.kt`:** MaterialTheme colorScheme üzerinden otomatik olarak `GecePalette` ile senkronize edildi.
+     - **`VodPlayerScreen.kt`:** Dizi bölüm kartları, bölüm listesi yan çekmecesi ve harici oynatıcı seçim pencereleri grafit kart ve kehribar altın odak çerçeveleriyle güncellendi.
+  5. **Sanal Kumanda ve Fare Menüleri:**
+     - **`RemoteScreen.kt`:** Mavi tema yerine zemin derin siyah (`#090A0F`), TV durum kartı altın gradyan, D-Pad ve Ses/Kanal kaydırakları grafit yüzey, orta "OK" butonu ve dokunmatik fare alanı asil kehribar altın ve zıt simsiyah metin ile baştan aşağı yenilendi.
+     - **`VirtualMouseOverlay.kt`:** Tıklama dalgası ve nişangah altın vurguyla senkronize edildi.
+* **Versiyon ve Dağıtım:**
+  - `app/build.gradle.kts`: `versionCode = 40`, `versionName = "0.12.19"`.
+  - `.\gradlew compileDebugKotlin`: Başarılı (0 hata).
+  - `.\gradlew assembleRelease`: Başarılı (`GECEiptv-release.apk` - 13.45 MB).
+  - `bygokhanege-svg/geceiptv`: `main` dalına commit atıldı ve `v0.12.19` etiketi pushlandı.
+  - `bygokhanege-svg/geceiptv-releases`: `v0.12.19` sürümü oluşturulup APK yüklendi.
+* **Doğrulama:**
+  - `https://api.github.com/repos/bygokhanege-svg/geceiptv-releases/releases/latest` üzerinden `v0.12.19` ve APK varlığı doğrulandı.
+
+---
+
 ## 📌 Hızlı Referans & Mimari Kurallar
 1. **Ekran Genişliği Sınırı (Mobil Breakpoint):**
    * `LocalConfiguration.current.screenWidthDp < 600` mobil/telefon cihazları temsil eder.
@@ -622,11 +665,12 @@
 2. **GitHub Bilgileri:**
    * Kaynak Kod Reposu (Private): `https://github.com/bygokhanege-svg/geceiptv.git`
    * Güncelleme / Dağıtım Reposu (Public): `https://github.com/bygokhanege-svg/geceiptv-releases.git`
-   * Release APK İndirme Bağlantısı: `https://github.com/bygokhanege-svg/geceiptv-releases/releases/download/v0.12.18/GECEiptv-release.apk`
+   * Release APK İndirme Bağlantısı: `https://github.com/bygokhanege-svg/geceiptv-releases/releases/download/v0.12.19/GECEiptv-release.apk`
    * Release APK Adı: `GECEiptv-release.apk`
    * Destek E-postası: `geceiptv@gmail.com`
 3. **Derleme Komutları:**
    * Kod Doğrulama: `.\gradlew compileDebugKotlin`
    * Release APK Üretimi: `.\gradlew assembleRelease`
    * Çıktı Yolu: `app\build\outputs\apk\release\GECEiptv-release.apk`
+
 

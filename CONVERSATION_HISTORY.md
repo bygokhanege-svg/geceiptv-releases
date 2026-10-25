@@ -601,6 +601,19 @@
 
 ---
 
+### 27. Versiyon 0.12.18 - Güncelleme Dağıtımı & Yayınlama
+* **Kullanıcı İstekleri:**
+  * Yapılan 3 renkli modern mobil/tablet ana sayfa revizyonlarının ve marka yenilemesinin tüm kullanıcılara otomatik güncelleme bildirimi olarak düşmesi için yeni bir sürüm oluşturulup GitHub'a yüklenmesi istendi.
+* **Uygulanan Değişiklikler ve Dağıtım:**
+  * **Versiyon Artırımı:** `app/build.gradle.kts` içerisinde `versionCode = 39` ve `versionName = "0.12.18"` olarak yükseltildi. (Böylece `0.12.17` ve altı tüm cihazlar uygulamayı açtıklarında veya 'Güncelle' dediklerinde yeni sürümü anında görecektir).
+  * **Release Derlemesi:** `.\gradlew assembleRelease` çalıştırıldı ve `GECEiptv-release.apk` (13.45 MB) üretildi.
+  * **GitHub Dağıtımı:**
+    - `bygokhanege-svg/geceiptv-releases` genel (public) dağıtım deposunda `v0.12.18` sürümü oluşturuldu ve APK varlığı yüklendi.
+    - Ana kaynak kod deposunda (`bygokhanege-svg/geceiptv`) `v0.12.18` etiketi oluşturulup `git push origin v0.12.18` ile pushlandı.
+  * **Doğrulama:** GitHub Releases API üzerinden `https://api.github.com/repos/bygokhanege-svg/geceiptv-releases/releases/latest` sorgulandı; `tag_name: "v0.12.18"` ve `GECEiptv-release.apk` indirme bağlantısının aktif olduğu doğrulandı.
+
+---
+
 ## 📌 Hızlı Referans & Mimari Kurallar
 1. **Ekran Genişliği Sınırı (Mobil Breakpoint):**
    * `LocalConfiguration.current.screenWidthDp < 600` mobil/telefon cihazları temsil eder.
@@ -609,7 +622,7 @@
 2. **GitHub Bilgileri:**
    * Kaynak Kod Reposu (Private): `https://github.com/bygokhanege-svg/geceiptv.git`
    * Güncelleme / Dağıtım Reposu (Public): `https://github.com/bygokhanege-svg/geceiptv-releases.git`
-   * Release APK İndirme Bağlantısı: `https://github.com/bygokhanege-svg/geceiptv-releases/releases/download/v0.12.17/GECEiptv-release.apk`
+   * Release APK İndirme Bağlantısı: `https://github.com/bygokhanege-svg/geceiptv-releases/releases/download/v0.12.18/GECEiptv-release.apk`
    * Release APK Adı: `GECEiptv-release.apk`
    * Destek E-postası: `geceiptv@gmail.com`
 3. **Derleme Komutları:**

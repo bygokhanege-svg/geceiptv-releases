@@ -73,6 +73,7 @@ import androidx.compose.ui.window.DialogProperties
 import app.opentv.R
 import app.opentv.core.AppSettings
 import app.opentv.player.PlayerController
+import app.opentv.ui.theme.GecePalette
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import java.text.SimpleDateFormat
@@ -180,8 +181,8 @@ fun StreamStatsDialog(
                     .widthIn(max = 620.dp)
                     .fillMaxWidth(),
                 shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFF0F172A)),
-                border = androidx.compose.foundation.BorderStroke(1.5.dp, Color(0xFF06B6D4).copy(alpha = 0.6f)),
+                colors = CardDefaults.cardColors(containerColor = GecePalette.CardSurface),
+                border = androidx.compose.foundation.BorderStroke(1.5.dp, GecePalette.Accent.copy(alpha = 0.5f)),
             ) {
                 Column(
                     modifier = Modifier
@@ -198,14 +199,14 @@ fun StreamStatsDialog(
                             Box(
                                 modifier = Modifier
                                     .size(38.dp)
-                                    .background(Color(0xFF06B6D4).copy(alpha = 0.2f), RoundedCornerShape(10.dp))
-                                    .border(1.dp, Color(0xFF06B6D4), RoundedCornerShape(10.dp)),
+                                    .background(GecePalette.AccentSubtle, RoundedCornerShape(10.dp))
+                                    .border(1.dp, GecePalette.Accent, RoundedCornerShape(10.dp)),
                                 contentAlignment = Alignment.Center,
                             ) {
                                 Icon(
                                     imageVector = Icons.Filled.Analytics,
                                     contentDescription = null,
-                                    tint = Color(0xFF06B6D4),
+                                    tint = GecePalette.Accent,
                                     modifier = Modifier.size(20.dp),
                                 )
                             }
@@ -241,7 +242,7 @@ fun StreamStatsDialog(
                     StatsSectionCard(
                         icon = Icons.Filled.Speed,
                         title = stringResource(R.string.player_stats_connection),
-                        accentColor = Color(0xFF06B6D4),
+                        accentColor = GecePalette.Accent,
                     ) {
                         StatsRowItem("İndirme / Okuma Hızı", stats.connectionSpeed, highlight = true)
                         StatsRowItem("Video Akış Bitrate", stats.videoBitrate)
@@ -254,7 +255,7 @@ fun StreamStatsDialog(
                     StatsSectionCard(
                         icon = Icons.Filled.HighQuality,
                         title = stringResource(R.string.player_stats_video_specs),
-                        accentColor = Color(0xFF8B5CF6),
+                        accentColor = GecePalette.Accent,
                     ) {
                         StatsRowItem("Çözünürlük & Ebat", stats.resolution, highlight = true)
                         StatsRowItem("Kare Hızı (FPS)", stats.fps)
@@ -272,7 +273,7 @@ fun StreamStatsDialog(
                     StatsSectionCard(
                         icon = Icons.Filled.VolumeUp,
                         title = stringResource(R.string.player_stats_audio),
-                        accentColor = Color(0xFF10B981),
+                        accentColor = GecePalette.Accent,
                     ) {
                         StatsRowItem("Ses Formatı", stats.audioCodec)
                         StatsRowItem("Kanal Düzeni", stats.audioChannels)
@@ -285,7 +286,7 @@ fun StreamStatsDialog(
                     StatsSectionCard(
                         icon = Icons.Filled.Tune,
                         title = stringResource(R.string.player_stats_buffer),
-                        accentColor = Color(0xFFF59E0B),
+                        accentColor = GecePalette.Accent,
                     ) {
                         StatsRowItem("Tampon Süresi", stats.bufferDuration)
                         StatsRowItem("Tampon Doluluk Oranı", "%${stats.bufferPercentage}")
@@ -293,7 +294,7 @@ fun StreamStatsDialog(
                         LinearProgressIndicator(
                             progress = { stats.bufferPercentage / 100f },
                             modifier = Modifier.fillMaxWidth().height(6.dp).clip(RoundedCornerShape(3.dp)),
-                            color = Color(0xFFF59E0B),
+                            color = GecePalette.Accent,
                             trackColor = Color.White.copy(alpha = 0.1f),
                         )
                         if (stats.estimatedFileSize != null) {
@@ -320,7 +321,7 @@ fun StreamStatsDialog(
                         horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Filled.Schedule, contentDescription = null, tint = Color(0xFF06B6D4), modifier = Modifier.size(18.dp))
+                            Icon(Icons.Filled.Schedule, contentDescription = null, tint = GecePalette.Accent, modifier = Modifier.size(18.dp))
                             Spacer(Modifier.width(10.dp))
                             Text(
                                 stringResource(R.string.player_stats_clock_toggle),
@@ -349,17 +350,17 @@ fun StreamStatsDialog(
                             .onFocusChanged { isBtnFocused = it.isFocused }
                             .border(
                                 if (isBtnFocused) 2.dp else 0.dp,
-                                if (isBtnFocused) Color(0xFF06B6D4) else Color.Transparent,
+                                if (isBtnFocused) GecePalette.Accent else Color.Transparent,
                                 RoundedCornerShape(10.dp),
                             ),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = if (isBtnFocused) Color(0xFF06B6D4) else Color.White.copy(alpha = 0.12f),
+                            containerColor = if (isBtnFocused) GecePalette.Accent else Color.White.copy(alpha = 0.12f),
                         ),
                         shape = RoundedCornerShape(10.dp),
                     ) {
                         Text(
                             text = stringResource(R.string.common_done),
-                            color = if (isBtnFocused) Color.Black else Color.White,
+                            color = if (isBtnFocused) GecePalette.OnAccent else Color.White,
                             fontWeight = FontWeight.Bold,
                         )
                     }
@@ -421,7 +422,7 @@ private fun StatsRowItem(
             text = value,
             style = MaterialTheme.typography.bodySmall,
             fontWeight = if (highlight) FontWeight.Bold else FontWeight.Medium,
-            color = if (highlight) Color(0xFF06B6D4) else Color.White,
+            color = if (highlight) GecePalette.Accent else Color.White,
             fontFamily = FontFamily.Monospace,
         )
     }

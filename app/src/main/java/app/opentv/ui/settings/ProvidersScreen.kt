@@ -188,7 +188,10 @@ fun ProvidersScreen(
                                     Spacer(Modifier.width(16.dp))
                                     Button(
                                         onClick = { viewModel.runSpeedTest(ui.sources.first()) },
-                                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0284C7)),
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = app.opentv.ui.theme.GecePalette.Accent,
+                                            contentColor = app.opentv.ui.theme.GecePalette.OnAccent,
+                                        ),
                                     ) {
                                         Text(stringResource(R.string.provider_speed_test_start_btn), fontWeight = FontWeight.Bold)
                                     }
@@ -401,7 +404,7 @@ private fun SpeedTestingCard() {
                     modifier = Modifier
                         .size(10.dp)
                         .clip(CircleShape)
-                        .background(Color(0xFF38BDF8)),
+                        .background(app.opentv.ui.theme.GecePalette.Accent),
                 )
                 Spacer(Modifier.width(8.dp))
                 Text(
@@ -423,7 +426,7 @@ private fun SpeedTestingCard() {
                     .fillMaxWidth()
                     .height(6.dp)
                     .clip(RoundedCornerShape(3.dp)),
-                color = Color(0xFF0284C7),
+                color = app.opentv.ui.theme.GecePalette.Accent,
             )
         }
     }
@@ -455,8 +458,8 @@ private fun SpeedTestResultCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .border(1.dp, Color(0xFF0284C7).copy(alpha = 0.5f), RoundedCornerShape(12.dp)),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF0B132B)),
+            .border(1.dp, app.opentv.ui.theme.GecePalette.CardBorder, RoundedCornerShape(12.dp)),
+        colors = CardDefaults.cardColors(containerColor = app.opentv.ui.theme.GecePalette.CardSurface),
     ) {
         Column(Modifier.padding(20.dp)) {
             // Header Row
@@ -572,7 +575,7 @@ private fun MetricBox(
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(10.dp))
-            .background(Color(0xFF1E293B).copy(alpha = 0.7f))
+            .background(app.opentv.ui.theme.GecePalette.CardElevated)
             .border(1.dp, accentColor.copy(alpha = 0.35f), RoundedCornerShape(10.dp))
             .padding(12.dp),
     ) {

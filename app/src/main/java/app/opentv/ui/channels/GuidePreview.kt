@@ -103,7 +103,7 @@ fun GuidePreview(
                 .fillMaxWidth()
                 .height(205.dp)
                 .clip(RoundedCornerShape(12.dp))
-                .background(Color(0xFF090D16))
+                .background(app.opentv.ui.theme.GecePalette.CanvasBg)
                 .border(1.dp, Color.White.copy(alpha = 0.12f), RoundedCornerShape(12.dp))
                 .clickable(onClick = onWatch),
             contentAlignment = Alignment.Center,
@@ -182,14 +182,14 @@ fun GuidePreview(
                     .align(Alignment.BottomStart)
                     .padding(10.dp)
                     .background(Color.Black.copy(alpha = 0.75f), RoundedCornerShape(8.dp))
-                    .border(1.dp, Color(0xFF38BDF8).copy(alpha = 0.5f), RoundedCornerShape(8.dp))
+                    .border(1.dp, app.opentv.ui.theme.GecePalette.Accent.copy(alpha = 0.5f), RoundedCornerShape(8.dp))
                     .padding(horizontal = 10.dp, vertical = 5.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(
                     Icons.Default.PlayArrow,
                     contentDescription = null,
-                    tint = Color(0xFF38BDF8),
+                    tint = app.opentv.ui.theme.GecePalette.Accent,
                     modifier = Modifier.size(16.dp),
                 )
                 Spacer(Modifier.width(6.dp))
@@ -390,15 +390,15 @@ private fun NowPlayingScheduleCard(
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(4.dp))
-                    .background(Color(0xFF0284C7).copy(alpha = 0.25f))
-                    .border(1.dp, Color(0xFF38BDF8).copy(alpha = 0.6f), RoundedCornerShape(4.dp))
+                    .background(app.opentv.ui.theme.GecePalette.Accent.copy(alpha = 0.25f))
+                    .border(1.dp, app.opentv.ui.theme.GecePalette.Accent.copy(alpha = 0.6f), RoundedCornerShape(4.dp))
                     .padding(horizontal = 6.dp, vertical = 2.dp),
             ) {
                 Text(
                     text = "● ŞİMDİ",
                     style = MaterialTheme.typography.labelSmall,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF38BDF8),
+                    color = app.opentv.ui.theme.GecePalette.Accent,
                 )
             }
             Spacer(Modifier.width(8.dp))
@@ -494,13 +494,13 @@ private fun ProgrammeScheduleItem(
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(4.dp))
-                    .background(Color(0xFF0284C7).copy(alpha = 0.2f))
+                    .background(app.opentv.ui.theme.GecePalette.Accent.copy(alpha = 0.2f))
                     .padding(horizontal = 6.dp, vertical = 2.dp),
             ) {
                 Text(
                     text = "Geri Al",
                     style = MaterialTheme.typography.labelSmall,
-                    color = Color(0xFF38BDF8),
+                    color = app.opentv.ui.theme.GecePalette.Accent,
                 )
             }
         }

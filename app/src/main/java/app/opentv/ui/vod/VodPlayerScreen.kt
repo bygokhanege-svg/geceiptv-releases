@@ -103,6 +103,7 @@ import app.opentv.data.model.Episode
 import app.opentv.player.OnlineSubtitle
 import app.opentv.ui.player.PlayerClockBadge
 import app.opentv.ui.player.StreamStatsDialog
+import app.opentv.ui.theme.GecePalette
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -1692,20 +1693,20 @@ private fun NextEpisodeFloatingCard(
             .background(
                 Brush.horizontalGradient(
                     colors = if (isFocused) listOf(
-                        Color(0xF51A2238),
-                        Color(0xF8243050),
+                        GecePalette.CardElevated,
+                        GecePalette.CardElevated.copy(alpha = 0.9f),
                     ) else listOf(
-                        Color(0xE6101420),
-                        Color(0xEE161C2C),
+                        GecePalette.CardSurface,
+                        GecePalette.CardSurface.copy(alpha = 0.8f),
                     ),
                 ),
             )
             .border(
                 width = if (isFocused) 2.dp else 1.dp,
                 brush = if (isFocused) Brush.horizontalGradient(
-                    listOf(MaterialTheme.colorScheme.primary, Color(0xFF7C93FF)),
+                    listOf(GecePalette.Accent, GecePalette.Accent.copy(alpha = 0.7f)),
                 ) else Brush.horizontalGradient(
-                    listOf(Color.White.copy(alpha = 0.2f), Color.White.copy(alpha = 0.1f)),
+                    listOf(GecePalette.CardBorder, GecePalette.CardBorder.copy(alpha = 0.5f)),
                 ),
                 shape = RoundedCornerShape(16.dp),
             )
@@ -1720,8 +1721,8 @@ private fun NextEpisodeFloatingCard(
                 modifier = Modifier
                     .size(width = 64.dp, height = 44.dp)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(Color(0xFF090D16))
-                    .border(1.dp, Color.White.copy(alpha = 0.15f), RoundedCornerShape(8.dp)),
+                    .background(GecePalette.CanvasBg)
+                    .border(1.dp, GecePalette.CardBorder, RoundedCornerShape(8.dp)),
                 contentAlignment = Alignment.Center,
             ) {
                 if (!episode.stillUrl.isNullOrBlank()) {
@@ -1859,10 +1860,10 @@ private fun SeriesEpisodesDrawer(
         modifier = Modifier
             .fillMaxHeight()
             .widthIn(min = 320.dp, max = 390.dp)
-            .background(Color(0xF00A0E18))
+            .background(GecePalette.CanvasBg.copy(alpha = 0.96f))
             .border(
                 width = 1.dp,
-                color = Color.White.copy(alpha = 0.15f),
+                color = GecePalette.CardBorder,
                 shape = RoundedCornerShape(topStart = 16.dp, bottomStart = 16.dp),
             )
             .padding(16.dp),
@@ -2037,7 +2038,7 @@ private fun SeriesEpisodesDrawer(
                                         text = "• Şu an Oynatılıyor",
                                         style = MaterialTheme.typography.labelSmall,
                                         fontWeight = FontWeight.SemiBold,
-                                        color = Color(0xFF4ADE80),
+                                        color = GecePalette.Accent,
                                         fontSize = 10.sp,
                                     )
                                 }
@@ -2088,8 +2089,8 @@ private fun ExternalPlayerChooserDialog(
         ) {
             Card(
                 shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xF8111625)),
-                border = BorderStroke(1.dp, Color.White.copy(alpha = 0.15f)),
+                colors = CardDefaults.cardColors(containerColor = GecePalette.CardSurface),
+                border = BorderStroke(1.dp, GecePalette.CardBorder),
                 modifier = Modifier
                     .widthIn(min = 340.dp, max = 460.dp)
                     .clickable(enabled = false) {}

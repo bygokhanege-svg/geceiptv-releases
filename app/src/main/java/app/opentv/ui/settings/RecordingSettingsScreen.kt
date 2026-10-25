@@ -57,6 +57,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import app.opentv.ui.theme.GecePalette
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
@@ -454,14 +455,14 @@ private fun BackgroundStatus() {
             Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(10.dp))
-                .background(Color(0xFF17351F))
+                .background(GecePalette.AccentSubtle)
                 .padding(14.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
                 Icons.Filled.CheckCircle,
                 contentDescription = null,
-                tint = Color(0xFF4ADE80),
+                tint = GecePalette.Accent,
                 modifier = Modifier.size(30.dp),
             )
             Spacer(Modifier.width(14.dp))
@@ -470,7 +471,7 @@ private fun BackgroundStatus() {
                     stringResource(R.string.recset_background_on_title),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
-                    color = Color(0xFF4ADE80),
+                    color = GecePalette.Accent,
                 )
                 Spacer(Modifier.height(2.dp))
                 Text(

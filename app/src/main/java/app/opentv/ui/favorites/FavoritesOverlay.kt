@@ -120,7 +120,7 @@ fun FavoritesDialog(
                 )
                     .background(
                         Brush.verticalGradient(
-                            listOf(Color(0xFF0F172A), Color(0xFF0A0F1D))
+                            listOf(app.opentv.ui.theme.GecePalette.CardElevated, app.opentv.ui.theme.GecePalette.CardSurface)
                         )
                     )
                     .border(
@@ -128,7 +128,7 @@ fun FavoritesDialog(
                         Brush.linearGradient(
                             listOf(
                                 Color(0xFFF59E0B).copy(alpha = 0.5f),
-                                Color(0xFF38BDF8).copy(alpha = 0.2f),
+                                app.opentv.ui.theme.GecePalette.CardBorder,
                                 Color.White.copy(alpha = 0.05f),
                             )
                         ),
@@ -226,14 +226,14 @@ fun FavoritesDialog(
                             title = stringResource(R.string.favorites_movies, favouriteMovies.size),
                             icon = Icons.Filled.Movie,
                             selected = selectedTab == FavTab.MOVIES,
-                            accentColor = Color(0xFF38BDF8),
+                            accentColor = app.opentv.ui.theme.GecePalette.Accent,
                             onClick = { selectedTab = FavTab.MOVIES },
                         )
                         FavTabButton(
                             title = stringResource(R.string.favorites_series, favouriteSeries.size),
                             icon = Icons.Filled.VideoLibrary,
                             selected = selectedTab == FavTab.SERIES,
-                            accentColor = Color(0xFFA855F7),
+                            accentColor = app.opentv.ui.theme.GecePalette.Accent,
                             onClick = { selectedTab = FavTab.SERIES },
                         )
                     }
@@ -503,7 +503,7 @@ private fun MovieFavCard(
                 scaleY = scale
             }
             .clip(RoundedCornerShape(12.dp))
-            .background(Color(0xFF1E293B).copy(alpha = 0.7f))
+            .background(app.opentv.ui.theme.GecePalette.CardSurface)
             .border(
                 width = if (isFocused) 2.dp else 1.dp,
                 color = if (isFocused) Color(0xFFF59E0B) else Color.White.copy(alpha = 0.1f),
@@ -525,7 +525,7 @@ private fun MovieFavCard(
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color(0xFF0F172A)),
+                    .background(app.opentv.ui.theme.GecePalette.CardElevated),
             )
 
             // Rating Badge (Top-Start)
@@ -614,7 +614,7 @@ private fun SeriesFavCard(
                 scaleY = scale
             }
             .clip(RoundedCornerShape(12.dp))
-            .background(Color(0xFF1E293B).copy(alpha = 0.7f))
+            .background(app.opentv.ui.theme.GecePalette.CardSurface)
             .border(
                 width = if (isFocused) 2.dp else 1.dp,
                 color = if (isFocused) Color(0xFFF59E0B) else Color.White.copy(alpha = 0.1f),
@@ -636,7 +636,7 @@ private fun SeriesFavCard(
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color(0xFF0F172A)),
+                    .background(app.opentv.ui.theme.GecePalette.CardElevated),
             )
 
             // Rating Badge (Top-Start)

@@ -43,6 +43,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import app.opentv.ui.theme.GecePalette
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -122,21 +123,21 @@ private fun Listening(session: ManagerServer.Session, onBack: () -> Unit) {
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier
                     .clip(RoundedCornerShape(8.dp))
-                    .background(Color(0xFF10B981).copy(alpha = 0.15f))
-                    .border(1.dp, Color(0xFF10B981).copy(alpha = 0.3f), RoundedCornerShape(8.dp))
+                    .background(GecePalette.AccentSubtle)
+                    .border(1.dp, GecePalette.Accent.copy(alpha = 0.4f), RoundedCornerShape(8.dp))
                     .padding(horizontal = 10.dp, vertical = 4.dp),
             ) {
                 Box(
                     modifier = Modifier
                         .size(8.dp)
                         .clip(RoundedCornerShape(4.dp))
-                        .background(Color(0xFF10B981)),
+                        .background(GecePalette.Accent),
                 )
                 Text(
                     stringResource(R.string.web_manager_badge),
                     style = MaterialTheme.typography.labelSmall,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF34D399),
+                    color = GecePalette.Accent,
                 )
             }
 
@@ -319,21 +320,21 @@ private fun Listening(session: ManagerServer.Session, onBack: () -> Unit) {
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier
                         .clip(RoundedCornerShape(8.dp))
-                        .background(Color(0xFF10B981).copy(alpha = 0.15f))
-                        .border(1.dp, Color(0xFF10B981).copy(alpha = 0.3f), RoundedCornerShape(8.dp))
+                        .background(GecePalette.AccentSubtle)
+                        .border(1.dp, GecePalette.Accent.copy(alpha = 0.4f), RoundedCornerShape(8.dp))
                         .padding(horizontal = 10.dp, vertical = 4.dp),
                 ) {
                     Box(
                         modifier = Modifier
                             .size(8.dp)
                             .clip(RoundedCornerShape(4.dp))
-                            .background(Color(0xFF10B981)),
+                            .background(GecePalette.Accent),
                     )
                     Text(
                         stringResource(R.string.web_manager_badge),
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF34D399),
+                        color = GecePalette.Accent,
                     )
                 }
 

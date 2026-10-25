@@ -103,6 +103,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.ui.PlayerView
 import app.opentv.R
+import app.opentv.ui.theme.GecePalette
 import app.opentv.core.ServiceLocator
 import app.opentv.core.findActivity
 import app.opentv.data.model.Category
@@ -651,7 +652,7 @@ fun MultiViewScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)),
-                color = Color(0xDD090D16),
+                color = GecePalette.CanvasBg.copy(alpha = 0.95f),
                 shadowElevation = 8.dp,
             ) {
                 Row(
@@ -686,22 +687,22 @@ fun MultiViewScreen(
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(6.dp))
-                            .background(Color(0xFF0284C7).copy(alpha = 0.25f))
-                            .border(1.dp, Color(0xFF38BDF8).copy(alpha = 0.4f), RoundedCornerShape(6.dp))
+                            .background(GecePalette.AccentSubtle)
+                            .border(1.dp, GecePalette.Accent.copy(alpha = 0.4f), RoundedCornerShape(6.dp))
                             .padding(horizontal = 8.dp, vertical = 3.dp),
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
                                 Icons.AutoMirrored.Filled.VolumeUp,
                                 contentDescription = null,
-                                tint = Color(0xFF38BDF8),
+                                tint = GecePalette.Accent,
                                 modifier = Modifier.size(13.dp),
                             )
                             Spacer(Modifier.width(4.dp))
                             Text(
                                 stringResource(R.string.multiview_slot_label, focusedSlotIndex + 1),
                                 style = MaterialTheme.typography.labelSmall,
-                                color = Color(0xFF38BDF8),
+                                color = GecePalette.Accent,
                                 fontWeight = FontWeight.Bold,
                             )
                         }
@@ -798,10 +799,10 @@ private fun MultiViewSlotTile(
         Box(
             modifier = modifier
                 .clip(RoundedCornerShape(12.dp))
-                .background(Color(0xFF090D16))
+                .background(GecePalette.CanvasBg)
                 .border(
                     width = 2.dp,
-                    brush = Brush.horizontalGradient(listOf(Color(0xFF38BDF8), Color(0xFF0284C7))),
+                    brush = Brush.horizontalGradient(listOf(GecePalette.Accent, GecePalette.Accent)),
                     shape = RoundedCornerShape(12.dp),
                 ),
         ) {
@@ -821,7 +822,7 @@ private fun MultiViewSlotTile(
     val borderModifier = if (isFocused || isActionMenuOpen) {
         Modifier.border(
             width = 3.dp,
-            brush = Brush.horizontalGradient(listOf(Color(0xFF38BDF8), Color(0xFF0284C7))),
+            brush = Brush.horizontalGradient(listOf(GecePalette.Accent, GecePalette.Accent)),
             shape = RoundedCornerShape(12.dp),
         )
     } else {
@@ -835,7 +836,7 @@ private fun MultiViewSlotTile(
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(12.dp))
-            .background(Color(0xFF0F172A))
+            .background(GecePalette.CardSurface)
             .then(borderModifier)
             .onFocusChanged { if (it.isFocused) onFocused() }
             .focusable(!isActionMenuOpen)
@@ -873,7 +874,7 @@ private fun MultiViewSlotTile(
                     contentAlignment = Alignment.Center,
                 ) {
                     CircularProgressIndicator(
-                        color = Color(0xFF38BDF8),
+                        color = GecePalette.Accent,
                         modifier = Modifier.size(36.dp),
                         strokeWidth = 3.dp,
                     )
@@ -901,7 +902,7 @@ private fun MultiViewSlotTile(
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(6.dp))
-                                .background(Color(0xFF0284C7))
+                                .background(GecePalette.Accent)
                                 .clickable { controller.retry() }
                                 .padding(horizontal = 10.dp, vertical = 4.dp),
                         ) {
@@ -920,7 +921,7 @@ private fun MultiViewSlotTile(
                     .background(Color.Black.copy(alpha = 0.75f))
                     .border(
                         1.dp,
-                        if (isAudioActive) Color(0xFF38BDF8).copy(alpha = 0.8f) else Color.White.copy(alpha = 0.15f),
+                        if (isAudioActive) GecePalette.Accent else Color.White.copy(alpha = 0.15f),
                         RoundedCornerShape(8.dp),
                     )
                     .padding(horizontal = 8.dp, vertical = 4.dp),
@@ -930,7 +931,7 @@ private fun MultiViewSlotTile(
                     Icon(
                         imageVector = if (isAudioActive) Icons.AutoMirrored.Filled.VolumeUp else Icons.AutoMirrored.Filled.VolumeMute,
                         contentDescription = null,
-                        tint = if (isAudioActive) Color(0xFF38BDF8) else Color.White.copy(alpha = 0.5f),
+                        tint = if (isAudioActive) GecePalette.Accent else Color.White.copy(alpha = 0.5f),
                         modifier = Modifier.size(15.dp),
                     )
                     Spacer(Modifier.width(6.dp))
@@ -984,12 +985,12 @@ private fun MultiViewSlotTile(
                         .size(54.dp)
                         .clip(CircleShape)
                         .background(
-                            if (isFocused) Color(0xFF0284C7).copy(alpha = 0.35f)
-                            else Color(0xFF1E293B).copy(alpha = 0.6f),
+                            if (isFocused) GecePalette.AccentSubtle
+                            else GecePalette.CardBorder.copy(alpha = 0.6f),
                         )
                         .border(
                             1.5.dp,
-                            if (isFocused) Color(0xFF38BDF8) else Color.White.copy(alpha = 0.2f),
+                            if (isFocused) GecePalette.Accent else Color.White.copy(alpha = 0.2f),
                             CircleShape,
                         ),
                     contentAlignment = Alignment.Center,
@@ -997,7 +998,7 @@ private fun MultiViewSlotTile(
                     Icon(
                         Icons.Filled.Add,
                         contentDescription = null,
-                        tint = if (isFocused) Color(0xFF38BDF8) else Color.White.copy(alpha = 0.7f),
+                        tint = if (isFocused) GecePalette.Accent else Color.White.copy(alpha = 0.7f),
                         modifier = Modifier.size(28.dp),
                     )
                 }
@@ -1006,7 +1007,7 @@ private fun MultiViewSlotTile(
                     text = stringResource(R.string.multiview_add_channel),
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Medium,
-                    color = if (isFocused) Color(0xFF38BDF8) else Color.White.copy(alpha = 0.7f),
+                    color = if (isFocused) GecePalette.Accent else Color.White.copy(alpha = 0.7f),
                 )
                 Text(
                     text = stringResource(R.string.multiview_slot_label, slotIndex + 1),
@@ -1034,16 +1035,16 @@ private fun TopBarLayoutChip(
             .clip(RoundedCornerShape(8.dp))
             .background(
                 when {
-                    isFocused -> Color(0xFF38BDF8).copy(alpha = 0.35f)
-                    isSelected -> Color(0xFF0284C7).copy(alpha = 0.25f)
+                    isFocused -> GecePalette.AccentSubtle
+                    isSelected -> GecePalette.AccentSubtle
                     else -> Color.Transparent
                 },
             )
             .border(
                 1.dp,
                 when {
-                    isFocused -> Color(0xFF38BDF8)
-                    isSelected -> Color(0xFF0284C7)
+                    isFocused -> GecePalette.Accent
+                    isSelected -> GecePalette.Accent
                     else -> Color.White.copy(alpha = 0.2f)
                 },
                 RoundedCornerShape(8.dp),
@@ -1057,7 +1058,7 @@ private fun TopBarLayoutChip(
             Icon(
                 mode.icon,
                 contentDescription = null,
-                tint = if (isSelected || isFocused) Color(0xFF38BDF8) else Color.White.copy(alpha = 0.7f),
+                tint = if (isSelected || isFocused) GecePalette.Accent else Color.White.copy(alpha = 0.7f),
                 modifier = Modifier.size(16.dp),
             )
             Spacer(Modifier.width(6.dp))
@@ -1083,10 +1084,10 @@ private fun TopBarIconButton(
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(8.dp))
-            .background(if (isFocused) Color(0xFF38BDF8).copy(alpha = 0.3f) else Color.Transparent)
+            .background(if (isFocused) GecePalette.AccentSubtle else Color.Transparent)
             .border(
                 1.dp,
-                if (isFocused) Color(0xFF38BDF8) else Color.White.copy(alpha = 0.2f),
+                if (isFocused) GecePalette.Accent else Color.White.copy(alpha = 0.2f),
                 RoundedCornerShape(8.dp),
             )
             .let { if (focusRequester != null) it.focusRequester(focusRequester) else it }
@@ -1129,7 +1130,7 @@ private fun InSlotActionMenu(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xF0080D1A))
+            .background(GecePalette.CanvasBg.copy(alpha = 0.95f))
             .onPreviewKeyEvent { event ->
                 if (event.type == KeyEventType.KeyDown && (event.key == Key.Back || event.key == Key.Escape)) {
                     onClose()
@@ -1181,7 +1182,7 @@ private fun InSlotActionMenu(
             InSlotActionRow(
                 icon = Icons.Filled.Fullscreen,
                 label = stringResource(R.string.multiview_fullscreen),
-                iconColor = Color(0xFF38BDF8),
+                iconColor = GecePalette.Accent,
                 focusRequester = firstActionFocusRequester,
                 onClick = onPlayFullscreen,
             )
@@ -1190,7 +1191,7 @@ private fun InSlotActionMenu(
             InSlotActionRow(
                 icon = Icons.Filled.SwapHoriz,
                 label = stringResource(R.string.multiview_change_channel),
-                iconColor = Color(0xFF67E8F9),
+                iconColor = GecePalette.Accent,
                 onClick = onChangeChannel,
             )
 
@@ -1217,7 +1218,7 @@ private fun InSlotActionMenu(
 private fun InSlotActionRow(
     icon: ImageVector,
     label: String,
-    iconColor: Color = Color(0xFF38BDF8),
+    iconColor: Color = GecePalette.Accent,
     focusRequester: FocusRequester? = null,
     onClick: () -> Unit,
 ) {
@@ -1228,11 +1229,11 @@ private fun InSlotActionRow(
             .fillMaxWidth()
             .clip(RoundedCornerShape(8.dp))
             .background(
-                if (isFocused) Color(0xFF0284C7).copy(alpha = 0.55f) else Color(0x99111827),
+                if (isFocused) GecePalette.AccentSubtle else GecePalette.CardSurface.copy(alpha = 0.6f),
             )
             .border(
                 width = if (isFocused) 2.dp else 1.dp,
-                color = if (isFocused) Color(0xFF38BDF8) else Color.White.copy(alpha = 0.12f),
+                color = if (isFocused) GecePalette.Accent else Color.White.copy(alpha = 0.12f),
                 shape = RoundedCornerShape(8.dp),
             )
             .let { if (focusRequester != null) it.focusRequester(focusRequester) else it }
@@ -1252,7 +1253,7 @@ private fun InSlotActionRow(
         Icon(
             imageVector = icon,
             contentDescription = null,
-            tint = if (isFocused) Color(0xFF38BDF8) else iconColor,
+            tint = if (isFocused) GecePalette.Accent else iconColor,
             modifier = Modifier.size(18.dp),
         )
         Spacer(Modifier.width(10.dp))
@@ -1311,7 +1312,7 @@ private fun InSlotChannelPicker(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF0A0F1D))
+            .background(GecePalette.CanvasBg)
             .padding(8.dp),
     ) {
         // In-Slot Header: Slot badge + Close button
@@ -1325,22 +1326,22 @@ private fun InSlotChannelPicker(
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(6.dp))
-                    .background(Color(0xFF0284C7).copy(alpha = 0.25f))
-                    .border(1.dp, Color(0xFF38BDF8).copy(alpha = 0.6f), RoundedCornerShape(6.dp))
+                    .background(GecePalette.AccentSubtle)
+                    .border(1.dp, GecePalette.Accent.copy(alpha = 0.6f), RoundedCornerShape(6.dp))
                     .padding(horizontal = 8.dp, vertical = 3.dp),
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         Icons.Filled.LiveTv,
                         contentDescription = null,
-                        tint = Color(0xFF38BDF8),
+                        tint = GecePalette.Accent,
                         modifier = Modifier.size(13.dp),
                     )
                     Spacer(Modifier.width(5.dp))
                     Text(
                         text = stringResource(R.string.multiview_slot_label, slotIndex + 1),
                         style = MaterialTheme.typography.labelSmall,
-                        color = Color(0xFF38BDF8),
+                        color = GecePalette.Accent,
                         fontWeight = FontWeight.Bold,
                     )
                 }
@@ -1364,7 +1365,7 @@ private fun InSlotChannelPicker(
                 modifier = Modifier
                     .size(26.dp)
                     .clip(CircleShape)
-                    .background(if (isCloseFocused) Color(0xFFEF4444).copy(alpha = 0.35f) else Color(0xFF1E293B))
+                    .background(if (isCloseFocused) Color(0xFFEF4444).copy(alpha = 0.35f) else GecePalette.CardElevated)
                     .border(
                         1.dp,
                         if (isCloseFocused) Color(0xFFEF4444) else Color.White.copy(alpha = 0.15f),
@@ -1471,14 +1472,14 @@ private fun InSlotCategoryChip(
             .clip(RoundedCornerShape(12.dp))
             .background(
                 when {
-                    isFocused -> Color(0xFF38BDF8).copy(alpha = 0.4f)
-                    isSelected -> Color(0xFF0284C7)
-                    else -> Color(0xFF1E293B).copy(alpha = 0.8f)
+                    isFocused -> GecePalette.Accent.copy(alpha = 0.4f)
+                    isSelected -> GecePalette.Accent
+                    else -> GecePalette.CardSurface
                 },
             )
             .border(
                 1.dp,
-                if (isFocused || isSelected) Color(0xFF38BDF8) else Color.White.copy(alpha = 0.1f),
+                if (isFocused || isSelected) GecePalette.Accent else Color.White.copy(alpha = 0.1f),
                 RoundedCornerShape(12.dp),
             )
             .onFocusChanged { isFocused = it.isFocused }
@@ -1518,16 +1519,16 @@ private fun InSlotChannelRow(
             .background(
                 when {
                     isFocused -> Brush.horizontalGradient(
-                        listOf(Color(0xFF0284C7).copy(alpha = 0.45f), Color(0xFF0F172A)),
+                        listOf(GecePalette.AccentSubtle, GecePalette.CardSurface),
                     )
                     else -> Brush.horizontalGradient(
-                        listOf(Color(0xFF131C2E).copy(alpha = 0.7f), Color(0xFF0B111E).copy(alpha = 0.7f)),
+                        listOf(GecePalette.CardSurface.copy(alpha = 0.7f), GecePalette.CardElevated.copy(alpha = 0.7f)),
                     )
                 },
             )
             .border(
                 width = if (isFocused) 1.5.dp else 1.dp,
-                color = if (isFocused) Color(0xFF38BDF8) else Color.White.copy(alpha = 0.06f),
+                color = if (isFocused) GecePalette.Accent else Color.White.copy(alpha = 0.06f),
                 shape = RoundedCornerShape(8.dp),
             )
             .let { if (focusRequester != null) it.focusRequester(focusRequester) else it }
@@ -1559,13 +1560,13 @@ private fun InSlotChannelRow(
                 modifier = Modifier
                     .size(24.dp)
                     .clip(RoundedCornerShape(4.dp))
-                    .background(Color(0xFF1E293B)),
+                    .background(GecePalette.CardElevated),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
                     Icons.Filled.PlayArrow,
                     contentDescription = null,
-                    tint = if (isFocused) Color(0xFF38BDF8) else Color.White.copy(alpha = 0.6f),
+                    tint = if (isFocused) GecePalette.Accent else Color.White.copy(alpha = 0.6f),
                     modifier = Modifier.size(14.dp),
                 )
             }
@@ -1588,7 +1589,7 @@ private fun InSlotChannelRow(
             Icon(
                 Icons.AutoMirrored.Filled.ArrowForward,
                 contentDescription = null,
-                tint = Color(0xFF38BDF8),
+                tint = GecePalette.Accent,
                 modifier = Modifier.size(14.dp),
             )
         }

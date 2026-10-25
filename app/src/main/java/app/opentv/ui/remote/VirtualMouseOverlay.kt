@@ -60,8 +60,8 @@ fun VirtualMouseOverlay(server: VirtualMouseServer) {
                         modifier = Modifier
                             .size(32.dp)
                             .clip(CircleShape)
-                            .background(Color(0x663B82F6))
-                            .border(2.dp, Color(0xFF60A5FA), CircleShape)
+                            .background(app.opentv.ui.theme.GecePalette.AccentSubtle)
+                            .border(2.dp, app.opentv.ui.theme.GecePalette.Accent, CircleShape)
                     )
                 }
 

@@ -146,8 +146,8 @@ fun AdminPanelScreen(
             .background(
                 Brush.radialGradient(
                     colors = listOf(
-                        Color(0xFF0F172A),
-                        Color(0xFF020617),
+                        app.opentv.ui.theme.GecePalette.CanvasBg,
+                        Color(0xFF040508),
                     ),
                     radius = 1800f,
                 ),
@@ -174,14 +174,14 @@ fun AdminPanelScreen(
                         modifier = Modifier
                             .size(44.dp)
                             .clip(RoundedCornerShape(12.dp))
-                            .background(Color(0xFF0284C7).copy(alpha = 0.25f))
-                            .border(1.5.dp, Color(0xFF38BDF8), RoundedCornerShape(12.dp)),
+                            .background(app.opentv.ui.theme.GecePalette.AccentSubtle)
+                            .border(1.5.dp, app.opentv.ui.theme.GecePalette.Accent, RoundedCornerShape(12.dp)),
                         contentAlignment = Alignment.Center,
                     ) {
                         Icon(
                             Icons.Filled.AdminPanelSettings,
                             contentDescription = null,
-                            tint = Color(0xFF38BDF8),
+                            tint = app.opentv.ui.theme.GecePalette.Accent,
                             modifier = Modifier.size(24.dp),
                         )
                     }
@@ -231,7 +231,7 @@ fun AdminPanelScreen(
                     AdminStatCard(
                         title = "TOPLAM CİHAZ",
                         value = totalCount.toString(),
-                        accentColor = Color(0xFF38BDF8),
+                        accentColor = app.opentv.ui.theme.GecePalette.Accent,
                         modifier = Modifier.weight(1f),
                     )
                     AdminStatCard(
@@ -259,8 +259,8 @@ fun AdminPanelScreen(
             item {
                 Surface(
                     shape = RoundedCornerShape(16.dp),
-                    color = Color(0xFF1E293B).copy(alpha = 0.6f),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF38BDF8).copy(alpha = 0.4f)),
+                    color = app.opentv.ui.theme.GecePalette.CardSurface,
+                    border = androidx.compose.foundation.BorderStroke(1.dp, app.opentv.ui.theme.GecePalette.CardBorder),
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     Row(
@@ -273,17 +273,17 @@ fun AdminPanelScreen(
                             modifier = Modifier
                                 .size(46.dp)
                                 .clip(CircleShape)
-                                .background(Color(0xFF0F172A)),
+                                .background(app.opentv.ui.theme.GecePalette.CardElevated),
                             contentAlignment = Alignment.Center,
                         ) {
-                            Icon(Icons.Filled.Tv, contentDescription = null, tint = Color(0xFF38BDF8), modifier = Modifier.size(24.dp))
+                            Icon(Icons.Filled.Tv, contentDescription = null, tint = app.opentv.ui.theme.GecePalette.Accent, modifier = Modifier.size(24.dp))
                         }
                         Spacer(Modifier.width(16.dp))
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 "ŞU AN KULLANDIĞINIZ TELEVİZYON",
                                 style = MaterialTheme.typography.labelSmall,
-                                color = Color(0xFF38BDF8),
+                                color = app.opentv.ui.theme.GecePalette.Accent,
                                 fontWeight = FontWeight.Bold,
                                 letterSpacing = 1.sp,
                             )
@@ -344,7 +344,7 @@ fun AdminPanelScreen(
             item {
                 Surface(
                     shape = RoundedCornerShape(16.dp),
-                    color = Color(0xFF131D31),
+                    color = app.opentv.ui.theme.GecePalette.CardSurface,
                     border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFF59E0B).copy(alpha = 0.5f)),
                     modifier = Modifier.fillMaxWidth(),
                 ) {
@@ -500,7 +500,7 @@ fun AdminPanelScreen(
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(0xFF38BDF8),
+                        focusedBorderColor = app.opentv.ui.theme.GecePalette.Accent,
                         unfocusedBorderColor = Color.White.copy(alpha = 0.2f),
                         focusedTextColor = Color.White,
                         unfocusedTextColor = Color.White,
@@ -603,10 +603,10 @@ private fun AdminDeviceRowCard(
 
     Surface(
         shape = RoundedCornerShape(12.dp),
-        color = if (isFocused) Color(0xFF1E293B) else Color(0xFF0F172A),
+        color = if (isFocused) app.opentv.ui.theme.GecePalette.CardElevated else app.opentv.ui.theme.GecePalette.CardSurface,
         border = androidx.compose.foundation.BorderStroke(
             1.dp,
-            if (isFocused) Color(0xFF38BDF8) else Color.White.copy(alpha = 0.08f),
+            if (isFocused) app.opentv.ui.theme.GecePalette.Accent else app.opentv.ui.theme.GecePalette.CardBorder,
         ),
         modifier = Modifier
             .fillMaxWidth()

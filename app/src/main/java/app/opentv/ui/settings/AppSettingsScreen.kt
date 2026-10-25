@@ -75,6 +75,7 @@ import app.opentv.R
 import app.opentv.core.AppSettings
 import app.opentv.core.DeviceOptimizationManager
 import app.opentv.data.work.SyncWorker
+import app.opentv.ui.theme.GecePalette
 import kotlinx.coroutines.delay
 
 /**
@@ -705,7 +706,7 @@ private fun DeviceOptimizerSection(settings: AppSettings) {
                 .onFocusChanged { isOptimizeBtnFocused = it.isFocused }
                 .border(
                     if (isOptimizeBtnFocused) 2.5.dp else 0.dp,
-                    if (isOptimizeBtnFocused) Color(0xFF06B6D4) else Color.Transparent,
+                    if (isOptimizeBtnFocused) GecePalette.Accent else Color.Transparent,
                     RoundedCornerShape(12.dp)
                 ),
             colors = ButtonDefaults.buttonColors(
@@ -823,15 +824,15 @@ private fun HardwareProfileCard(
                     Spacer(Modifier.width(8.dp))
                     Box(
                         modifier = Modifier
-                            .background(Color(0xFF10B981).copy(alpha = 0.2f), RoundedCornerShape(6.dp))
-                            .border(1.dp, Color(0xFF10B981), RoundedCornerShape(6.dp))
+                            .background(GecePalette.AccentSubtle, RoundedCornerShape(6.dp))
+                            .border(1.dp, GecePalette.Accent, RoundedCornerShape(6.dp))
                             .padding(horizontal = 6.dp, vertical = 2.dp),
                     ) {
                         Text(
                             text = stringResource(R.string.settings_device_recommended_badge),
                             style = MaterialTheme.typography.labelSmall,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF10B981),
+                            color = GecePalette.Accent,
                         )
                     }
                 }
@@ -883,7 +884,7 @@ private fun HardwareProfileCard(
                     Text(
                         text = "⚡ A/V Tunneling",
                         style = MaterialTheme.typography.labelSmall,
-                        color = Color(0xFF06B6D4),
+                        color = GecePalette.Accent,
                     )
                 }
             }
@@ -1000,13 +1001,13 @@ private fun DeviceOptimizationDialog(
                             Box(
                                 modifier = Modifier
                                     .size(42.dp)
-                                    .background(Color(0xFF10B981).copy(alpha = 0.2f), CircleShape),
+                                    .background(GecePalette.AccentSubtle, CircleShape),
                                 contentAlignment = Alignment.Center,
                             ) {
                                 Icon(
                                     Icons.Filled.CheckCircle,
                                     contentDescription = null,
-                                    tint = Color(0xFF10B981),
+                                    tint = GecePalette.Accent,
                                     modifier = Modifier.size(26.dp),
                                 )
                             }
@@ -1099,14 +1100,14 @@ private fun DeviceOptimizationDialog(
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Box(
                                         modifier = Modifier
-                                            .background(Color(0xFF10B981), RoundedCornerShape(6.dp))
+                                            .background(GecePalette.Accent, RoundedCornerShape(6.dp))
                                             .padding(horizontal = 8.dp, vertical = 2.dp),
                                     ) {
                                         Text(
                                             stringResource(R.string.settings_device_recommended_badge),
                                             style = MaterialTheme.typography.labelSmall,
                                             fontWeight = FontWeight.Bold,
-                                            color = Color.Black,
+                                            color = GecePalette.OnAccent,
                                         )
                                     }
                                     Spacer(Modifier.width(8.dp))
@@ -1179,7 +1180,7 @@ private fun ScanStepRow(title: String, isDone: Boolean, isActive: Boolean) {
             Icon(
                 Icons.Filled.CheckCircle,
                 contentDescription = null,
-                tint = Color(0xFF10B981),
+                tint = GecePalette.Accent,
                 modifier = Modifier.size(18.dp),
             )
         } else if (isActive) {
@@ -1228,7 +1229,7 @@ private fun OptimizationCheckItem(text: String) {
         Icon(
             Icons.Filled.Check,
             contentDescription = null,
-            tint = Color(0xFF10B981),
+            tint = GecePalette.Accent,
             modifier = Modifier.size(16.dp),
         )
         Spacer(Modifier.width(6.dp))

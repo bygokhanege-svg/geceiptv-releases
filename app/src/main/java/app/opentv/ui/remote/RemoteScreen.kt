@@ -128,10 +128,11 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
-import androidx.core.content.ContextCompat
 import app.opentv.R
 import app.opentv.core.ServiceLocator
 import app.opentv.pairing.QrCodes
+import app.opentv.ui.theme.GecePalette
+import androidx.core.content.ContextCompat
 import java.net.Inet4Address
 import java.net.NetworkInterface
 import java.util.concurrent.TimeUnit
@@ -504,7 +505,7 @@ fun RemoteScreen() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF090C15))
+            .background(GecePalette.CanvasBg)
     ) {
         Column(
             modifier = Modifier
@@ -529,12 +530,12 @@ fun RemoteScreen() {
                             .clip(CircleShape)
                             .background(
                                 Brush.linearGradient(
-                                    listOf(Color(0xFF3B82F6), Color(0xFF1D4ED8))
+                                    listOf(GecePalette.Accent, Color(0xFFD97706))
                                 )
                             ),
                         contentAlignment = Alignment.Center,
                     ) {
-                        Icon(Icons.Filled.Tv, contentDescription = null, tint = Color.White, modifier = Modifier.size(20.dp))
+                        Icon(Icons.Filled.Tv, contentDescription = null, tint = GecePalette.OnAccent, modifier = Modifier.size(20.dp))
                     }
                     Spacer(Modifier.width(10.dp))
                     Column {
@@ -588,17 +589,17 @@ fun RemoteScreen() {
                         modifier = Modifier
                             .clip(RoundedCornerShape(12.dp))
                             .clickable { showQrScanner = true },
-                        color = Color(0x223B82F6),
-                        border = BorderStroke(1.dp, Color(0x443B82F6)),
+                        color = GecePalette.CardSurface,
+                        border = BorderStroke(1.dp, GecePalette.CardBorder),
                         shape = RoundedCornerShape(12.dp),
                     ) {
                         Row(
                             modifier = Modifier.padding(horizontal = 10.dp, vertical = 7.dp),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            Icon(Icons.Default.QrCodeScanner, contentDescription = stringResource(R.string.remote_btn_qr_scan), tint = Color(0xFF60A5FA), modifier = Modifier.size(16.dp))
+                            Icon(Icons.Default.QrCodeScanner, contentDescription = stringResource(R.string.remote_btn_qr_scan), tint = GecePalette.Accent, modifier = Modifier.size(16.dp))
                             Spacer(Modifier.width(6.dp))
-                            Text(if (isConnected) stringResource(R.string.remote_btn_qr_change) else stringResource(R.string.remote_btn_qr_scan), fontSize = 12.sp, color = Color(0xFF93C5FD), fontWeight = FontWeight.SemiBold)
+                            Text(if (isConnected) stringResource(R.string.remote_btn_qr_change) else stringResource(R.string.remote_btn_qr_scan), fontSize = 12.sp, color = GecePalette.Accent, fontWeight = FontWeight.SemiBold)
                         }
                     }
 
@@ -626,9 +627,9 @@ fun RemoteScreen() {
                     modifier = Modifier
                         .fillMaxWidth()
                         .shadow(16.dp, RoundedCornerShape(20.dp)),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFF111728)),
+                    colors = CardDefaults.cardColors(containerColor = GecePalette.CardSurface),
                     shape = RoundedCornerShape(20.dp),
-                    border = BorderStroke(1.dp, Color(0x333B82F6)),
+                    border = BorderStroke(1.dp, GecePalette.CardBorder),
                 ) {
                     Column(
                         modifier = Modifier.padding(24.dp),
@@ -638,21 +639,21 @@ fun RemoteScreen() {
                             modifier = Modifier
                                 .size(72.dp)
                                 .clip(CircleShape)
-                                .background(Color(0x223B82F6))
-                                .border(1.dp, Color(0x443B82F6), CircleShape),
+                                .background(GecePalette.AccentSubtle)
+                                .border(1.dp, GecePalette.Accent, CircleShape),
                             contentAlignment = Alignment.Center,
                         ) {
                             if (isConnecting || isSearchingLan) {
                                 CircularProgressIndicator(
                                     modifier = Modifier.size(36.dp),
-                                    color = Color(0xFF60A5FA),
+                                    color = GecePalette.Accent,
                                     strokeWidth = 3.dp,
                                 )
                             } else {
                                 Icon(
                                     if (tvToken.isNotBlank()) Icons.Default.Wifi else Icons.Default.QrCodeScanner,
                                     contentDescription = null,
-                                    tint = Color(0xFF60A5FA),
+                                    tint = GecePalette.Accent,
                                     modifier = Modifier.size(36.dp),
                                 )
                             }
@@ -719,12 +720,12 @@ fun RemoteScreen() {
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(48.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2563EB)),
+                                colors = ButtonDefaults.buttonColors(containerColor = GecePalette.Accent),
                                 shape = RoundedCornerShape(14.dp),
                             ) {
-                                Icon(Icons.Default.Refresh, contentDescription = null, tint = Color.White, modifier = Modifier.size(18.dp))
+                                Icon(Icons.Default.Refresh, contentDescription = null, tint = GecePalette.OnAccent, modifier = Modifier.size(18.dp))
                                 Spacer(Modifier.width(8.dp))
-                                Text(stringResource(R.string.remote_reconnect_now), fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                                Text(stringResource(R.string.remote_reconnect_now), fontSize = 14.sp, fontWeight = FontWeight.Bold, color = GecePalette.OnAccent)
                             }
 
                             Spacer(Modifier.height(10.dp))
@@ -735,11 +736,11 @@ fun RemoteScreen() {
                                     .fillMaxWidth()
                                     .height(44.dp),
                                 shape = RoundedCornerShape(12.dp),
-                                border = BorderStroke(1.dp, Color(0x443B82F6)),
+                                border = BorderStroke(1.dp, GecePalette.CardBorder),
                             ) {
-                                Icon(Icons.Default.QrCodeScanner, contentDescription = null, tint = Color(0xFF60A5FA), modifier = Modifier.size(18.dp))
+                                Icon(Icons.Default.QrCodeScanner, contentDescription = null, tint = GecePalette.Accent, modifier = Modifier.size(18.dp))
                                 Spacer(Modifier.width(8.dp))
-                                Text(stringResource(R.string.remote_scan_different_tv), fontSize = 13.sp, color = Color(0xFF93C5FD))
+                                Text(stringResource(R.string.remote_scan_different_tv), fontSize = 13.sp, color = GecePalette.TextSecondary)
                             }
                         } else {
                             Button(
@@ -747,12 +748,12 @@ fun RemoteScreen() {
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(50.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2563EB)),
+                                colors = ButtonDefaults.buttonColors(containerColor = GecePalette.Accent),
                                 shape = RoundedCornerShape(14.dp),
                             ) {
-                                Icon(Icons.Default.CameraAlt, contentDescription = null, tint = Color.White, modifier = Modifier.size(20.dp))
+                                Icon(Icons.Default.CameraAlt, contentDescription = null, tint = GecePalette.OnAccent, modifier = Modifier.size(20.dp))
                                 Spacer(Modifier.width(10.dp))
-                                Text(stringResource(R.string.remote_scan_qr_camera), fontSize = 15.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                                Text(stringResource(R.string.remote_scan_qr_camera), fontSize = 15.sp, fontWeight = FontWeight.Bold, color = GecePalette.OnAccent)
                             }
                         }
 
@@ -767,7 +768,7 @@ fun RemoteScreen() {
                             Text(
                                 stringResource(R.string.remote_manual_ip_link),
                                 fontSize = 12.sp,
-                                color = Color(0xFF60A5FA),
+                                color = GecePalette.Accent,
                                 modifier = Modifier.padding(vertical = 6.dp, horizontal = 10.dp),
                             )
                         }
@@ -780,9 +781,9 @@ fun RemoteScreen() {
                 // Search / Text Input Bar (Send text directly to TV)
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFF131A2E)),
+                    colors = CardDefaults.cardColors(containerColor = GecePalette.CardSurface),
                     shape = RoundedCornerShape(16.dp),
-                    border = BorderStroke(0.5.dp, Color(0x22FFFFFF)),
+                    border = BorderStroke(1.dp, GecePalette.CardBorder),
                 ) {
                     Row(
                         modifier = Modifier
@@ -790,12 +791,12 @@ fun RemoteScreen() {
                             .padding(horizontal = 12.dp, vertical = 6.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Icon(Icons.Default.Search, contentDescription = null, tint = Color(0xFF94A3B8), modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Search, contentDescription = null, tint = GecePalette.TextSecondary, modifier = Modifier.size(18.dp))
                         Spacer(Modifier.width(8.dp))
                         OutlinedTextField(
                             value = searchInput,
                             onValueChange = { searchInput = it },
-                            placeholder = { Text(stringResource(R.string.remote_send_text_hint), fontSize = 13.sp, color = Color(0xFF64748B)) },
+                            placeholder = { Text(stringResource(R.string.remote_send_text_hint), fontSize = 13.sp, color = GecePalette.TextSecondary.copy(alpha = 0.6f)) },
                             singleLine = true,
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
                             keyboardActions = KeyboardActions(onSend = {
@@ -821,7 +822,7 @@ fun RemoteScreen() {
                             },
                             modifier = Modifier.size(36.dp),
                         ) {
-                            Icon(Icons.AutoMirrored.Filled.Send, contentDescription = stringResource(R.string.remote_send), tint = Color(0xFF3B82F6), modifier = Modifier.size(18.dp))
+                            Icon(Icons.AutoMirrored.Filled.Send, contentDescription = stringResource(R.string.remote_send), tint = GecePalette.Accent, modifier = Modifier.size(18.dp))
                         }
                     }
                 }
@@ -839,31 +840,31 @@ fun RemoteScreen() {
                     TvShortcutChip(
                         icon = Icons.Default.Tv,
                         label = stringResource(R.string.remote_nav_live),
-                        color = Color(0xFFEF4444),
+                        color = GecePalette.Accent,
                         onClick = { sendCommand("nav_live") }
                     )
                     TvShortcutChip(
                         icon = Icons.Default.PlayArrow,
                         label = stringResource(R.string.remote_nav_movies),
-                        color = Color(0xFF8B5CF6),
+                        color = GecePalette.Accent,
                         onClick = { sendCommand("nav_movies") }
                     )
                     TvShortcutChip(
                         icon = Icons.Default.Tv,
                         label = stringResource(R.string.remote_nav_shows),
-                        color = Color(0xFF3B82F6),
+                        color = GecePalette.Accent,
                         onClick = { sendCommand("nav_shows") }
                     )
                     TvShortcutChip(
                         icon = Icons.Default.Home,
                         label = stringResource(R.string.remote_nav_home),
-                        color = Color(0xFF10B981),
+                        color = GecePalette.Accent,
                         onClick = { sendCommand("home") }
                     )
                     TvShortcutChip(
                         icon = Icons.Default.Refresh,
                         label = stringResource(R.string.remote_sync_sources),
-                        color = Color(0xFFF59E0B),
+                        color = GecePalette.Accent,
                         onClick = {
                             TvCastHelper.syncSourcesToTv(context, coroutineScope, tvUrl, tvToken)
                         }
@@ -877,8 +878,8 @@ fun RemoteScreen() {
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(16.dp))
-                        .background(Color(0xFF111728))
-                        .border(1.dp, Color(0x22FFFFFF), RoundedCornerShape(16.dp))
+                        .background(GecePalette.CardSurface)
+                        .border(1.dp, GecePalette.CardBorder, RoundedCornerShape(16.dp))
                         .padding(vertical = 8.dp, horizontal = 4.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = Alignment.CenterVertically,
@@ -904,7 +905,7 @@ fun RemoteScreen() {
                         onClick = { sendCommand("ok") },
                     )
                     RemoteIconButton(
-                        customIcon = { MouseIcon(tint = if (isMouseMode) Color.White else Color(0xFF60A5FA)) },
+                        customIcon = { MouseIcon(tint = if (isMouseMode) GecePalette.OnAccent else GecePalette.Accent) },
                         label = if (isMouseMode) stringResource(R.string.remote_btn_mouse_on) else stringResource(R.string.remote_btn_mouse),
                         highlighted = isMouseMode,
                         onClick = { toggleMouseMode() },
@@ -948,10 +949,10 @@ fun RemoteScreen() {
                                 .clip(RoundedCornerShape(31.dp))
                                 .background(
                                     Brush.verticalGradient(
-                                        listOf(Color(0xFF161F38), Color(0xFF0F172A))
+                                        listOf(GecePalette.CardElevated, GecePalette.CardSurface)
                                     )
                                 )
-                                .border(1.dp, Color(0x333B82F6), RoundedCornerShape(31.dp))
+                                .border(1.dp, GecePalette.CardBorder, RoundedCornerShape(31.dp))
                                 .padding(vertical = 10.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -962,7 +963,7 @@ fun RemoteScreen() {
                             ) {
                                 Icon(Icons.AutoMirrored.Filled.VolumeUp, contentDescription = stringResource(R.string.remote_vol_up), tint = Color.White, modifier = Modifier.size(24.dp))
                             }
-                            Text(stringResource(R.string.remote_vol_title), fontSize = 11.sp, fontWeight = FontWeight.ExtraBold, color = Color(0xFF60A5FA), letterSpacing = 1.sp)
+                            Text(stringResource(R.string.remote_vol_title), fontSize = 11.sp, fontWeight = FontWeight.ExtraBold, color = GecePalette.Accent, letterSpacing = 1.sp)
                             IconButton(
                                 onClick = { sendCommand("vol_down") },
                                 modifier = Modifier.size(46.dp),
@@ -978,10 +979,10 @@ fun RemoteScreen() {
                                 .clip(CircleShape)
                                 .background(
                                     Brush.radialGradient(
-                                        listOf(Color(0xFF1E2846), Color(0xFF0A0F1D))
+                                        listOf(GecePalette.CardElevated, GecePalette.CardSurface)
                                     )
                                 )
-                                .border(2.dp, Brush.linearGradient(listOf(Color(0xFF3B82F6), Color(0xFF1D4ED8))), CircleShape)
+                                .border(2.dp, GecePalette.Accent, CircleShape)
                                 .shadow(16.dp, CircleShape),
                             contentAlignment = Alignment.Center,
                         ) {
@@ -1037,21 +1038,21 @@ fun RemoteScreen() {
                                 Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = stringResource(R.string.remote_dpad_right), tint = Color.White, modifier = Modifier.size(34.dp))
                             }
 
-                            // CENTER OK BUTTON (Direct Thumb Action)
+                            // CENTER OK BUTTON (Direct Thumb Action - Gold with High Contrast Black Text!)
                             Box(
                                 modifier = Modifier
                                     .size(74.dp)
                                     .clip(CircleShape)
                                     .background(
                                         Brush.linearGradient(
-                                            listOf(Color(0xFF2563EB), Color(0xFF1D4ED8))
+                                            listOf(GecePalette.Accent, Color(0xFFD97706))
                                         )
                                     )
-                                    .border(2.dp, Color(0xFF60A5FA), CircleShape)
+                                    .border(2.dp, GecePalette.Accent, CircleShape)
                                     .clickable { sendCommand("ok") },
                                 contentAlignment = Alignment.Center,
                             ) {
-                                Text(stringResource(R.string.remote_dpad_ok), fontWeight = FontWeight.ExtraBold, fontSize = 18.sp, color = Color.White)
+                                Text(stringResource(R.string.remote_dpad_ok), fontWeight = FontWeight.ExtraBold, fontSize = 18.sp, color = GecePalette.OnAccent)
                             }
                         }
 
@@ -1062,10 +1063,10 @@ fun RemoteScreen() {
                                 .clip(RoundedCornerShape(31.dp))
                                 .background(
                                     Brush.verticalGradient(
-                                        listOf(Color(0xFF161F38), Color(0xFF0F172A))
+                                        listOf(GecePalette.CardElevated, GecePalette.CardSurface)
                                     )
                                 )
-                                .border(1.dp, Color(0x333B82F6), RoundedCornerShape(31.dp))
+                                .border(1.dp, GecePalette.CardBorder, RoundedCornerShape(31.dp))
                                 .padding(vertical = 10.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -1076,7 +1077,7 @@ fun RemoteScreen() {
                             ) {
                                 Icon(Icons.Default.ArrowUpward, contentDescription = stringResource(R.string.remote_ch_up), tint = Color.White, modifier = Modifier.size(24.dp))
                             }
-                            Text(stringResource(R.string.remote_ch_title), fontSize = 10.sp, fontWeight = FontWeight.ExtraBold, color = Color(0xFF60A5FA), letterSpacing = 0.5.sp)
+                            Text(stringResource(R.string.remote_ch_title), fontSize = 10.sp, fontWeight = FontWeight.ExtraBold, color = GecePalette.Accent, letterSpacing = 0.5.sp)
                             IconButton(
                                 onClick = { sendCommand("ch_down") },
                                 modifier = Modifier.size(46.dp),
@@ -1098,12 +1099,12 @@ fun RemoteScreen() {
                             .fillMaxWidth(0.95f)
                             .padding(top = 16.dp)
                             .clip(RoundedCornerShape(20.dp))
-                            .background(Color(0xFF111728))
-                            .border(1.dp, Color(0x22FFFFFF), RoundedCornerShape(20.dp))
+                            .background(GecePalette.CardSurface)
+                            .border(1.dp, GecePalette.CardBorder, RoundedCornerShape(20.dp))
                             .padding(14.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
-                        Text(stringResource(R.string.remote_numpad_title), fontSize = 12.sp, color = Color(0xFF94A3B8), fontWeight = FontWeight.SemiBold)
+                        Text(stringResource(R.string.remote_numpad_title), fontSize = 12.sp, color = GecePalette.TextSecondary, fontWeight = FontWeight.SemiBold)
                         Spacer(Modifier.height(10.dp))
                         val numbers = listOf(
                             listOf("1", "2", "3"),
@@ -1123,8 +1124,8 @@ fun RemoteScreen() {
                                                 .size(54.dp)
                                                 .clip(CircleShape)
                                                 .clickable { sendCommand("num", num) },
-                                            color = Color(0xFF1E263E),
-                                            border = BorderStroke(1.dp, Color(0x33FFFFFF)),
+                                            color = GecePalette.CardElevated,
+                                            border = BorderStroke(1.dp, GecePalette.CardBorder),
                                             shape = CircleShape,
                                         ) {
                                             Box(contentAlignment = Alignment.Center) {
@@ -1162,8 +1163,8 @@ fun RemoteScreen() {
         Dialog(onDismissRequest = { showManualDialog = false }) {
             Card(
                 shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFF131A2E)),
-                border = BorderStroke(1.dp, Color(0x333B82F6)),
+                colors = CardDefaults.cardColors(containerColor = GecePalette.CardSurface),
+                border = BorderStroke(1.dp, GecePalette.CardBorder),
             ) {
                 Column(
                     modifier = Modifier.padding(22.dp),
@@ -1171,7 +1172,7 @@ fun RemoteScreen() {
                 ) {
                     Text(stringResource(R.string.remote_dialog_manual_title), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = Color.White)
                     Spacer(Modifier.height(8.dp))
-                    Text(stringResource(R.string.remote_dialog_manual_desc), fontSize = 12.sp, color = Color(0xFF94A3B8), textAlign = TextAlign.Center)
+                    Text(stringResource(R.string.remote_dialog_manual_desc), fontSize = 12.sp, color = GecePalette.TextSecondary, textAlign = TextAlign.Center)
                     Spacer(Modifier.height(14.dp))
                     OutlinedTextField(
                         value = manualInput,
@@ -1181,8 +1182,8 @@ fun RemoteScreen() {
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedTextColor = Color.White,
                             unfocusedTextColor = Color.White,
-                            focusedBorderColor = Color(0xFF3B82F6),
-                            unfocusedBorderColor = Color(0x33FFFFFF),
+                            focusedBorderColor = GecePalette.Accent,
+                            unfocusedBorderColor = GecePalette.CardBorder,
                         ),
                         modifier = Modifier.fillMaxWidth(),
                     )
@@ -1190,21 +1191,21 @@ fun RemoteScreen() {
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                         Button(
                             onClick = { showManualDialog = false },
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1E293B)),
+                            colors = ButtonDefaults.buttonColors(containerColor = GecePalette.CardElevated),
                             modifier = Modifier.weight(1f),
                             shape = RoundedCornerShape(12.dp),
                         ) {
-                            Text(stringResource(R.string.common_cancel), color = Color(0xFF94A3B8))
+                            Text(stringResource(R.string.common_cancel), color = GecePalette.TextSecondary)
                         }
                         Button(
                             onClick = {
                                 if (manualInput.isNotBlank()) parseAndConnect(manualInput)
                             },
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2563EB)),
+                            colors = ButtonDefaults.buttonColors(containerColor = GecePalette.Accent),
                             modifier = Modifier.weight(1f),
                             shape = RoundedCornerShape(12.dp),
                         ) {
-                            Text(stringResource(R.string.remote_btn_connect), fontWeight = FontWeight.Bold, color = Color.White)
+                            Text(stringResource(R.string.remote_btn_connect), fontWeight = FontWeight.Bold, color = GecePalette.OnAccent)
                         }
                     }
                 }
@@ -1227,15 +1228,20 @@ private fun RemoteIconButton(
                 .size(46.dp)
                 .clip(CircleShape)
                 .clickable(onClick = onClick),
-            color = if (highlighted) Color(0xFF2563EB) else Color(0xFF141C30),
-            border = BorderStroke(1.dp, if (highlighted) Color(0xFF60A5FA) else Color(0x22FFFFFF)),
+            color = if (highlighted) GecePalette.Accent else GecePalette.CardElevated,
+            border = BorderStroke(1.dp, if (highlighted) GecePalette.Accent else GecePalette.CardBorder),
             shape = CircleShape,
         ) {
             Box(contentAlignment = Alignment.Center) {
                 if (customIcon != null) {
                     customIcon()
                 } else if (icon != null) {
-                    Icon(icon, contentDescription = label, tint = Color.White, modifier = Modifier.size(20.dp))
+                    Icon(
+                        icon,
+                        contentDescription = label,
+                        tint = if (highlighted) GecePalette.OnAccent else Color.White,
+                        modifier = Modifier.size(20.dp),
+                    )
                 }
             }
         }
@@ -1244,7 +1250,7 @@ private fun RemoteIconButton(
             label,
             fontSize = 10.sp,
             maxLines = 1,
-            color = if (highlighted) Color(0xFF93C5FD) else Color(0xFF94A3B8)
+            color = if (highlighted) GecePalette.Accent else GecePalette.TextSecondary,
         )
     }
 }
@@ -1318,13 +1324,13 @@ private fun MouseTouchpadAndKeyboardSection(
                     modifier = Modifier
                         .size(8.dp)
                         .clip(CircleShape)
-                        .background(Color(0xFF38BDF8))
+                        .background(GecePalette.Accent)
                 )
                 Text(
                     stringResource(R.string.remote_mouse_title),
                     fontSize = 11.sp,
                     fontWeight = FontWeight.ExtraBold,
-                    color = Color(0xFF38BDF8),
+                    color = GecePalette.Accent,
                     letterSpacing = 0.5.sp,
                 )
             }
@@ -1333,8 +1339,8 @@ private fun MouseTouchpadAndKeyboardSection(
                 modifier = Modifier
                     .clip(RoundedCornerShape(10.dp))
                     .clickable(onClick = onExitMouseMode),
-                color = Color(0x333B82F6),
-                border = BorderStroke(1.dp, Color(0x663B82F6)),
+                color = GecePalette.AccentSubtle,
+                border = BorderStroke(1.dp, GecePalette.Accent),
                 shape = RoundedCornerShape(10.dp),
             ) {
                 Row(
@@ -1368,16 +1374,16 @@ private fun MouseTouchpadAndKeyboardSection(
                         }
                     )
                 },
-            colors = CardDefaults.cardColors(containerColor = Color(0xFF0F172A)),
+            colors = CardDefaults.cardColors(containerColor = GecePalette.CardSurface),
             shape = RoundedCornerShape(20.dp),
-            border = BorderStroke(1.5.dp, Brush.linearGradient(listOf(Color(0xFF38BDF8), Color(0xFF1D4ED8)))),
+            border = BorderStroke(1.5.dp, GecePalette.Accent),
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(
                         Brush.radialGradient(
-                            listOf(Color(0xFF1E293B), Color(0xFF0B1120))
+                            listOf(GecePalette.CardElevated, GecePalette.CanvasBg)
                         )
                     ),
                 contentAlignment = Alignment.Center,
@@ -1388,7 +1394,7 @@ private fun MouseTouchpadAndKeyboardSection(
                     verticalArrangement = Arrangement.spacedBy(6.dp),
                 ) {
                     MouseIcon(
-                        tint = Color(0x4438BDF8),
+                        tint = GecePalette.Accent.copy(alpha = 0.35f),
                         modifier = Modifier.size(32.dp),
                     )
                     Text(
@@ -1653,7 +1659,7 @@ fun CameraScannerDialog(
                             .offset(y = laserPosition.dp)
                             .background(
                                 Brush.horizontalGradient(
-                                    listOf(Color.Transparent, Color(0xFF60A5FA), Color(0xFF38BDF8), Color.Transparent)
+                                    listOf(Color.Transparent, GecePalette.Accent, Color(0xFFFBBF24), Color.Transparent)
                                 )
                             )
                     )
@@ -1711,7 +1717,7 @@ fun CameraScannerDialog(
                     Spacer(Modifier.height(24.dp))
                     Button(
                         onClick = { permissionLauncher.launch(Manifest.permission.CAMERA) },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2563EB)),
+                        colors = ButtonDefaults.buttonColors(containerColor = GecePalette.Accent),
                     ) {
                         Text(stringResource(R.string.remote_camera_permission_allow), fontWeight = FontWeight.Bold, color = Color.White)
                     }
@@ -1803,15 +1809,15 @@ private fun CameraSurfacePreview(
 private fun TvShortcutChip(
     icon: ImageVector,
     label: String,
-    color: Color,
+    color: Color = GecePalette.Accent,
     onClick: () -> Unit,
 ) {
     Surface(
         modifier = Modifier
             .clip(RoundedCornerShape(12.dp))
             .clickable(onClick = onClick),
-        color = color.copy(alpha = 0.15f),
-        border = BorderStroke(1.dp, color.copy(alpha = 0.4f)),
+        color = GecePalette.CardSurface,
+        border = BorderStroke(1.dp, GecePalette.CardBorder),
         shape = RoundedCornerShape(12.dp),
     ) {
         Row(
@@ -1819,8 +1825,8 @@ private fun TvShortcutChip(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(6.dp),
         ) {
-            Icon(icon, contentDescription = null, tint = color, modifier = Modifier.size(16.dp))
-            Text(label, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
+            Icon(icon, contentDescription = null, tint = GecePalette.Accent, modifier = Modifier.size(16.dp))
+            Text(label, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = GecePalette.TextPrimary)
         }
     }
 }

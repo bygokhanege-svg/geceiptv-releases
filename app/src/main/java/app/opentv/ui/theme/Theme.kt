@@ -20,6 +20,25 @@ import androidx.compose.ui.unit.sp
 import app.opentv.core.AppSettings
 
 /**
+ * GECE İPTV Player 3-Renkli Resmi Tasarım Paleti.
+ * 1. Zemin (Canvas): Derin Obsidyen Siyah
+ * 2. Kart/Yüzey (Surface): Grafit Yüzey & Mikro Çerçeve
+ * 3. Vurgu (Accent): Asil Kehribar Altın
+ * Zıt Renkler: Koyu üzerinde kar beyazı; altın butonlarda simsiyah metin.
+ */
+object GecePalette {
+    val CanvasBg = Color(0xFF090A0F)        // 1. Zemin (Obsidyen Gece Siyahı)
+    val CardSurface = Color(0xFF131722)     // 2. Yüzey/Kart (Grafit)
+    val CardBorder = Color(0xFF22283A)      // 2. Alt Çerçeve
+    val CardElevated = Color(0xFF1A1F2E)    // 2. Alt Kabarık Yüzey
+    val Accent = Color(0xFFF59E0B)          // 3. Vurgu (Asil Kehribar Altın)
+    val AccentSubtle = Color(0x26F59E0B)    // 3. Alt Hafif Vurgu (%15)
+    val TextPrimary = Color(0xFFFFFFFF)     // Kar Beyazı Kristal Metin
+    val TextSecondary = Color(0xFF94A3B8)   // Gümüş/Arduvaz İkincil Metin
+    val OnAccent = Color(0xFF000000)        // Altın Üzerine Simsiyah Zıt Metin
+}
+
+/**
  * Builds high-contrast, modern ColorScheme for TV and Mobile.
  * Preserves video stabilization by dynamically changing color tokens without recreating Activity.
  */
@@ -27,19 +46,19 @@ fun buildColorScheme(darkTheme: Boolean, colorTheme: AppSettings.AppColorTheme):
     return if (darkTheme) {
         when (colorTheme) {
             AppSettings.AppColorTheme.OBSIDIAN -> darkColorScheme(
-                primary = Color(0xFF6366F1),
-                onPrimary = Color.White,
-                primaryContainer = Color(0xFF4338CA),
-                onPrimaryContainer = Color(0xFFE0E7FF),
-                secondary = Color(0xFF818CF8),
-                onSecondary = Color(0xFF0F172A),
-                background = Color(0xFF090D16),
-                onBackground = Color(0xFFF8FAFC),
-                surface = Color(0xFF131A2A),
-                onSurface = Color(0xFFF8FAFC),
-                surfaceVariant = Color(0xFF1B243B),
-                onSurfaceVariant = Color(0xFF94A3B8),
-                outline = Color(0xFF243048),
+                primary = GecePalette.Accent,
+                onPrimary = GecePalette.OnAccent,
+                primaryContainer = GecePalette.AccentSubtle,
+                onPrimaryContainer = GecePalette.Accent,
+                secondary = GecePalette.Accent,
+                onSecondary = GecePalette.OnAccent,
+                background = GecePalette.CanvasBg,
+                onBackground = GecePalette.TextPrimary,
+                surface = GecePalette.CardSurface,
+                onSurface = GecePalette.TextPrimary,
+                surfaceVariant = GecePalette.CardElevated,
+                onSurfaceVariant = GecePalette.TextSecondary,
+                outline = GecePalette.CardBorder,
                 error = Color(0xFFEF4444),
                 onError = Color(0xFF1E0A0A),
             )

@@ -58,6 +58,7 @@ import androidx.compose.material.icons.filled.VideoLibrary
 import androidx.compose.material.icons.filled.ViewTimeline
 import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material.icons.outlined.AccountCircle
+import app.opentv.ui.theme.GecePalette
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -147,56 +148,56 @@ fun SettingsHubScreen(
             icon = Icons.Filled.WorkspacePremium,
             title = stringResource(R.string.settings_license_title),
             subtitle = stringResource(R.string.settings_license_subtitle),
-            accentColor = Color(0xFFF59E0B), // Royal Amber / Gold
+            accentColor = GecePalette.Accent,
             onClick = onOpenLicense,
         ),
         HubEntry(
             icon = Icons.AutoMirrored.Filled.PlaylistPlay,
             title = stringResource(R.string.settings_providers_title),
             subtitle = stringResource(R.string.settings_providers_subtitle),
-            accentColor = Color(0xFF06B6D4), // Electric Cyan
+            accentColor = GecePalette.Accent,
             onClick = onOpenProviders,
         ),
         HubEntry(
             icon = Icons.Filled.LiveTv,
             title = stringResource(R.string.common_channels),
             subtitle = stringResource(R.string.settings_channels_subtitle),
-            accentColor = Color(0xFF3B82F6), // Royal Blue
+            accentColor = GecePalette.Accent,
             onClick = onOpenChannels,
         ),
         HubEntry(
             icon = Icons.Filled.QrCode2,
             title = stringResource(R.string.settings_webmanager_title),
             subtitle = stringResource(R.string.settings_webmanager_subtitle),
-            accentColor = Color(0xFFF97316), // Sunset Orange
+            accentColor = GecePalette.Accent,
             onClick = onOpenWebManager,
         ),
         HubEntry(
             icon = Icons.Filled.DisplaySettings,
             title = stringResource(R.string.settings_display_title),
             subtitle = stringResource(R.string.settings_display_subtitle),
-            accentColor = Color(0xFF6366F1), // Neon Indigo
+            accentColor = GecePalette.Accent,
             onClick = onOpenDisplay,
         ),
         HubEntry(
             icon = Icons.Filled.Subtitles,
             title = stringResource(R.string.settings_subtitles_hub_title),
             subtitle = stringResource(R.string.settings_subtitles_hub_subtitle),
-            accentColor = Color(0xFFEC4899), // Hot Pink / Magenta
+            accentColor = GecePalette.Accent,
             onClick = onOpenSubtitles,
         ),
         HubEntry(
             icon = Icons.Filled.Tune,
             title = stringResource(R.string.settings_other_title),
             subtitle = stringResource(R.string.settings_other_subtitle),
-            accentColor = Color(0xFF10B981), // Emerald Green
+            accentColor = GecePalette.Accent,
             onClick = { showingOtherSettings = true },
         ),
         HubEntry(
             icon = Icons.Filled.Info,
             title = stringResource(R.string.settings_about_title),
             subtitle = stringResource(R.string.settings_about_subtitle),
-            accentColor = Color(0xFF94A3B8), // Diamond Platinum
+            accentColor = GecePalette.Accent,
             onClick = onOpenAbout,
         ),
     )
@@ -206,63 +207,63 @@ fun SettingsHubScreen(
             icon = Icons.Filled.Extension,
             title = stringResource(R.string.settings_addons_title),
             subtitle = stringResource(R.string.settings_addons_subtitle),
-            accentColor = Color(0xFF8B5CF6), // Cyber Violet
+            accentColor = GecePalette.Accent,
             onClick = onOpenAddons,
         ),
         HubEntry(
             icon = Icons.Filled.ViewTimeline,
             title = stringResource(R.string.settings_guide_title),
             subtitle = stringResource(R.string.settings_guide_subtitle),
-            accentColor = Color(0xFF10B981), // Emerald Green
+            accentColor = GecePalette.Accent,
             onClick = onOpenGuide,
         ),
         HubEntry(
             icon = Icons.Filled.Translate,
             title = stringResource(R.string.settings_language_title),
             subtitle = stringResource(R.string.settings_language_subtitle),
-            accentColor = Color(0xFF14B8A6), // Mint Teal
+            accentColor = GecePalette.Accent,
             onClick = onOpenLanguage,
         ),
         HubEntry(
             icon = Icons.Filled.Bedtime,
             title = stringResource(R.string.settings_sleep_timer),
             subtitle = stringResource(R.string.settings_sleep_subtitle),
-            accentColor = Color(0xFF818CF8), // Moonlit Indigo
+            accentColor = GecePalette.Accent,
             onClick = onOpenSleepTimer,
         ),
         HubEntry(
             icon = Icons.Filled.VideoLibrary,
             title = stringResource(R.string.settings_recording_title),
             subtitle = stringResource(R.string.settings_recording_subtitle),
-            accentColor = Color(0xFFEF4444), // Ruby Crimson
+            accentColor = GecePalette.Accent,
             onClick = onOpenRecordings,
         ),
         HubEntry(
             icon = Icons.Filled.Security,
             title = stringResource(R.string.settings_parental_title),
             subtitle = stringResource(R.string.settings_parental_subtitle),
-            accentColor = Color(0xFFE11D48), // Rose Shield
+            accentColor = GecePalette.Accent,
             onClick = onOpenParental,
         ),
         HubEntry(
             icon = Icons.Filled.CloudSync,
             title = stringResource(R.string.settings_sync_title),
             subtitle = stringResource(R.string.settings_sync_subtitle),
-            accentColor = Color(0xFF0EA5E9), // Sky Blue
+            accentColor = GecePalette.Accent,
             onClick = onOpenSync,
         ),
         HubEntry(
             icon = Icons.Outlined.AccountCircle,
             title = stringResource(R.string.settings_profiles_hub_title),
             subtitle = stringResource(R.string.settings_profiles_hub_subtitle),
-            accentColor = Color(0xFFA855F7), // Lavender Purple
+            accentColor = GecePalette.Accent,
             onClick = onOpenProfiles,
         ),
         HubEntry(
             icon = Icons.Filled.Search,
             title = stringResource(R.string.settings_search_hub_title),
             subtitle = stringResource(R.string.settings_search_hub_subtitle),
-            accentColor = Color(0xFFEAB308), // Sunbeam Gold
+            accentColor = GecePalette.Accent,
             onClick = onOpenSearch,
         ),
     )
@@ -272,7 +273,7 @@ fun SettingsHubScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF080D17)),
+            .background(GecePalette.CanvasBg),
     ) {
         // 3D Animated Ambient Light Canvas in background (gives true glass refraction depth)
         GlassAmbientBackdrop()
@@ -326,7 +327,7 @@ fun SettingsHubScreen(
                     Icon(
                         imageVector = if (showingOtherSettings) Icons.Filled.Tune else Icons.Filled.Tv,
                         contentDescription = null,
-                        tint = if (showingOtherSettings) Color(0xFF10B981) else MaterialTheme.colorScheme.primary,
+                        tint = GecePalette.Accent,
                         modifier = Modifier.size(if (isWideScreen) 26.dp else 22.dp),
                     )
                 }
@@ -422,15 +423,15 @@ private fun GlassAmbientBackdrop() {
         val w = size.width
         val h = size.height
 
-        // Orb 1: Upper-left cyan & sapphire glow
+        // Orb 1: Upper-left golden ambient glow
         val rad1 = Math.toRadians(pulse1.toDouble())
         val ox1 = (w * 0.22f + Math.cos(rad1).toFloat() * (w * 0.08f))
         val oy1 = (h * 0.28f + Math.sin(rad1).toFloat() * (h * 0.06f))
         drawCircle(
             brush = Brush.radialGradient(
                 colors = listOf(
-                    Color(0xFF06B6D4).copy(alpha = 0.18f),
-                    Color(0xFF3B82F6).copy(alpha = 0.08f),
+                    GecePalette.Accent.copy(alpha = 0.14f),
+                    Color(0xFFB45309).copy(alpha = 0.06f),
                     Color.Transparent,
                 ),
                 center = Offset(ox1, oy1),
@@ -440,15 +441,15 @@ private fun GlassAmbientBackdrop() {
             radius = w * 0.45f,
         )
 
-        // Orb 2: Center-right violet & magenta glow
+        // Orb 2: Center-right warm amber glow
         val rad2 = Math.toRadians(pulse2.toDouble())
         val ox2 = (w * 0.80f + Math.cos(rad2).toFloat() * (w * 0.06f))
         val oy2 = (h * 0.58f + Math.sin(rad2).toFloat() * (h * 0.08f))
         drawCircle(
             brush = Brush.radialGradient(
                 colors = listOf(
-                    Color(0xFF8B5CF6).copy(alpha = 0.16f),
-                    Color(0xFFEC4899).copy(alpha = 0.07f),
+                    GecePalette.AccentSubtle,
+                    GecePalette.CardElevated.copy(alpha = 0.35f),
                     Color.Transparent,
                 ),
                 center = Offset(ox2, oy2),
@@ -458,13 +459,13 @@ private fun GlassAmbientBackdrop() {
             radius = w * 0.42f,
         )
 
-        // Orb 3: Bottom-left emerald & teal glow
+        // Orb 3: Bottom-left subtle graphite glow
         val ox3 = w * 0.35f
         val oy3 = h * 0.88f
         drawCircle(
             brush = Brush.radialGradient(
                 colors = listOf(
-                    Color(0xFF10B981).copy(alpha = 0.12f),
+                    GecePalette.CardBorder.copy(alpha = 0.25f),
                     Color.Transparent,
                 ),
                 center = Offset(ox3, oy3),
@@ -508,15 +509,15 @@ private fun HubTile(
         label = "tile_rotX",
     )
 
-    val cardShape = RoundedCornerShape(if (isWideScreen) 22.dp else 16.dp)
+    val cardShape = RoundedCornerShape(if (isWideScreen) 20.dp else 16.dp)
 
-    // Frosted glass background brush with depth
+    // GecePalette 3-renk kart yüzeyi
     val backgroundBrush = if (focused || isPressed) {
         Brush.linearGradient(
             colors = listOf(
-                entry.accentColor.copy(alpha = 0.32f),
-                Color(0xFF1E293B).copy(alpha = 0.88f),
-                Color(0xFF0F172A).copy(alpha = 0.94f),
+                GecePalette.Accent.copy(alpha = 0.22f),
+                GecePalette.CardElevated,
+                GecePalette.CardSurface,
             ),
             start = Offset(0f, 0f),
             end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY),
@@ -524,30 +525,28 @@ private fun HubTile(
     } else {
         Brush.linearGradient(
             colors = listOf(
-                Color.White.copy(alpha = 0.10f),
-                Color(0xFF161F2E).copy(alpha = 0.65f),
-                Color(0xFF0B0F17).copy(alpha = 0.82f),
+                GecePalette.CardElevated.copy(alpha = 0.90f),
+                GecePalette.CardSurface,
             ),
             start = Offset(0f, 0f),
             end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY),
         )
     }
 
-    // Glass specular light refraction edge border (light source from top-left)
+    // GecePalette mikro çerçeve
     val borderBrush = if (focused || isPressed) {
         Brush.linearGradient(
             colors = listOf(
-                entry.accentColor,
-                Color.White.copy(alpha = 0.75f),
-                entry.accentColor.copy(alpha = 0.45f),
+                GecePalette.Accent,
+                Color.White.copy(alpha = 0.85f),
+                GecePalette.Accent.copy(alpha = 0.60f),
             )
         )
     } else {
         Brush.linearGradient(
             colors = listOf(
-                Color.White.copy(alpha = 0.28f), // Specular light highlight at top-left edge
-                Color.White.copy(alpha = 0.08f),
-                entry.accentColor.copy(alpha = 0.16f), // Subtle tinted glass edge reflection
+                GecePalette.CardBorder,
+                GecePalette.CardBorder.copy(alpha = 0.40f),
             )
         )
     }
@@ -584,7 +583,7 @@ private fun HubTile(
             drawCircle(
                 brush = Brush.radialGradient(
                     colors = listOf(
-                        entry.accentColor.copy(alpha = if (focused || isPressed) 0.35f else 0.12f),
+                        GecePalette.Accent.copy(alpha = if (focused || isPressed) 0.28f else 0.08f),
                         Color.Transparent,
                     ),
                     center = Offset(size.width * 0.82f, size.height * 0.20f),
@@ -608,17 +607,16 @@ private fun HubTile(
             val badgeBg = if (focused || isPressed) {
                 Brush.radialGradient(
                     colors = listOf(
-                        entry.accentColor,
-                        entry.accentColor.copy(alpha = 0.70f),
+                        GecePalette.Accent,
+                        Color(0xFFD97706),
                     ),
                     radius = 80f,
                 )
             } else {
                 Brush.linearGradient(
                     colors = listOf(
-                        Color.White.copy(alpha = 0.22f),
-                        entry.accentColor.copy(alpha = 0.18f),
-                        Color.Black.copy(alpha = 0.35f),
+                        GecePalette.AccentSubtle,
+                        GecePalette.CardElevated,
                     ),
                     start = Offset(0f, 0f),
                     end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY),
@@ -629,8 +627,7 @@ private fun HubTile(
                 width = 1.dp,
                 brush = Brush.linearGradient(
                     listOf(
-                        Color.White.copy(alpha = if (focused || isPressed) 0.90f else 0.45f),
-                        entry.accentColor.copy(alpha = 0.35f),
+                        if (focused || isPressed) GecePalette.Accent else GecePalette.CardBorder,
                         Color.Transparent,
                     )
                 ),
@@ -647,7 +644,7 @@ private fun HubTile(
                 Icon(
                     imageVector = entry.icon,
                     contentDescription = null,
-                    tint = if (focused || isPressed) Color.White else entry.accentColor,
+                    tint = if (focused || isPressed) GecePalette.OnAccent else GecePalette.Accent,
                     modifier = Modifier.size(iconSize),
                 )
             }

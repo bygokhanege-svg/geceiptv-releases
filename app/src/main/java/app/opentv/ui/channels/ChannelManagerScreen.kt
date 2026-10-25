@@ -65,6 +65,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import app.opentv.R
 import app.opentv.data.model.shownName
 import app.opentv.ui.ChannelsViewModel
+import app.opentv.ui.theme.GecePalette
 import coil.compose.AsyncImage
 import kotlinx.coroutines.delay
 
@@ -492,14 +493,14 @@ private fun GroupHeaderCard(
                             .clip(RoundedCornerShape(6.dp))
                             .background(
                                 if (isGroupHidden) MaterialTheme.colorScheme.error.copy(alpha = 0.15f)
-                                else Color(0xFF22C55E).copy(alpha = 0.15f)
+                                else GecePalette.AccentSubtle
                             )
                             .padding(horizontal = 7.dp, vertical = 2.dp),
                     ) {
                         Text(
                             text = if (isGroupHidden) stringResource(R.string.channels_manager_group_hidden)
                             else stringResource(R.string.channels_manager_group_visible),
-                            color = if (isGroupHidden) MaterialTheme.colorScheme.error else Color(0xFF22C55E),
+                            color = if (isGroupHidden) MaterialTheme.colorScheme.error else GecePalette.Accent,
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold,
                         )
@@ -582,10 +583,10 @@ private fun GroupHeaderCard(
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(8.dp))
-                            .background(if (showAllFocused) Color(0xFF22C55E) else MaterialTheme.colorScheme.surfaceVariant)
+                            .background(if (showAllFocused) GecePalette.Accent else MaterialTheme.colorScheme.surfaceVariant)
                             .border(
                                 1.dp,
-                                if (showAllFocused) Color(0xFF22C55E) else MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
+                                if (showAllFocused) GecePalette.Accent else MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
                                 RoundedCornerShape(8.dp),
                             )
                             .clickable(onClick = onShowAll)
@@ -598,7 +599,7 @@ private fun GroupHeaderCard(
                             text = stringResource(R.string.channels_manager_show_all),
                             style = MaterialTheme.typography.labelSmall,
                             fontWeight = FontWeight.SemiBold,
-                            color = if (showAllFocused) Color.White else MaterialTheme.colorScheme.onSurface,
+                            color = if (showAllFocused) GecePalette.OnAccent else MaterialTheme.colorScheme.onSurface,
                         )
                     }
                 }
@@ -623,14 +624,14 @@ private fun GroupHeaderCard(
                             .clip(RoundedCornerShape(6.dp))
                             .background(
                                 if (isGroupHidden) MaterialTheme.colorScheme.error.copy(alpha = 0.15f)
-                                else Color(0xFF22C55E).copy(alpha = 0.15f)
+                                else GecePalette.AccentSubtle
                             )
                             .padding(horizontal = 7.dp, vertical = 2.dp),
                     ) {
                         Text(
                             text = if (isGroupHidden) stringResource(R.string.channels_manager_group_hidden)
                             else stringResource(R.string.channels_manager_group_visible),
-                            color = if (isGroupHidden) MaterialTheme.colorScheme.error else Color(0xFF22C55E),
+                            color = if (isGroupHidden) MaterialTheme.colorScheme.error else GecePalette.Accent,
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold,
                         )
@@ -716,10 +717,10 @@ private fun GroupHeaderCard(
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(8.dp))
-                        .background(if (showAllFocused) Color(0xFF22C55E) else MaterialTheme.colorScheme.surfaceVariant)
+                        .background(if (showAllFocused) GecePalette.Accent else MaterialTheme.colorScheme.surfaceVariant)
                         .border(
                             1.dp,
-                            if (showAllFocused) Color(0xFF22C55E) else MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
+                            if (showAllFocused) GecePalette.Accent else MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
                             RoundedCornerShape(8.dp),
                         )
                         .clickable(onClick = onShowAll)
@@ -732,7 +733,7 @@ private fun GroupHeaderCard(
                         text = stringResource(R.string.channels_manager_show_all),
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.SemiBold,
-                        color = if (showAllFocused) Color.White else MaterialTheme.colorScheme.onSurface,
+                        color = if (showAllFocused) GecePalette.OnAccent else MaterialTheme.colorScheme.onSurface,
                     )
                 }
             }

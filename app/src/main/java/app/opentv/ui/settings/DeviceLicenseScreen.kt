@@ -72,6 +72,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import app.opentv.ui.theme.GecePalette
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -420,7 +421,7 @@ private fun LicenseCodeInputCard(
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = stringResource(R.string.license_code_success),
-                    color = Color(0xFF22C55E),
+                    color = GecePalette.Accent,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Medium,
                 )
@@ -573,7 +574,7 @@ private fun LicenseStatusCard(status: LicenseManager.LicenseStatus) {
                 "Bitiş: " + fmt.format(Date(status.expiryMillis))
             }
             Tuple4(
-                Color(0xFF22C55E),
+                GecePalette.Accent,
                 stringResource(R.string.license_premium_active),
                 dateStr,
                 Icons.Filled.CheckCircle,

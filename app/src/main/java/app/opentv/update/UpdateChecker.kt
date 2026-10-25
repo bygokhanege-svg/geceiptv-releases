@@ -80,7 +80,7 @@ class UpdateChecker(
 
     companion object {
         /** The single place the project's GitHub location is written down. */
-        const val REPO_SLUG = "bygokhanege-svg/geceiptv"
+        const val REPO_SLUG = "bygokhanege-svg/geceiptv-releases"
 
         /**
          * Repairs Turkish and Latin character mojibake caused by UTF-8 bytes being decoded

@@ -32,11 +32,14 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items as gridItems
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.Close
+import androidx.compose.ui.graphics.Color
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -168,7 +171,13 @@ fun MoviesScreen(
                         verticalArrangement = Arrangement.spacedBy(14.dp),
                         modifier = Modifier.fillMaxSize(),
                     ) {
-                        if (resume.isNotEmpty()) item(key = "cw") { ContinueWatchingRow(resume, onResume) }
+                        if (resume.isNotEmpty()) item(key = "cw") {
+                            ContinueWatchingRow(
+                                items = resume,
+                                onResume = onResume,
+                                onRemove = { viewModel.removeContinueWatching(it.mediaKey) },
+                            )
+                        }
                         if (recommended.isNotEmpty()) item(key = "rec") {
                             MoviePosterRow(stringResource(R.string.vod_recommended), recommended, onOpenMovie)
                         }
@@ -232,7 +241,13 @@ fun MoviesScreen(
                         verticalArrangement = Arrangement.spacedBy(14.dp),
                         modifier = Modifier.fillMaxSize(),
                     ) {
-                        if (resume.isNotEmpty()) item(key = "cw") { ContinueWatchingRow(resume, onResume) }
+                        if (resume.isNotEmpty()) item(key = "cw") {
+                            ContinueWatchingRow(
+                                items = resume,
+                                onResume = onResume,
+                                onRemove = { viewModel.removeContinueWatching(it.mediaKey) },
+                            )
+                        }
                         if (recommended.isNotEmpty()) item(key = "rec") {
                             MoviePosterRow(stringResource(R.string.vod_recommended), recommended, onOpenMovie)
                         }
@@ -354,7 +369,13 @@ fun SeriesScreen(
                         verticalArrangement = Arrangement.spacedBy(14.dp),
                         modifier = Modifier.fillMaxSize(),
                     ) {
-                        if (resume.isNotEmpty()) item(key = "cw") { ContinueWatchingRow(resume, onResume) }
+                        if (resume.isNotEmpty()) item(key = "cw") {
+                            ContinueWatchingRow(
+                                items = resume,
+                                onResume = onResume,
+                                onRemove = { viewModel.removeContinueWatching(it.mediaKey) },
+                            )
+                        }
                         if (recentlyAdded.isNotEmpty()) item(key = "recent") {
                             SeriesPosterRow(stringResource(R.string.vod_recently_added), recentlyAdded, onOpenSeries)
                         }
@@ -414,7 +435,13 @@ fun SeriesScreen(
                         verticalArrangement = Arrangement.spacedBy(14.dp),
                         modifier = Modifier.fillMaxSize(),
                     ) {
-                        if (resume.isNotEmpty()) item(key = "cw") { ContinueWatchingRow(resume, onResume) }
+                        if (resume.isNotEmpty()) item(key = "cw") {
+                            ContinueWatchingRow(
+                                items = resume,
+                                onResume = onResume,
+                                onRemove = { viewModel.removeContinueWatching(it.mediaKey) },
+                            )
+                        }
                         if (recentlyAdded.isNotEmpty()) item(key = "recent") {
                             SeriesPosterRow(stringResource(R.string.vod_recently_added), recentlyAdded, onOpenSeries)
                         }
@@ -684,6 +711,7 @@ private fun Badge(text: String, modifier: Modifier = Modifier, highlight: Boolea
 internal fun ContinueWatchingRow(
     items: List<VodViewModel.ResumeItem>,
     onResume: (mediaKey: String, url: String, title: String) -> Unit,
+    onRemove: ((VodViewModel.ResumeItem) -> Unit)? = null,
 ) {
     Column(Modifier.fillMaxWidth()) {
         SectionHeader(stringResource(R.string.vod_continue_watching))
@@ -692,7 +720,11 @@ internal fun ContinueWatchingRow(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             items(items, key = { it.mediaKey }) { item ->
-                ResumeCard(item) { onResume(item.mediaKey, item.streamUrl, item.title) }
+                ResumeCard(
+                    item = item,
+                    onClick = { onResume(item.mediaKey, item.streamUrl, item.title) },
+                    onRemove = if (onRemove != null) { { onRemove(item) } } else null,
+                )
             }
         }
     }
@@ -700,7 +732,11 @@ internal fun ContinueWatchingRow(
 
 /** A landscape resume thumbnail with a progress fill — a movie or an episode part-way through. */
 @Composable
-private fun ResumeCard(item: VodViewModel.ResumeItem, onClick: () -> Unit) {
+private fun ResumeCard(
+    item: VodViewModel.ResumeItem,
+    onClick: () -> Unit,
+    onRemove: (() -> Unit)? = null,
+) {
     var focused by remember { mutableStateOf(false) }
     val scale by animateFloatAsState(if (focused) 1.06f else 1f, label = "resumeScale")
     Column(
@@ -729,6 +765,25 @@ private fun ResumeCard(item: VodViewModel.ResumeItem, onClick: () -> Unit) {
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize(),
             )
+            if (onRemove != null) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(4.dp)
+                        .size(24.dp)
+                        .clip(CircleShape)
+                        .background(Color.Black.copy(alpha = 0.7f))
+                        .clickable { onRemove() },
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Close,
+                        contentDescription = stringResource(R.string.continue_watching_remove_item),
+                        tint = Color(0xFFEF4444),
+                        modifier = Modifier.size(14.dp),
+                    )
+                }
+            }
             LinearProgressIndicator(
                 progress = { item.progress },
                 modifier = Modifier.fillMaxWidth().height(4.dp).align(Alignment.BottomStart),

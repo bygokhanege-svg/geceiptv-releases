@@ -339,6 +339,116 @@
   * **Ayarlar ve Dil Desteği ([AppSettings.kt](file:///c:/Users/EGE/Desktop/Tvapk/app/src/main/java/app/opentv/core/AppSettings.kt), [AppSettingsScreen.kt](file:///c:/Users/EGE/Desktop/Tvapk/app/src/main/java/app/opentv/ui/settings/AppSettingsScreen.kt)):**
     * Ayarlar > Oynatma menüsüne `Oynatıcıda Güncel Saat` / `Show Current Time in Player` toggle'ı eklendi (varsayılan: açık).
 
+### 25. Favoriler Bölümü (Dashboard Hızlı Araçlar) & İzlemeye Devam Et Yönetimi
+* **Kullanıcı İstekleri:**
+  1. Görev 1: Ana sayfada Arama ve QR Bağlantısı arasına "Favoriler" bölümü eklenmesi; favorilere alınan dizi ve filmlerin kategorik olarak o menüde listelenmesi.
+  2. Görev 2: İzlemeye devam et gridinde kullanıcının tekil içerikleri silebilmesi veya listenin tamamını temizleyebilmesi.
+* **Teknik Çözüm ve Kararlar:**
+  * **Favoriler Bölümü ve Kategorik Görünüm ([FavoritesOverlay.kt](file:///c:/Users/EGE/Desktop/Tvapk/app/src/main/java/app/opentv/ui/favorites/FavoritesOverlay.kt)):**
+    * `DashboardQuickToolsRow` içine Arama ile QR arasına altın sarısı yıldız simgeli (`Color(0xFFF59E0B)`) `Favoriler` hızlı işlem kartı eklendi.
+    * Tıklandığında açılan `FavoritesDialog` overlay'i oluşturuldu.
+    * `Tümü (All)`, `Filmler (Movies)` ve `Diziler (Series)` üst kategorik filtreleme sekmeleri (`FavTabButton`) sunuldu.
+    * "Tümü" seçildiğinde Filmler ve Diziler kategorik olarak iki ayrı yatay karusel (`LazyRow`) halinde sunuldu.
+    * "Filmler" ve "Diziler" sekmelerinde TV için 5 sütunlu (`GridCells.Fixed(5)`), telefon için 3 sütunlu (`GridCells.Fixed(3)`) dikey ızgara yapısı kuruldu.
+    * Kartlar üzerinde afiş, başlık, çıkış yılı, IMDb/kullanıcı puan rozeti (`⭐ 8.4`) ve tek tıkla favoriden çıkarma butonu yerleştirildi; tıklandığında ilgili detay ekranına yönlendirir.
+    * Boş durumda şık yıldız ikonlu bilgilendirme penceresi eklendi.
+    * D-pad kumanda odaklanması (`focusRequester`, `border`, `scale` animasyonu) ve `BackHandler` desteklendi.
+  * **Veri Katmanı Desteği ([Daos.kt](file:///c:/Users/EGE/Desktop/Tvapk/app/src/main/java/app/opentv/data/db/Daos.kt), [CatalogRepository.kt](file:///c:/Users/EGE/Desktop/Tvapk/app/src/main/java/app/opentv/data/repo/CatalogRepository.kt), [OpenTvViewModels.kt](file:///c:/Users/EGE/Desktop/Tvapk/app/src/main/java/app/opentv/ui/OpenTvViewModels.kt)):**
+    * `SeriesDao` içine `@Query("SELECT * FROM series WHERE favourite = 1 ...") fun observeFavourites` eklendi.
+    * `PlaybackPositionDao` içine `@Query("DELETE FROM playback_positions WHERE profileId = :profileId") suspend fun clearForProfile` eklendi.
+    * `VodViewModel` üzerinde `favouriteMovies`, `favouriteSeries` StateFlow'ları ile `removeContinueWatching(mediaKey)` ve `clearContinueWatching()` fonksiyonları tanımlandı.
+  * **İzlemeye Devam Et Yönetimi ([DashboardScreen.kt](file:///c:/Users/EGE/Desktop/Tvapk/app/src/main/java/app/opentv/ui/DashboardScreen.kt), [VodScreens.kt](file:///c:/Users/EGE/Desktop/Tvapk/app/src/main/java/app/opentv/ui/vod/VodScreens.kt)):**
+    * Hem TV (`ContinueWatchingColumn`) hem mobil (`PhoneDashboardContent`) arayüzlerinde başlık satırına kırmızı vurgulu **"Tümünü Temizle"** (`Icons.Outlined.DeleteSweep`) butonu eklendi.
+    * Birincil devam kartına "▶ Devam Et" butonunun yanına **"Kaldır"** (`Icons.Outlined.DeleteOutline`) butonu yerleştirildi.
+    * İkincil liste kartlarına ve `VodScreens`'deki `ResumeCard` bileşenlerine tek tıkla silme (`Icons.Outlined.Close`) düğmesi eklendi.
+    * Yanlışlıkla silinmeleri önlemek için şık `ContinueWatchingClearConfirmDialog` ve `ContinueWatchingRemoveConfirmDialog` onay pencereleri entegre edildi.
+  * **Çift Dil Desteği (`strings.xml`, `strings.xml (tr)`):**
+    * Favoriler ve izlemeyi temizleme/silme seçenekleri İngilizce ve Türkçe olarak tam lokalize edildi.
+  * **Video Oynatıcı Dijital Saati İyileştirmesi ([StreamStatsOverlay.kt](file:///c:/Users/EGE/Desktop/Tvapk/app/src/main/java/app/opentv/ui/player/StreamStatsOverlay.kt)):**
+    * Kullanıcı isteği doğrultusunda video oynatıcının sağ üst köşesindeki saat sadeleştirildi:
+    * Arka plan kutusu, kenarlık/çerçeve (border), yeşil canlılık noktası ve takvim/saat ikonu tamamen kaldırıldı.
+    * Yalnızca saf dijital saat (`HH:mm`) metni bırakıldı.
+    * Opasitesi %30 oranında düşürüldü (`Color.White.copy(alpha = 0.65f)`).
+    * Parlak/açık renkli video sahnelerinde okunurluğu kaybetmemek adına hafif, şık bir metin gölgesi (`Shadow(Color.Black.copy(alpha = 0.8f))`) uygulandı.
+    * Tıklanma özelliği (istatistik/analiz panelini açma) minimalist haliyle korunmaya devam etti.
+
+### 26. Ayarlar Menüsünün Sadeleştirilmesi & "DİĞER AYARLAR" Alt Menüsü
+* **Kullanıcı İstekleri:**
+  * Ayarlar menüsünün sadeleştirilmesi:
+  * Ana menüde yalnızca: Cihaz ve Lisans, Sağlayıcılar, Kanallar, Telefon Kumandası, Görüntü ve Oynatma, Altyazılar, DİĞER AYARLAR ve Hakkında menülerinin kalması.
+  * Geriye kalan tüm ayarların (Eklentiler, Yayın Akışı/Rehber, Dil Seçimi, Uyku Zamanlayıcı, Kayıtlar/DVR, Ebeveyn Denetimi, Veri/Eşitleme, Profiller, Hızlı Arama) "DİĞER AYARLAR" adında yeni bir alt menü başlığı altında toplanması.
+* **Teknik Çözüm ve Kararlar:**
+  * **Ayarlar Merkezi Mimarisi ([SettingsHubScreen.kt](file:///c:/Users/EGE/Desktop/Tvapk/app/src/main/java/app/opentv/ui/settings/SettingsHubScreen.kt)):**
+    * Ana menü 8 şık, dengeli karta indirgendi (`mainEntries`):
+      1. Cihaz ve Lisans (`WorkspacePremium`)
+      2. Sağlayıcılar (`PlaylistPlay`)
+      3. Kanallar (`LiveTv`)
+      4. Telefon Kumandası & Web (`QrCode2`)
+      5. Görüntü ve Oynatma (`DisplaySettings`)
+      6. Altyazılar (`Subtitles`)
+      7. DİĞER AYARLAR (`Tune`, Emerald Green vurgusu, tıklandığında `showingOtherSettings = true`)
+      8. Hakkında (`Info`)
+    * "DİĞER AYARLAR" menüsü 9 karttan oluştu (`otherEntries`):
+      1. Eklentiler / Stremio Addons (`Extension`)
+      2. Yayın Akışı / EPG Rehberi (`ViewTimeline`)
+      3. Dil Seçimi (`Translate`)
+      4. Uyku Zamanlayıcı (`Bedtime`)
+      5. Kayıtlar / DVR (`VideoLibrary`)
+      6. Ebeveyn Denetimi (`Security`)
+      7. Veri & Eşitleme / Cloud Sync (`CloudSync`)
+      8. Profiller (`AccountCircle`)
+      9. Hızlı Arama (`Search`)
+    * **Simetrik Grid Yerleşimi:**
+      * Ana menü TV'de 4 sütun (`GridCells.Fixed(4)`): 8 kart tam 2 satırda (4x2) simetrik olarak yerleşir, TV ekranında boşluk veya asimetri oluşturmaz.
+      * "Diğer Ayarlar" menüsünde TV'de 5 sütun (`GridCells.Fixed(5)`), tabletlerde 3 sütun (`GridCells.Fixed(3)`), telefonlarda 2 sütun (`GridCells.Fixed(2)`) düzeni korunur.
+    * **Kumanda (D-pad) ve Geri Tuşu Ergonomisi:**
+      * `BackHandler(enabled = showingOtherSettings) { showingOtherSettings = false }` entegre edildi; TV kumandası veya telefondaki Geri tuşuna basıldığında doğrudan ana ayarlar menüsüne dönülür.
+      * Üst başlık çubuğunda dinamik değişim sağlandı: Diğer Ayarlar açıkken başlık "DİĞER AYARLAR", açıklama "Eklentiler, rehber, dil, uyku modu, eşitleme ve fazlası" olur; sağ tarafta `[ ← Geri ]` butonu yer alır.
+      * Sol üstteki ikon kutusuna tıklanarak da ana menüye dönülebilir.
+      * `rememberSaveable { mutableStateOf(false) }` ile alt sayfalardan (örn. Uyku Zamanlayıcı) geri dönüldüğünde kullanıcının Diğer Ayarlar menüsündeki konumu korunur.
+  * **Çift Dil Desteği (`strings.xml`, `strings.xml (tr)`):**
+    * `settings_other_title` ("Diğer Ayarlar" / "Other Settings") ve `settings_other_subtitle` kaynakları eklendi.
+
+### 27. Video Oynatıcı 5 Büyük Geliştirme (Netflix Butonlar, Hız, En-Boy Oranı, Dizi Önizleme Drawer, Harici Oynatıcı Seçici)
+* **Tarih:** 25 Ekim 2026
+* **Kullanıcı İsteği:**
+  1. *Görev 1:* İleri / geri sarma butonları (-15s, +15s) ile oynat/duraklat (play/pause) butonu yuvarlak, Netflix tarzında ikonlar olacak; yazısız, sadece ikon ve buton.
+  2. *Görev 2:* YouTube tarzı video hızlı ve yavaş oynatma butonu.
+  3. *Görev 3:* 4:3, 16:9, tam ekran (zoom), ekrana yay (stretch) ve sayfaya sığdır butonları; aktif çalışır şekilde.
+  4. *Görev 4:* Dizi bölümünde dizinin tüm bölümlerini önizleme butonu; tıklandığında ekranın sağ tarafında düşük opasite ile dizinin diğer sezon ve bölümlerini listeleyen ufak yan menü.
+  5. *Görev 5:* Cihazda (TV veya telefonda) yüklü harici oynatıcıları otomatik tespit edip kullanıcının istediği oynatıcıda izlemesini sağlayan akıllı seçici.
+* **Uygulanan Çözüm & Mimari:**
+  * **Görev 1 - Netflix Tarzı Yuvarlak Medya Butonları (`RoundMediaButton`):**
+    * Geri Sar (-15s), Oynat/Duraklat (Play/Pause) ve İleri Sar (+15s) butonları `CircleShape` yuvarlak tasarımda yazısız olarak yeniden oluşturuldu.
+    * Netflix estetiği: Odaklandığında büyüyen (`scale(1.15f)`), odaklandığında primary renkle parlayan, odak dışındayken yarı saydam buzlu cam arka planlı (`Color.White.copy(alpha = 0.14f)` ve ortadaki büyük oynat butonu için `0.28f`).
+    * TV kumandası D-pad odağı (`focusRequester = barFocus`) doğrudan ortadaki dairesel Oynat/Duraklat butonuna atanır.
+  * **Görev 2 - YouTube Tarzı Oynatma Hızı Kontrolü (`playbackSpeed`):**
+    * `PlayerController.kt` sınıfına `fun setPlaybackSpeed(speed: Float) { player.setPlaybackSpeed(speed) }` fonksiyonu eklendi.
+    * Oynatıcı kontrol çubuğuna `Icons.Filled.Speed` ikonu ve güncel hız etiketli ("Oynatma Hızı" veya örn. "1.25x") çip yerleştirildi.
+    * `TrackPanel` içine YouTube standartlarında hız seçenekleri eklendi: `0.5x`, `0.75x`, `1.0x (Standart)`, `1.25x`, `1.5x`, `1.75x`, `2.0x`.
+  * **Görev 3 - Gerçek Zamanlı En-Boy Oranı & Sığdırma (`AspectRatioMode`):**
+    * `AspectRatioMode` enum'u tanımlandı:
+      1. `FIT` (Sayfaya Sığdır / Orijinal): `RESIZE_MODE_FIT`
+      2. `RATIO_16_9` (16:9 Geniş Ekran): `Modifier.aspectRatio(16f / 9f)` + `RESIZE_MODE_FILL`
+      3. `RATIO_4_3` (4:3 Klasik TV): `Modifier.aspectRatio(4f / 3f)` + `RESIZE_MODE_FILL`
+      4. `ZOOM` (Full Ekran / Yakınlaştır): `RESIZE_MODE_ZOOM`
+      5. `STRETCH` (Ekrana Yay / Uzat): `RESIZE_MODE_FILL`
+    * AndroidView / PlayerView kapsayıcısı dinamik `aspectModifier` ile sarıldı; `update = { it.resizeMode = exoResizeMode }` ile video çerçevesi anında seçilen orana göre yeniden şekillenir.
+  * **Görev 4 - Dizi Sezon & Bölüm Önizleme Yan Menüsü (`SeriesEpisodesDrawer`):**
+    * Ekranın sağ tarafına yaslanan (`Alignment.CenterEnd`), yumuşak geçişli (`slideInHorizontally` + `fadeIn`) ve düşük opasiteli yarı saydam koyu cam arka planlı (`Color(0xF00A0E18)`) yan menü geliştirildi.
+    * Üst kısımda Sezon filtreleme çipleri (`LazyRow` - Sezon 1, Sezon 2...), alt kısımda bölüm listesi (`LazyColumn`).
+    * Her bölüm kartında: Bölüm önizleme görseli (still), oynat ikonu, bölüm numarası, bölüm başlığı, kısa konusu ve o anda izlenmekte olan bölüm için yeşil "• Şu an Oynatılıyor" etiketi.
+    * Kumanda veya dokunmatik seçimle tıklandığında anında o bölüme geçilir ve menü kapanır. `BackHandler` kumanda Geri tuşunu menüyü kapatacak şekilde yakalar.
+  * **Görev 5 - Otomatik Harici Oynatıcı Tespiti & Seçim Diyaloğu (`detectExternalPlayers` & `ExternalPlayerChooserDialog`):**
+    * `detectExternalPlayers(context)` fonksiyonu ile Android `PackageManager` üzerinden:
+      1. `video/*` MIME türünü açabilen tüm yüklü uygulamalar taranır.
+      2. Popüler TV/mobil oynatıcı paketleri (VLC, MX Player, MX Player Pro, Just Player, Kodi, mpv-android, Nova Video Player, KMPlayer, XPlayer, BSPlayer) otomatik olarak sorgulanır.
+    * Yüklü uygulamaların gerçek simgeleri (`Bitmap` ve `ImageBitmap`) ve uygulama adları çekilerek şık bir diyalog penceresinde listelenir.
+    * Kullanıcı istediği harici oynatıcıya tıkladığında doğrudan o uygulamaya stream URL'si ve başlığı gönderilerek başlatılır.
+    * Alt kısımda ayrıca sistem genel seçicisini açan "Sistem Seçicisi ile Aç" (`Intent.createChooser`) seçeneği korunmuştur.
+  * **Doğrulama:**
+    * `.\gradlew compileDebugKotlin` ve `.\gradlew assembleRelease` başarıyla tamamlandı; `app\build\outputs\apk\release\GECEiptv-release.apk` sorunsuz üretildi.
+
 ---
 
 ## 📌 Hızlı Referans & Mimari Kurallar

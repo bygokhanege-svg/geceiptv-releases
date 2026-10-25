@@ -231,8 +231,14 @@ class CatalogRepository(
     fun observeMovies(categoryId: String? = null, sourceId: Long? = null): Flow<List<Movie>> =
         movieDao.observe(categoryId, sourceId)
 
+    fun observeFavouriteMovies(sourceId: Long? = null): Flow<List<Movie>> =
+        movieDao.observeFavourites(sourceId)
+
     fun observeSeries(categoryId: String? = null, sourceId: Long? = null): Flow<List<Series>> =
         seriesDao.observe(categoryId, sourceId)
+
+    fun observeFavouriteSeries(sourceId: Long? = null): Flow<List<Series>> =
+        seriesDao.observeFavourites(sourceId)
 
     fun observeEpisodes(sourceId: Long, seriesId: String): Flow<List<Episode>> =
         episodeDao.observeForSeries(sourceId, seriesId)

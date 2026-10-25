@@ -571,6 +571,9 @@ interface SeriesDao {
     )
     fun observe(categoryId: String?, sourceId: Long? = null): Flow<List<Series>>
 
+    @Query("SELECT * FROM series WHERE favourite = 1 AND (:sourceId IS NULL OR sourceId = :sourceId) ORDER BY name")
+    fun observeFavourites(sourceId: Long? = null): Flow<List<Series>>
+
     @Query(
         """
         SELECT * FROM series
@@ -692,6 +695,9 @@ interface PlaybackPositionDao {
 
     @Query("DELETE FROM playback_positions WHERE profileId = :profileId AND mediaKey = :key")
     suspend fun delete(profileId: Long, key: String)
+
+    @Query("DELETE FROM playback_positions WHERE profileId = :profileId")
+    suspend fun clearForProfile(profileId: Long)
 }
 
 @Dao

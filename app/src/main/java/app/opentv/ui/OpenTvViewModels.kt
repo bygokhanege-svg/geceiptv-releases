@@ -1154,6 +1154,20 @@ class VodViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
+    /** Removes a single item from the active profile's continue watching list. */
+    fun removeContinueWatching(mediaKey: String) {
+        viewModelScope.launch {
+            graph.playbackPositions.delete(settings.activeProfileId.value, mediaKey)
+        }
+    }
+
+    /** Clears all continue watching history for the active profile. */
+    fun clearContinueWatching() {
+        viewModelScope.launch {
+            graph.playbackPositions.clearForProfile(settings.activeProfileId.value)
+        }
+    }
+
     private val movieCategory = MutableStateFlow<String?>(null)
     private val seriesCategory = MutableStateFlow<String?>(null)
 
@@ -1290,6 +1304,16 @@ class VodViewModel(app: Application) : AndroidViewModel(app) {
     @OptIn(ExperimentalCoroutinesApi::class)
     val recentlyAddedSeries: StateFlow<List<Series>> = selectedVodSource
         .flatMapLatest { src -> graph.catalogRepository.recentlyAddedSeries(limit = 30, sourceId = src) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val favouriteMovies: StateFlow<List<Movie>> = selectedVodSource
+        .flatMapLatest { src -> graph.catalogRepository.observeFavouriteMovies(sourceId = src) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val favouriteSeries: StateFlow<List<Series>> = selectedVodSource
+        .flatMapLatest { src -> graph.catalogRepository.observeFavouriteSeries(sourceId = src) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     private val _recommendedMovies = MutableStateFlow<List<Movie>>(emptyList())

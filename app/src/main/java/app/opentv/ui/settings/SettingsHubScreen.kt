@@ -50,7 +50,9 @@ import androidx.compose.material.icons.filled.QrCode2
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Subtitles
+import androidx.activity.compose.BackHandler
 import androidx.compose.material.icons.filled.Translate
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.filled.Tv
 import androidx.compose.material.icons.filled.VideoLibrary
 import androidx.compose.material.icons.filled.ViewTimeline
@@ -63,6 +65,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -119,21 +122,27 @@ fun SettingsHubScreen(
     val screenWidthDp = configuration.screenWidthDp
     val isWideScreen = screenWidthDp >= 600
 
-    // Grid columns: 2 columns for portrait phones (prevents text clipping), 3 for tablets, 5 for TV
+    var showingOtherSettings by rememberSaveable { mutableStateOf(false) }
+
+    BackHandler(enabled = showingOtherSettings) {
+        showingOtherSettings = false
+    }
+
+    // Grid columns: 2 columns for portrait phones (prevents text clipping), 4 for TV in main menu (4x2 = 8), 5 for TV in other menu (5+4=9), 3 or 4 for tablets
     val columns = when {
-        isTv -> 5
-        isWideScreen -> 3
+        isTv -> if (showingOtherSettings) 5 else 4
+        isWideScreen -> if (showingOtherSettings) 3 else 4
         else -> 2
     }
 
-    // Card aspect ratio: 1f for TV, 1.15f for tablets/phones
+    // Card aspect ratio: 1.05f for TV, 1.15f for tablets/phones
     val tileAspectRatio = when {
-        isTv -> 1f
+        isTv -> 1.05f
         isWideScreen -> 1.15f
         else -> 1.15f
     }
 
-    val entries = listOf(
+    val mainEntries = listOf(
         HubEntry(
             icon = Icons.Filled.WorkspacePremium,
             title = stringResource(R.string.settings_license_title),
@@ -147,20 +156,6 @@ fun SettingsHubScreen(
             subtitle = stringResource(R.string.settings_providers_subtitle),
             accentColor = Color(0xFF06B6D4), // Electric Cyan
             onClick = onOpenProviders,
-        ),
-        HubEntry(
-            icon = Icons.Filled.Extension,
-            title = stringResource(R.string.settings_addons_title),
-            subtitle = stringResource(R.string.settings_addons_subtitle),
-            accentColor = Color(0xFF8B5CF6), // Cyber Violet
-            onClick = onOpenAddons,
-        ),
-        HubEntry(
-            icon = Icons.Filled.ViewTimeline,
-            title = stringResource(R.string.settings_guide_title),
-            subtitle = stringResource(R.string.settings_guide_subtitle),
-            accentColor = Color(0xFF10B981), // Emerald Green
-            onClick = onOpenGuide,
         ),
         HubEntry(
             icon = Icons.Filled.LiveTv,
@@ -189,6 +184,37 @@ fun SettingsHubScreen(
             subtitle = stringResource(R.string.settings_subtitles_hub_subtitle),
             accentColor = Color(0xFFEC4899), // Hot Pink / Magenta
             onClick = onOpenSubtitles,
+        ),
+        HubEntry(
+            icon = Icons.Filled.Tune,
+            title = stringResource(R.string.settings_other_title),
+            subtitle = stringResource(R.string.settings_other_subtitle),
+            accentColor = Color(0xFF10B981), // Emerald Green
+            onClick = { showingOtherSettings = true },
+        ),
+        HubEntry(
+            icon = Icons.Filled.Info,
+            title = stringResource(R.string.settings_about_title),
+            subtitle = stringResource(R.string.settings_about_subtitle),
+            accentColor = Color(0xFF94A3B8), // Diamond Platinum
+            onClick = onOpenAbout,
+        ),
+    )
+
+    val otherEntries = listOf(
+        HubEntry(
+            icon = Icons.Filled.Extension,
+            title = stringResource(R.string.settings_addons_title),
+            subtitle = stringResource(R.string.settings_addons_subtitle),
+            accentColor = Color(0xFF8B5CF6), // Cyber Violet
+            onClick = onOpenAddons,
+        ),
+        HubEntry(
+            icon = Icons.Filled.ViewTimeline,
+            title = stringResource(R.string.settings_guide_title),
+            subtitle = stringResource(R.string.settings_guide_subtitle),
+            accentColor = Color(0xFF10B981), // Emerald Green
+            onClick = onOpenGuide,
         ),
         HubEntry(
             icon = Icons.Filled.Translate,
@@ -239,14 +265,9 @@ fun SettingsHubScreen(
             accentColor = Color(0xFFEAB308), // Sunbeam Gold
             onClick = onOpenSearch,
         ),
-        HubEntry(
-            icon = Icons.Filled.Info,
-            title = stringResource(R.string.settings_about_title),
-            subtitle = stringResource(R.string.settings_about_subtitle),
-            accentColor = Color(0xFF94A3B8), // Diamond Platinum
-            onClick = onOpenAbout,
-        ),
     )
+
+    val entries = if (showingOtherSettings) otherEntries else mainEntries
 
     Box(
         modifier = Modifier
@@ -294,13 +315,18 @@ fun SettingsHubScreen(
                                 )
                             ),
                             RoundedCornerShape(if (isWideScreen) 14.dp else 11.dp)
+                        )
+                        .then(
+                            if (showingOtherSettings) {
+                                Modifier.clickable { showingOtherSettings = false }
+                            } else Modifier
                         ),
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
-                        imageVector = Icons.Filled.Tv,
+                        imageVector = if (showingOtherSettings) Icons.Filled.Tune else Icons.Filled.Tv,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
+                        tint = if (showingOtherSettings) Color(0xFF10B981) else MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(if (isWideScreen) 26.dp else 22.dp),
                     )
                 }
@@ -309,13 +335,17 @@ fun SettingsHubScreen(
 
                 Column {
                     Text(
-                        text = stringResource(R.string.nav_settings),
+                        text = if (showingOtherSettings) stringResource(R.string.settings_other_title) else stringResource(R.string.nav_settings),
                         style = if (isWideScreen) MaterialTheme.typography.headlineMedium else MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.ExtraBold,
                         color = Color.White,
                     )
                     Text(
-                        text = if (isTv) "GECE IPTV • TV Kontrol Merkezi" else "GECE IPTV • Modern Ayarlar",
+                        text = if (showingOtherSettings) {
+                            stringResource(R.string.settings_other_subtitle)
+                        } else {
+                            if (isTv) "GECE IPTV • TV Kontrol Merkezi" else "GECE IPTV • Modern Ayarlar"
+                        },
                         style = MaterialTheme.typography.bodySmall,
                         fontSize = if (isWideScreen) 12.sp else 10.5.sp,
                         color = Color.White.copy(alpha = 0.50f),
@@ -324,10 +354,16 @@ fun SettingsHubScreen(
 
                 Spacer(Modifier.weight(1f))
 
-                HubTextButton(stringResource(R.string.common_done), onBack)
+                if (showingOtherSettings) {
+                    HubTextButton("← " + stringResource(R.string.common_back)) {
+                        showingOtherSettings = false
+                    }
+                } else {
+                    HubTextButton(stringResource(R.string.common_done), onBack)
+                }
             }
 
-            // Grid of Settings Tiles (3 columns on phone/tablet, 5 on TV)
+            // Grid of Settings Tiles (2 columns on phone, 4 on TV for main menu, 5 on TV for other menu)
             LazyVerticalGrid(
                 columns = GridCells.Fixed(columns),
                 contentPadding = PaddingValues(bottom = 32.dp),
@@ -335,7 +371,7 @@ fun SettingsHubScreen(
                 verticalArrangement = Arrangement.spacedBy(if (isWideScreen) 16.dp else 10.dp),
                 modifier = Modifier.fillMaxSize(),
             ) {
-                items(entries) { entry ->
+                items(entries, key = { it.title }) { entry ->
                     HubTile(
                         entry = entry,
                         isTv = isTv,

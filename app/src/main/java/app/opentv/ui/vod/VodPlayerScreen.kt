@@ -44,35 +44,61 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Analytics
+import androidx.compose.material.icons.filled.AspectRatio
 import androidx.compose.material.icons.filled.Audiotrack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ClosedCaption
 import androidx.compose.material.icons.filled.FastForward
 import androidx.compose.material.icons.filled.FastRewind
 import androidx.compose.material.icons.filled.FiberManualRecord
 import androidx.compose.material.icons.filled.HighQuality
+import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.SkipNext
+import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material.icons.filled.Tv
+import androidx.compose.material.icons.filled.VideoLibrary
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import androidx.media3.ui.AspectRatioFrameLayout
 import app.opentv.data.model.Episode
 import app.opentv.player.OnlineSubtitle
 import app.opentv.ui.player.PlayerClockBadge
@@ -127,6 +153,98 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+
+enum class AspectRatioMode(val title: String, val shortLabel: String) {
+    FIT("Sayfaya Sığdır (Orijinal)", "Sığdır"),
+    RATIO_16_9("16:9 Geniş Ekran", "16:9"),
+    RATIO_4_3("4:3 Klasik TV", "4:3"),
+    ZOOM("Full Ekran (Zoom)", "Full Ekran"),
+    STRETCH("Ekrana Yay (Uzat)", "Uzat"),
+}
+
+data class ExternalAppInfo(
+    val name: String,
+    val packageName: String,
+    val activityName: String?,
+    val icon: Drawable?,
+)
+
+private fun drawableToBitmap(drawable: Drawable?): Bitmap? {
+    if (drawable == null) return null
+    if (drawable is BitmapDrawable && drawable.bitmap != null) {
+        return drawable.bitmap
+    }
+    return try {
+        val width = drawable.intrinsicWidth.takeIf { it > 0 } ?: 96
+        val height = drawable.intrinsicHeight.takeIf { it > 0 } ?: 96
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        drawable.setBounds(0, 0, canvas.width, canvas.height)
+        drawable.draw(canvas)
+        bitmap
+    } catch (_: Exception) {
+        null
+    }
+}
+
+private fun detectExternalPlayers(context: Context): List<ExternalAppInfo> {
+    val pm = context.packageManager
+    val players = mutableListOf<ExternalAppInfo>()
+    val seenPackages = mutableSetOf<String>()
+
+    val viewIntent = Intent(Intent.ACTION_VIEW).apply {
+        setDataAndType(Uri.parse("http://example.com/video.mp4"), "video/*")
+    }
+    val resolveList = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+        pm.queryIntentActivities(viewIntent, PackageManager.ResolveInfoFlags.of(0L))
+    } else {
+        @Suppress("DEPRECATION")
+        pm.queryIntentActivities(viewIntent, 0)
+    }
+
+    for (resolve in resolveList) {
+        val pkg = resolve.activityInfo.packageName
+        if (pkg != context.packageName && seenPackages.add(pkg)) {
+            val label = resolve.loadLabel(pm).toString()
+            val icon = resolve.loadIcon(pm)
+            players.add(ExternalAppInfo(label, pkg, resolve.activityInfo.name, icon))
+        }
+    }
+
+    val wellKnown = listOf(
+        "org.videolan.vlc" to "VLC for Android",
+        "com.mxtech.videoplayer.ad" to "MX Player",
+        "com.mxtech.videoplayer.pro" to "MX Player Pro",
+        "com.brouken.player" to "Just Player",
+        "org.xbmc.kodi" to "Kodi",
+        "is.xyz.mpv" to "mpv-android",
+        "org.courville.nova" to "Nova Video Player",
+        "com.kmplayer" to "KMPlayer",
+        "com.inshot.xplayer" to "XPlayer",
+        "com.bsplayer.bspandroid.free" to "BSPlayer",
+    )
+
+    for ((pkg, defaultName) in wellKnown) {
+        if (!seenPackages.contains(pkg)) {
+            try {
+                val appInfo = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                    pm.getApplicationInfo(pkg, PackageManager.ApplicationInfoFlags.of(0L))
+                } else {
+                    @Suppress("DEPRECATION")
+                    pm.getApplicationInfo(pkg, 0)
+                }
+                if (appInfo.enabled) {
+                    seenPackages.add(pkg)
+                    val label = pm.getApplicationLabel(appInfo).toString().ifBlank { defaultName }
+                    val icon = pm.getApplicationIcon(appInfo)
+                    players.add(ExternalAppInfo(label, pkg, null, icon))
+                }
+            } catch (_: Exception) {}
+        }
+    }
+
+    return players
+}
 
 /**
  * Plays a movie or episode: a single non-live stream, with resume and a proper transport bar.
@@ -258,6 +376,15 @@ fun VodPlayerScreen(
     var subtitleSearchMessage by remember { mutableStateOf<String?>(null) }
     var selectedOnlineSubId by remember { mutableStateOf<String?>(null) }
 
+    var playbackSpeed by remember { mutableFloatStateOf(1.0f) }
+    var aspectMode by remember { mutableStateOf(AspectRatioMode.FIT) }
+    var seriesEpisodes by remember { mutableStateOf<List<Episode>>(emptyList()) }
+    var currentEpisodeId by remember { mutableStateOf<Long?>(null) }
+    var showEpisodesDrawer by remember { mutableStateOf(false) }
+    var selectedSeasonTab by remember { mutableStateOf(1) }
+    var showExternalChooser by remember { mutableStateOf(false) }
+    val detectedPlayers = remember { detectExternalPlayers(context) }
+
     LaunchedEffect(currentMediaKey, currentStreamUrl) {
         withContext(Dispatchers.IO) {
             val parts = currentMediaKey.split(":", limit = 2)
@@ -278,6 +405,8 @@ fun VodPlayerScreen(
                 seasonNumber = currentEp.season
                 episodeNumber = currentEp.episodeNumber
                 movieName = null
+                currentEpisodeId = currentEp.id
+                selectedSeasonTab = currentEp.season
 
                 val series = graph.catalogRepository.seriesBySeriesId(currentEp.sourceId, currentEp.seriesId)
                 parentSeriesTitle = series?.name
@@ -285,6 +414,7 @@ fun VodPlayerScreen(
 
                 val allEps = graph.catalogRepository.episodesForSeries(currentEp.sourceId, currentEp.seriesId)
                 val sorted = allEps.sortedWith(compareBy({ it.season }, { it.episodeNumber }))
+                seriesEpisodes = sorted
                 val curIdx = sorted.indexOfFirst { it.id == currentEp.id }
                 nextEpisode = if (curIdx != -1 && curIdx + 1 < sorted.size) {
                     sorted[curIdx + 1]
@@ -303,10 +433,14 @@ fun VodPlayerScreen(
                 seasonNumber = null
                 episodeNumber = null
                 nextEpisode = null
+                seriesEpisodes = emptyList()
+                currentEpisodeId = null
             } else {
                 movieName = null
                 parentSeriesTitle = null
                 nextEpisode = null
+                seriesEpisodes = emptyList()
+                currentEpisodeId = null
             }
 
             val srcId = currentEp?.sourceId ?: currentMovie?.sourceId
@@ -338,18 +472,48 @@ fun VodPlayerScreen(
         }
     }
 
-    fun playNextEpisode() {
-        val next = nextEpisode ?: return
+    fun playEpisode(ep: Episode) {
         scope.launch {
             savePosition()
-            currentMediaKey = "ep:${next.id}"
-            currentStreamUrl = next.streamUrl
-            currentTitle = "S${next.season}E${next.episodeNumber} · ${next.title}"
+            currentMediaKey = "ep:${ep.id}"
+            currentStreamUrl = ep.streamUrl
+            currentTitle = "S${ep.season}E${ep.episodeNumber} · ${ep.title}"
+            currentEpisodeId = ep.id
+            selectedSeasonTab = ep.season
             paused = false
             onlineSubtitles = emptyList()
             selectedOnlineSubId = null
             subtitleSearchMessage = null
+            showEpisodesDrawer = false
             reveal()
+        }
+    }
+
+    fun playNextEpisode() {
+        val next = nextEpisode ?: return
+        playEpisode(next)
+    }
+
+    fun launchPlayer(app: ExternalAppInfo) {
+        runCatching {
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                setDataAndType(Uri.parse(currentStreamUrl), "video/*")
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                putExtra("title", currentTitle)
+                putExtra("secure_uri", true)
+                if (app.activityName != null) {
+                    setClassName(app.packageName, app.activityName)
+                } else {
+                    setPackage(app.packageName)
+                }
+                if (effectiveUserAgent.isNotBlank()) {
+                    putExtra("headers", arrayOf("User-Agent", effectiveUserAgent))
+                }
+            }
+            paused = true
+            controller.player.playWhenReady = false
+            controller.player.pause()
+            context.startActivity(intent)
         }
     }
 
@@ -360,9 +524,15 @@ fun VodPlayerScreen(
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 putExtra("title", currentTitle)
                 putExtra("secure_uri", true)
+                if (effectiveUserAgent.isNotBlank()) {
+                    putExtra("headers", arrayOf("User-Agent", effectiveUserAgent))
+                }
             }
             val chooser = Intent.createChooser(intent, "Harici Oynatıcı Seçin (VLC / MX)")
             chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            paused = true
+            controller.player.playWhenReady = false
+            controller.player.pause()
             context.startActivity(chooser)
         }
     }
@@ -489,10 +659,10 @@ fun VodPlayerScreen(
     // Auto-hide when playing and not paused/scrubbing and no picker open. A growing recording dips in
     // and out of Buffering as it rides the write head, so for that case Buffering counts as "playing"
     // here — otherwise a single hiccup would pin the transport bar on screen for the rest of the watch.
-    LaunchedEffect(controlsVisible, interaction, state, paused, scrubbing, vodPanel) {
+    LaunchedEffect(controlsVisible, interaction, state, paused, scrubbing, vodPanel, showEpisodesDrawer, showExternalChooser) {
         val activelyPlaying = state is PlayerController.State.Playing ||
             (growingRec && state is PlayerController.State.Buffering)
-        if (controlsVisible && !paused && !scrubbing && vodPanel == VodPanel.NONE && activelyPlaying) {
+        if (controlsVisible && !paused && !scrubbing && vodPanel == VodPanel.NONE && !showEpisodesDrawer && !showExternalChooser && activelyPlaying) {
             delay(5_000)
             controlsVisible = false
         }
@@ -512,6 +682,8 @@ fun VodPlayerScreen(
             (growingRec && state is PlayerController.State.Buffering)
         when {
             showStatsDialog -> showStatsDialog = false
+            showExternalChooser -> showExternalChooser = false
+            showEpisodesDrawer -> showEpisodesDrawer = false
             vodPanel != VodPanel.NONE -> vodPanel = VodPanel.NONE
             controlsVisible && activelyPlaying && !paused -> controlsVisible = false
             else -> onBack()
@@ -547,22 +719,41 @@ fun VodPlayerScreen(
                 detectTapGestures { if (controlsVisible) controlsVisible = false else reveal() }
             },
     ) {
-        AndroidView(
+        val aspectModifier = when (aspectMode) {
+            AspectRatioMode.RATIO_16_9 -> Modifier.aspectRatio(16f / 9f)
+            AspectRatioMode.RATIO_4_3 -> Modifier.aspectRatio(4f / 3f)
+            else -> Modifier.fillMaxSize()
+        }
+        val exoResizeMode = when (aspectMode) {
+            AspectRatioMode.ZOOM -> AspectRatioFrameLayout.RESIZE_MODE_ZOOM
+            AspectRatioMode.STRETCH -> AspectRatioFrameLayout.RESIZE_MODE_FILL
+            AspectRatioMode.RATIO_16_9, AspectRatioMode.RATIO_4_3 -> AspectRatioFrameLayout.RESIZE_MODE_FILL
+            else -> AspectRatioFrameLayout.RESIZE_MODE_FIT
+        }
+
+        Box(
             modifier = Modifier.fillMaxSize(),
-            factory = { ctx ->
-                PlayerView(ctx).apply {
-                    player = controller.player
-                    useController = false
-                    keepScreenOn = true
-                    setKeepContentOnPlayerReset(true)
-                    app.opentv.ui.settings.SubtitleStyleHelper.applySubtitlePreferences(subtitleView, graph.settings)
-                    layoutParams = ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                    )
-                }
-            },
-        )
+            contentAlignment = Alignment.Center,
+        ) {
+            AndroidView(
+                modifier = aspectModifier,
+                factory = { ctx ->
+                    PlayerView(ctx).apply {
+                        player = controller.player
+                        useController = false
+                        keepScreenOn = true
+                        setKeepContentOnPlayerReset(true)
+                        this.resizeMode = exoResizeMode
+                        app.opentv.ui.settings.SubtitleStyleHelper.applySubtitlePreferences(subtitleView, graph.settings)
+                        layoutParams = ViewGroup.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                        )
+                    }
+                },
+                update = { it.resizeMode = exoResizeMode },
+            )
+        }
 
         // Top-Right Live Clock Badge
         if (playerClockEnabled && !inPip) {
@@ -681,6 +872,15 @@ fun VodPlayerScreen(
                         controller = controller,
                         tracks = tracks,
                         firstFocus = panelFocus,
+                        playbackSpeed = playbackSpeed,
+                        onSelectSpeed = { spd ->
+                            playbackSpeed = spd
+                            controller.setPlaybackSpeed(spd)
+                        },
+                        aspectMode = aspectMode,
+                        onSelectAspect = { mode ->
+                            aspectMode = mode
+                        },
                         onlineSubtitles = onlineSubtitles,
                         isSearchingSubtitles = isSearchingSubtitles,
                         subtitleSearchMessage = subtitleSearchMessage,
@@ -804,54 +1004,123 @@ fun VodPlayerScreen(
                 Spacer(Modifier.height(8.dp))
 
                 Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    VodChip(Icons.Filled.FastRewind, stringResource(R.string.player_rewind)) {
-                        seekRelative(-15_000)
-                        interaction++
+                    RoundMediaButton(
+                        icon = Icons.Filled.FastRewind,
+                        contentDescription = stringResource(R.string.player_rewind),
+                        size = 42.dp,
+                        iconSize = 22.dp,
+                        onClick = {
+                            seekRelative(-15_000)
+                            interaction++
+                        },
+                    )
+                    RoundMediaButton(
+                        icon = if (paused) Icons.Filled.PlayArrow else Icons.Filled.Pause,
+                        contentDescription = if (paused) stringResource(R.string.common_play) else stringResource(R.string.player_pause),
+                        size = 50.dp,
+                        iconSize = 28.dp,
+                        isPrimary = true,
+                        focusRequester = barFocus,
+                        onClick = {
+                            paused = !paused
+                            controller.player.playWhenReady = !paused
+                            interaction++
+                        },
+                    )
+                    RoundMediaButton(
+                        icon = Icons.Filled.FastForward,
+                        contentDescription = stringResource(R.string.player_forward),
+                        size = 42.dp,
+                        iconSize = 22.dp,
+                        onClick = {
+                            seekRelative(15_000)
+                            interaction++
+                        },
+                    )
+
+                    Spacer(Modifier.width(4.dp))
+
+                    VodChip(
+                        icon = Icons.Filled.Speed,
+                        label = if (playbackSpeed == 1.0f) stringResource(R.string.player_speed) else "${playbackSpeed}x",
+                        onClick = {
+                            vodPanel = if (vodPanel == VodPanel.SPEED) VodPanel.NONE else VodPanel.SPEED
+                            interaction++
+                        },
+                    )
+                    VodChip(
+                        icon = Icons.Filled.AspectRatio,
+                        label = aspectMode.shortLabel,
+                        onClick = {
+                            vodPanel = if (vodPanel == VodPanel.ASPECT) VodPanel.NONE else VodPanel.ASPECT
+                            interaction++
+                        },
+                    )
+                    if (seriesEpisodes.isNotEmpty()) {
+                        VodChip(
+                            icon = Icons.Filled.VideoLibrary,
+                            label = stringResource(R.string.player_episodes),
+                            onClick = {
+                                showEpisodesDrawer = !showEpisodesDrawer
+                                interaction++
+                            },
+                        )
                     }
                     VodChip(
-                        icon = if (paused) Icons.Filled.PlayArrow else Icons.Filled.Pause,
-                        label = if (paused) stringResource(R.string.common_play) else stringResource(R.string.player_pause),
-                        focusRequester = barFocus,
-                    ) {
-                        paused = !paused
-                        controller.player.playWhenReady = !paused
-                        interaction++
-                    }
-                    VodChip(Icons.Filled.FastForward, stringResource(R.string.player_forward)) {
-                        seekRelative(15_000)
-                        interaction++
-                    }
-                    VodChip(Icons.Filled.ClosedCaption, stringResource(R.string.player_subtitles)) {
-                        vodPanel = if (vodPanel == VodPanel.SUBTITLES) VodPanel.NONE else VodPanel.SUBTITLES
-                        interaction++
-                    }
-                    VodChip(Icons.Filled.Audiotrack, stringResource(R.string.player_audio)) {
-                        vodPanel = if (vodPanel == VodPanel.AUDIO) VodPanel.NONE else VodPanel.AUDIO
-                        interaction++
-                    }
-                    VodChip(Icons.Filled.HighQuality, stringResource(R.string.player_quality)) {
-                        vodPanel = if (vodPanel == VodPanel.QUALITY) VodPanel.NONE else VodPanel.QUALITY
-                        interaction++
-                    }
-                    VodChip(Icons.Filled.Analytics, stringResource(R.string.player_stats)) {
-                        showStatsDialog = true
-                        interaction++
-                    }
-                    VodChip(Icons.Filled.Tv, stringResource(R.string.vod_external_player)) {
-                        launchExternalPlayer()
-                        interaction++
-                    }
+                        icon = Icons.Filled.ClosedCaption,
+                        label = stringResource(R.string.player_subtitles),
+                        onClick = {
+                            vodPanel = if (vodPanel == VodPanel.SUBTITLES) VodPanel.NONE else VodPanel.SUBTITLES
+                            interaction++
+                        },
+                    )
+                    VodChip(
+                        icon = Icons.Filled.Audiotrack,
+                        label = stringResource(R.string.player_audio),
+                        onClick = {
+                            vodPanel = if (vodPanel == VodPanel.AUDIO) VodPanel.NONE else VodPanel.AUDIO
+                            interaction++
+                        },
+                    )
+                    VodChip(
+                        icon = Icons.Filled.HighQuality,
+                        label = stringResource(R.string.player_quality),
+                        onClick = {
+                            vodPanel = if (vodPanel == VodPanel.QUALITY) VodPanel.NONE else VodPanel.QUALITY
+                            interaction++
+                        },
+                    )
+                    VodChip(
+                        icon = Icons.Filled.Analytics,
+                        label = stringResource(R.string.player_stats),
+                        onClick = {
+                            showStatsDialog = true
+                            interaction++
+                        },
+                    )
+                    VodChip(
+                        icon = Icons.Filled.OpenInNew,
+                        label = stringResource(R.string.vod_external_player),
+                        onClick = {
+                            showExternalChooser = true
+                            interaction++
+                        },
+                    )
                     if (nextEpisodePromptEnabled && nextEpisode != null) {
                         VodChip(
                             icon = Icons.Filled.SkipNext,
                             label = stringResource(R.string.vod_next_episode_tag, nextEpisode!!.season, nextEpisode!!.episodeNumber),
-                        ) {
-                            playNextEpisode()
-                            interaction++
-                        }
+                            onClick = {
+                                playNextEpisode()
+                                interaction++
+                            },
+                        )
                     }
                 }
             }
@@ -892,6 +1161,46 @@ fun VodPlayerScreen(
                 onDismiss = { showStatsDialog = false },
             )
         }
+
+        AnimatedVisibility(
+            visible = showEpisodesDrawer && seriesEpisodes.isNotEmpty(),
+            enter = fadeIn(tween(250)) + slideInHorizontally(tween(300)) { it },
+            exit = fadeOut(tween(200)) + slideOutHorizontally(tween(250)) { it },
+            modifier = Modifier.align(Alignment.CenterEnd),
+        ) {
+            SeriesEpisodesDrawer(
+                episodes = seriesEpisodes,
+                currentEpisodeId = currentEpisodeId,
+                selectedSeason = selectedSeasonTab,
+                onSelectSeason = { selectedSeasonTab = it },
+                onSelectEpisode = { ep ->
+                    playEpisode(ep)
+                    showEpisodesDrawer = false
+                    interaction++
+                },
+                onClose = {
+                    showEpisodesDrawer = false
+                    interaction++
+                },
+            )
+        }
+
+        if (showExternalChooser) {
+            ExternalPlayerChooserDialog(
+                players = detectedPlayers,
+                onSelectPlayer = { app ->
+                    launchPlayer(app)
+                    showExternalChooser = false
+                },
+                onOpenSystemChooser = {
+                    launchExternalPlayer()
+                    showExternalChooser = false
+                },
+                onDismiss = {
+                    showExternalChooser = false
+                },
+            )
+        }
     }
 }
 
@@ -925,7 +1234,7 @@ private fun VodChip(
     }
 }
 
-private enum class VodPanel { NONE, SUBTITLES, AUDIO, QUALITY }
+private enum class VodPanel { NONE, SUBTITLES, AUDIO, QUALITY, SPEED, ASPECT }
 
 @OptIn(UnstableApi::class)
 @Composable
@@ -934,6 +1243,10 @@ private fun TrackPanel(
     controller: PlayerController,
     tracks: Tracks,
     firstFocus: FocusRequester,
+    playbackSpeed: Float = 1.0f,
+    onSelectSpeed: (Float) -> Unit = {},
+    aspectMode: AspectRatioMode = AspectRatioMode.FIT,
+    onSelectAspect: (AspectRatioMode) -> Unit = {},
     onlineSubtitles: List<OnlineSubtitle> = emptyList(),
     isSearchingSubtitles: Boolean = false,
     subtitleSearchMessage: String? = null,
@@ -952,6 +1265,33 @@ private fun TrackPanel(
     val options = mutableListOf<Triple<String, Boolean, () -> Unit>>()
 
     when (panel) {
+        VodPanel.SPEED -> {
+            val speeds = listOf(0.5f, 0.75f, 1.0f, 1.25f, 1.5f, 1.75f, 2.0f)
+            speeds.forEach { spd ->
+                val label = if (spd == 1.0f) "1.0x (${stringResource(R.string.player_quality_standard)})" else "${spd}x"
+                val isSelected = (playbackSpeed == spd)
+                options += Triple(label, isSelected) {
+                    onSelectSpeed(spd)
+                    onDone()
+                }
+            }
+        }
+        VodPanel.ASPECT -> {
+            val aspectOptions = listOf(
+                Pair(AspectRatioMode.FIT, stringResource(R.string.aspect_fit)),
+                Pair(AspectRatioMode.RATIO_16_9, stringResource(R.string.aspect_16_9)),
+                Pair(AspectRatioMode.RATIO_4_3, stringResource(R.string.aspect_4_3)),
+                Pair(AspectRatioMode.ZOOM, stringResource(R.string.aspect_zoom)),
+                Pair(AspectRatioMode.STRETCH, stringResource(R.string.aspect_stretch)),
+            )
+            aspectOptions.forEach { (mode, label) ->
+                val isSelected = (aspectMode == mode)
+                options += Triple(label, isSelected) {
+                    onSelectAspect(mode)
+                    onDone()
+                }
+            }
+        }
         VodPanel.SUBTITLES -> {
             val textGroups = tracks.groups.filter { it.type == C.TRACK_TYPE_TEXT }
             val anyEmbeddedSelected = textGroups.any { g -> (0 until g.length).any { g.isTrackSelected(it) } }
@@ -1020,6 +1360,8 @@ private fun TrackPanel(
         VodPanel.SUBTITLES -> stringResource(R.string.player_subtitles)
         VodPanel.AUDIO -> stringResource(R.string.player_audio)
         VodPanel.QUALITY -> stringResource(R.string.player_quality)
+        VodPanel.SPEED -> stringResource(R.string.player_speed)
+        VodPanel.ASPECT -> stringResource(R.string.player_aspect)
         VodPanel.NONE -> ""
     }
 
@@ -1446,6 +1788,500 @@ private fun NextEpisodeFloatingCard(
                 tint = if (isFocused) MaterialTheme.colorScheme.primary else Color.White.copy(alpha = 0.5f),
                 modifier = Modifier.size(20.dp),
             )
+        }
+    }
+}
+
+@Composable
+private fun RoundMediaButton(
+    icon: ImageVector,
+    contentDescription: String,
+    size: Dp = 44.dp,
+    iconSize: Dp = 22.dp,
+    isPrimary: Boolean = false,
+    focusRequester: FocusRequester? = null,
+    onClick: () -> Unit,
+) {
+    var focused by remember { mutableStateOf(false) }
+    val scale by animateFloatAsState(targetValue = if (focused) 1.15f else 1f, label = "roundBtnScale")
+    val bgColor = when {
+        focused -> MaterialTheme.colorScheme.primary
+        isPrimary -> Color.White.copy(alpha = 0.28f)
+        else -> Color.White.copy(alpha = 0.14f)
+    }
+    val iconColor = when {
+        focused -> MaterialTheme.colorScheme.onPrimary
+        else -> Color.White
+    }
+
+    Box(
+        modifier = Modifier
+            .then(if (focusRequester != null) Modifier.focusRequester(focusRequester) else Modifier)
+            .scale(scale)
+            .size(size)
+            .clip(CircleShape)
+            .background(bgColor)
+            .border(
+                width = if (focused) 2.dp else 1.dp,
+                color = if (focused) MaterialTheme.colorScheme.primary else Color.White.copy(alpha = 0.25f),
+                shape = CircleShape,
+            )
+            .onFocusChanged { focused = it.isFocused }
+            .clickable(onClick = onClick)
+            .focusable(),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = contentDescription,
+            tint = iconColor,
+            modifier = Modifier.size(iconSize),
+        )
+    }
+}
+
+@Composable
+private fun SeriesEpisodesDrawer(
+    episodes: List<Episode>,
+    currentEpisodeId: Long?,
+    selectedSeason: Int,
+    onSelectSeason: (Int) -> Unit,
+    onSelectEpisode: (Episode) -> Unit,
+    onClose: () -> Unit,
+) {
+    val seasons = remember(episodes) { episodes.map { it.season }.distinct().sorted() }
+    val activeSeason = if (selectedSeason in seasons) selectedSeason else (seasons.firstOrNull() ?: 1)
+    val seasonEpisodes = remember(episodes, activeSeason) {
+        episodes.filter { it.season == activeSeason }.sortedBy { it.episodeNumber }
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxHeight()
+            .widthIn(min = 320.dp, max = 390.dp)
+            .background(Color(0xF00A0E18))
+            .border(
+                width = 1.dp,
+                color = Color.White.copy(alpha = 0.15f),
+                shape = RoundedCornerShape(topStart = 16.dp, bottomStart = 16.dp),
+            )
+            .padding(16.dp),
+    ) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            // Header: Title & Close Button
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        Icons.Filled.VideoLibrary,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(20.dp),
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        text = stringResource(R.string.player_episodes),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White,
+                    )
+                    Spacer(Modifier.width(6.dp))
+                    Text(
+                        text = "(${seasonEpisodes.size})",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.White.copy(alpha = 0.6f),
+                    )
+                }
+
+                IconButton(
+                    onClick = onClose,
+                    modifier = Modifier.size(32.dp),
+                ) {
+                    Icon(
+                        Icons.Filled.Close,
+                        contentDescription = stringResource(R.string.common_close),
+                        tint = Color.White.copy(alpha = 0.8f),
+                        modifier = Modifier.size(20.dp),
+                    )
+                }
+            }
+
+            Spacer(Modifier.height(12.dp))
+
+            // Season selector row (if more than 1 season)
+            if (seasons.size > 1) {
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    items(seasons) { s ->
+                        val isSelected = (s == activeSeason)
+                        var focused by remember { mutableStateOf(false) }
+                        Box(
+                            modifier = Modifier
+                                .onFocusChanged { focused = it.isFocused }
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(
+                                    when {
+                                        focused -> MaterialTheme.colorScheme.primary
+                                        isSelected -> MaterialTheme.colorScheme.primary.copy(alpha = 0.25f)
+                                        else -> Color.White.copy(alpha = 0.08f)
+                                    },
+                                )
+                                .border(
+                                    1.dp,
+                                    if (focused || isSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
+                                    RoundedCornerShape(8.dp),
+                                )
+                                .clickable { onSelectSeason(s) }
+                                .padding(horizontal = 12.dp, vertical = 6.dp),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text(
+                                text = "Sezon $s",
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                color = if (focused) MaterialTheme.colorScheme.onPrimary else if (isSelected) MaterialTheme.colorScheme.primary else Color.White,
+                            )
+                        }
+                    }
+                }
+                Spacer(Modifier.height(12.dp))
+            }
+
+            // Episode list
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                items(seasonEpisodes) { ep ->
+                    val isCurrent = (ep.id == currentEpisodeId)
+                    var focused by remember { mutableStateOf(false) }
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .onFocusChanged { focused = it.isFocused }
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(
+                                when {
+                                    focused -> MaterialTheme.colorScheme.primary.copy(alpha = 0.25f)
+                                    isCurrent -> Color(0xFF1E293B)
+                                    else -> Color.White.copy(alpha = 0.05f)
+                                },
+                            )
+                            .border(
+                                width = if (focused) 2.dp else if (isCurrent) 1.5.dp else 1.dp,
+                                color = when {
+                                    focused -> MaterialTheme.colorScheme.primary
+                                    isCurrent -> MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
+                                    else -> Color.White.copy(alpha = 0.08f)
+                                },
+                                shape = RoundedCornerShape(12.dp),
+                            )
+                            .clickable { onSelectEpisode(ep) }
+                            .focusable()
+                            .padding(8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        // Thumbnail or placeholder
+                        Box(
+                            modifier = Modifier
+                                .size(width = 68.dp, height = 44.dp)
+                                .clip(RoundedCornerShape(6.dp))
+                                .background(Color.Black.copy(alpha = 0.5f)),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            if (!ep.stillUrl.isNullOrBlank()) {
+                                AsyncImage(
+                                    model = ep.stillUrl,
+                                    contentDescription = null,
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier.fillMaxSize(),
+                                )
+                            }
+                            Box(
+                                modifier = Modifier
+                                    .size(22.dp)
+                                    .clip(CircleShape)
+                                    .background(if (isCurrent) MaterialTheme.colorScheme.primary else Color.Black.copy(alpha = 0.6f)),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                Icon(
+                                    Icons.Filled.PlayArrow,
+                                    contentDescription = null,
+                                    tint = if (isCurrent) Color.Black else Color.White,
+                                    modifier = Modifier.size(14.dp),
+                                )
+                            }
+                        }
+
+                        Spacer(Modifier.width(10.dp))
+
+                        Column(modifier = Modifier.weight(1f)) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    text = "B${ep.episodeNumber}",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary,
+                                )
+                                if (isCurrent) {
+                                    Spacer(Modifier.width(6.dp))
+                                    Text(
+                                        text = "• Şu an Oynatılıyor",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = Color(0xFF4ADE80),
+                                        fontSize = 10.sp,
+                                    )
+                                }
+                            }
+                            Text(
+                                text = ep.title.ifBlank { "Bölüm ${ep.episodeNumber}" },
+                                style = MaterialTheme.typography.bodySmall,
+                                fontWeight = FontWeight.Medium,
+                                color = Color.White,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                            if (!ep.plot.isNullOrBlank()) {
+                                Text(
+                                    text = ep.plot,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = Color.White.copy(alpha = 0.5f),
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    fontSize = 10.sp,
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ExternalPlayerChooserDialog(
+    players: List<ExternalAppInfo>,
+    onSelectPlayer: (ExternalAppInfo) -> Unit,
+    onOpenSystemChooser: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.65f))
+                .clickable(onClick = onDismiss),
+            contentAlignment = Alignment.Center,
+        ) {
+            Card(
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(containerColor = Color(0xF8111625)),
+                border = BorderStroke(1.dp, Color.White.copy(alpha = 0.15f)),
+                modifier = Modifier
+                    .widthIn(min = 340.dp, max = 460.dp)
+                    .clickable(enabled = false) {}
+                    .padding(20.dp),
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    // Header
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                Icons.Filled.OpenInNew,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(24.dp),
+                            )
+                            Spacer(Modifier.width(10.dp))
+                            Text(
+                                text = stringResource(R.string.vod_external_chooser_title),
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                            )
+                        }
+                        IconButton(
+                            onClick = onDismiss,
+                            modifier = Modifier.size(28.dp),
+                        ) {
+                            Icon(
+                                Icons.Filled.Close,
+                                contentDescription = stringResource(R.string.common_close),
+                                tint = Color.White.copy(alpha = 0.7f),
+                                modifier = Modifier.size(20.dp),
+                            )
+                        }
+                    }
+
+                    Spacer(Modifier.height(6.dp))
+                    Text(
+                        text = "Videoyu harici bir video oynatıcı uygulamasında izleyin:",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.White.copy(alpha = 0.65f),
+                    )
+
+                    Spacer(Modifier.height(14.dp))
+
+                    if (players.isNotEmpty()) {
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(max = 260.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                        ) {
+                            items(players) { app ->
+                                var focused by remember { mutableStateOf(false) }
+                                val bmp = remember(app.icon) { drawableToBitmap(app.icon) }
+
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .onFocusChanged { focused = it.isFocused }
+                                        .clip(RoundedCornerShape(12.dp))
+                                        .background(
+                                            if (focused) MaterialTheme.colorScheme.primary
+                                            else Color.White.copy(alpha = 0.08f),
+                                        )
+                                        .border(
+                                            1.dp,
+                                            if (focused) MaterialTheme.colorScheme.primary else Color.White.copy(alpha = 0.12f),
+                                            RoundedCornerShape(12.dp),
+                                        )
+                                        .clickable { onSelectPlayer(app) }
+                                        .focusable()
+                                        .padding(horizontal = 12.dp, vertical = 10.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
+                                    if (bmp != null) {
+                                        Image(
+                                            bitmap = bmp.asImageBitmap(),
+                                            contentDescription = app.name,
+                                            modifier = Modifier
+                                                .size(36.dp)
+                                                .clip(RoundedCornerShape(8.dp)),
+                                        )
+                                    } else {
+                                        Box(
+                                            modifier = Modifier
+                                                .size(36.dp)
+                                                .clip(RoundedCornerShape(8.dp))
+                                                .background(Color.White.copy(alpha = 0.12f)),
+                                            contentAlignment = Alignment.Center,
+                                        ) {
+                                            Icon(
+                                                Icons.Filled.Tv,
+                                                contentDescription = null,
+                                                tint = if (focused) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary,
+                                                modifier = Modifier.size(22.dp),
+                                            )
+                                        }
+                                    }
+
+                                    Spacer(Modifier.width(12.dp))
+
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text(
+                                            text = app.name,
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            fontWeight = FontWeight.Bold,
+                                            color = if (focused) MaterialTheme.colorScheme.onPrimary else Color.White,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                        )
+                                        Text(
+                                            text = app.packageName,
+                                            style = MaterialTheme.typography.labelSmall,
+                                            color = if (focused) MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f) else Color.White.copy(alpha = 0.5f),
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                            fontSize = 10.sp,
+                                        )
+                                    }
+
+                                    Icon(
+                                        Icons.Filled.OpenInNew,
+                                        contentDescription = null,
+                                        tint = if (focused) MaterialTheme.colorScheme.onPrimary else Color.White.copy(alpha = 0.5f),
+                                        modifier = Modifier.size(18.dp),
+                                    )
+                                }
+                            }
+                        }
+                    } else {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(Color.White.copy(alpha = 0.05f))
+                                .padding(14.dp),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text(
+                                text = stringResource(R.string.vod_external_chooser_empty),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color.White.copy(alpha = 0.65f),
+                                textAlign = TextAlign.Center,
+                            )
+                        }
+                    }
+
+                    Spacer(Modifier.height(14.dp))
+
+                    // System app chooser button
+                    var sysFocused by remember { mutableStateOf(false) }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .onFocusChanged { sysFocused = it.isFocused }
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(
+                                if (sysFocused) MaterialTheme.colorScheme.primaryContainer
+                                else Color.White.copy(alpha = 0.12f),
+                            )
+                            .border(
+                                1.dp,
+                                if (sysFocused) MaterialTheme.colorScheme.primary else Color.White.copy(alpha = 0.2f),
+                                RoundedCornerShape(10.dp),
+                            )
+                            .clickable(onClick = onOpenSystemChooser)
+                            .focusable()
+                            .padding(vertical = 10.dp, horizontal = 14.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
+                    ) {
+                        Icon(
+                            Icons.Filled.Tv,
+                            contentDescription = null,
+                            tint = if (sysFocused) MaterialTheme.colorScheme.onPrimaryContainer else Color.White,
+                            modifier = Modifier.size(18.dp),
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            text = stringResource(R.string.vod_external_system_chooser),
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            color = if (sysFocused) MaterialTheme.colorScheme.onPrimaryContainer else Color.White,
+                        )
+                    }
+                }
+            }
         }
     }
 }

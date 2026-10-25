@@ -503,6 +503,10 @@ class PlayerController(
         if (player.isCurrentMediaItemSeekable) player.seekForward()
     }
 
+    fun setPlaybackSpeed(speed: Float) {
+        player.setPlaybackSpeed(speed)
+    }
+
     val isSeekable: Boolean get() = player.isCurrentMediaItemSeekable
 
     data class QualityOption(

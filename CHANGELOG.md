@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.12.14
+
+- **Netflix Tarzı Yuvarlak Oynatıcı Butonları:** İleri (+15s) ve geri (-15s) sarma ile oynat/duraklat butonları tamamen yuvarlak, yazısız, zarif Netflix tarzı ikonlarla yenilendi. Odaklandığında büyüyen ve parlayan D-pad kumanda uyumlu yapı kuruldu.
+- **YouTube Tarzı Video Oynatma Hızı:** Oynatıcı çubuğuna eklenen hız butonu ile video akışı 0.5x, 0.75x, 1.0x (Normal), 1.25x, 1.5x, 1.75x ve 2.0x hızlarında gerçek zamanlı kontrol edilebilir.
+- **Dinamik En-Boy Oranı & Sığdırma (Aspect Ratio):** Sayfaya Sığdır (Orijinal), 16:9 Geniş Ekran, 4:3 Klasik TV, Tam Ekran (Zoom) ve Ekrana Yay (Stretch) seçenekleri video ekranını anında ve kesintisiz yeniden boyutlandırır.
+- **Dizi Sezon & Bölüm Önizleme Yan Menüsü (Drawer):** Dizi izlerken sağ taraftan açılan düşük opasiteli modern menü ile diğer sezonlara ve bölümlere resimleriyle birlikte anında göz atılabilir, tek tıkla istenen bölüme geçilebilir.
+- **Akıllı Harici Oynatıcı Tespiti:** Cihazda (TV veya telefonda) yüklü olan tüm harici oynatıcılar (VLC, MX Player, Just Player, Kodi, mpv vb.) otomatik bulunur ve kendi logolarıyla seçme şansı sunulur.
+- **Ana Sayfa Hızlı Araçlar Menüsüne Favoriler Bölümü:** Arama ve QR arasına eklenen altın sarısı yıldız simgeli Favoriler butonu ile favori dizi ve filmler kategorik karusel ve ızgaralarla tek bir yerde toplandı.
+- **İzlemeye Devam Et Yönetimi:** Kullanıcının listeden tek tek içerik silebilmesi veya tüm listeyi tek dokunuşla onaylı şekilde temizleyebilmesi sağlandı.
+- **Sadeleştirilmiş Dijital Saat:** Oynatıcıdaki sağ üst saat kutusuz, çerçevesiz, saf ve şık bir dijital saate dönüştürüldü.
+- **Sadeleştirilmiş Ayarlar:** Ana menü 8 temel başlıkta toplanarak diğer ayarlar "DİĞER AYARLAR" menüsü altına taşındı.
+
 ## 0.12.13
 
 - **Donanım Multimedya Tünelleme (Hardware A/V Tunneling):** Destekleyen Android TV'lerde ses ve görüntü doğrudan TV'nin donanım çipine tünellenerek dudak-ses kayması (lip-sync lag) sıfırlandı; 60fps ve 4K spor yayınları için kusursuz akıcılık sağlandı.

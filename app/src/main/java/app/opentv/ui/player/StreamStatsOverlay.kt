@@ -77,10 +77,15 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import java.text.SimpleDateFormat
 import java.util.Date
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.text.TextStyle
 import java.util.Locale
 
 /**
- * Sleek frosted-glass digital clock pill in the top-right corner of the video player.
+ * Minimalist digital clock in the top-right corner of the video player.
+ * Frameless, iconless, with 30% reduced opacity (~0.65f) and shadow so it stays legible without distracting.
  */
 @Composable
 fun PlayerClockBadge(
@@ -98,37 +103,31 @@ fun PlayerClockBadge(
 
     Box(
         modifier = modifier
-            .clip(RoundedCornerShape(12.dp))
-            .background(Color.Black.copy(alpha = 0.65f))
-            .border(1.dp, Color.White.copy(alpha = 0.2f), RoundedCornerShape(12.dp))
-            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
-            .padding(horizontal = 12.dp, vertical = 6.dp),
+            .then(
+                if (onClick != null) Modifier.clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    onClick = onClick,
+                ) else Modifier
+            )
+            .padding(horizontal = 6.dp, vertical = 4.dp),
         contentAlignment = Alignment.Center,
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(6.dp)
-                    .background(Color(0xFF06B6D4), CircleShape),
-            )
-            Icon(
-                imageVector = Icons.Filled.Schedule,
-                contentDescription = null,
-                tint = Color.White.copy(alpha = 0.8f),
-                modifier = Modifier.size(14.dp),
-            )
-            Text(
-                text = currentTime,
-                color = Color.White,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily.Monospace,
-                letterSpacing = 0.5.sp,
-            )
-        }
+        Text(
+            text = currentTime,
+            color = Color.White.copy(alpha = 0.65f),
+            fontSize = 15.sp,
+            fontWeight = FontWeight.SemiBold,
+            fontFamily = FontFamily.Monospace,
+            letterSpacing = 0.5.sp,
+            style = TextStyle(
+                shadow = Shadow(
+                    color = Color.Black.copy(alpha = 0.8f),
+                    offset = Offset(1.5f, 1.5f),
+                    blurRadius = 4f,
+                )
+            ),
+        )
     }
 }
 

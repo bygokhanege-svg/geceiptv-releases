@@ -44,6 +44,12 @@ import androidx.compose.material.icons.outlined.Movie
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.VideoLibrary
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.DeleteOutline
+import androidx.compose.material.icons.outlined.DeleteSweep
+import androidx.compose.ui.text.style.TextAlign
+import app.opentv.ui.favorites.FavoritesDialog
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.AnimatedVisibility
@@ -104,6 +110,11 @@ fun DashboardScreen(
     val recentSeries by vodViewModel.recentlyAddedSeries.collectAsState()
     val recommendedMovies by vodViewModel.recommendedMovies.collectAsState()
     val continueWatching by vodViewModel.continueWatching.collectAsState()
+    val favouriteMovies by vodViewModel.favouriteMovies.collectAsState()
+    val favouriteSeries by vodViewModel.favouriteSeries.collectAsState()
+    var showFavoritesDialog by remember { mutableStateOf(false) }
+    var showClearAllConfirm by remember { mutableStateOf(false) }
+    var itemToRemove by remember { mutableStateOf<VodViewModel.ResumeItem?>(null) }
 
     val hasSources = sourcesUi.sources.isNotEmpty()
     LaunchedEffect(hasSources) {
@@ -165,6 +176,9 @@ fun DashboardScreen(
             onResume = onResume,
             onOpenLicense = onOpenLicense,
             onOpenSearch = onOpenSearch,
+            onOpenFavorites = { showFavoritesDialog = true },
+            onRemoveResumeItem = { itemToRemove = it },
+            onClearContinueWatching = { showClearAllConfirm = true },
             onOpenSettings = onOpenSettings,
             onOpenMultiView = onOpenMultiView,
             onAddSource = onAddSource,
@@ -177,9 +191,7 @@ fun DashboardScreen(
             onNavigateTab = onNavigateTab,
             health = activeHealth,
         )
-        return
-    }
-
+    } else {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -414,10 +426,11 @@ fun DashboardScreen(
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            // Hızlı Araçlar ve İşlem Paneli (Çoklu TV, Arama, QR ile Bağlan, Ayarlar)
+            // Hızlı Araçlar ve İşlem Paneli (Çoklu TV, Arama, Favoriler, QR ile Bağlan, Ayarlar)
             DashboardQuickToolsRow(
                 onOpenMultiView = onOpenMultiView,
                 onOpenSearch = onOpenSearch,
+                onOpenFavorites = { showFavoritesDialog = true },
                 onOpenQr = onOpenWebManager,
                 onOpenSettings = onOpenSettings,
             )
@@ -447,6 +460,8 @@ fun DashboardScreen(
                         recommendedFallback = recommendedMovies.firstOrNull(),
                         onResume = onResume,
                         onOpenMovie = onOpenMovie,
+                        onRemoveItem = { itemToRemove = it },
+                        onClearAll = { showClearAllConfirm = true },
                     )
                 }
 
@@ -521,6 +536,51 @@ fun DashboardScreen(
             }
         }
     }
+    }
+
+    if (showFavoritesDialog) {
+        FavoritesDialog(
+            favouriteMovies = favouriteMovies,
+            favouriteSeries = favouriteSeries,
+            onOpenMovie = { movie ->
+                showFavoritesDialog = false
+                onOpenMovie(movie)
+            },
+            onOpenSeries = { series ->
+                showFavoritesDialog = false
+                onOpenSeries(series)
+            },
+            onToggleMovieFavourite = { movie ->
+                vodViewModel.toggleMovieFavourite(movie)
+            },
+            onToggleSeriesFavourite = { series ->
+                vodViewModel.toggleSeriesFavourite(series)
+            },
+            onDismiss = { showFavoritesDialog = false },
+            isTelevision = isTelevision,
+        )
+    }
+
+    if (showClearAllConfirm) {
+        ContinueWatchingClearConfirmDialog(
+            onConfirm = {
+                vodViewModel.clearContinueWatching()
+                showClearAllConfirm = false
+            },
+            onDismiss = { showClearAllConfirm = false },
+        )
+    }
+
+    itemToRemove?.let { item ->
+        ContinueWatchingRemoveConfirmDialog(
+            itemTitle = item.title,
+            onConfirm = {
+                vodViewModel.removeContinueWatching(item.mediaKey)
+                itemToRemove = null
+            },
+            onDismiss = { itemToRemove = null },
+        )
+    }
 }
 
 @Composable
@@ -575,6 +635,8 @@ private fun ContinueWatchingColumn(
     recommendedFallback: Movie?,
     onResume: (mediaKey: String, url: String, title: String) -> Unit,
     onOpenMovie: (Movie) -> Unit,
+    onRemoveItem: (VodViewModel.ResumeItem) -> Unit = {},
+    onClearAll: () -> Unit = {},
 ) {
     Column(
         modifier = Modifier
@@ -600,18 +662,50 @@ private fun ContinueWatchingColumn(
                     fontWeight = FontWeight.Bold,
                 )
             }
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f))
-                    .padding(horizontal = 7.dp, vertical = 3.dp),
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
             ) {
-                Text(
-                    if (continueWatching.isNotEmpty()) stringResource(R.string.dashboard_content_count, continueWatching.size) else stringResource(R.string.dashboard_recommended).uppercase(),
-                    color = MaterialTheme.colorScheme.primary,
-                    style = MaterialTheme.typography.labelSmall,
-                    fontWeight = FontWeight.Bold,
-                )
+                if (continueWatching.isNotEmpty()) {
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(Color(0xFFEF4444).copy(alpha = 0.15f))
+                            .border(1.dp, Color(0xFFEF4444).copy(alpha = 0.35f), RoundedCornerShape(8.dp))
+                            .clickable { onClearAll() }
+                            .padding(horizontal = 7.dp, vertical = 3.dp),
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Outlined.DeleteSweep,
+                                contentDescription = stringResource(R.string.continue_watching_clear_all),
+                                tint = Color(0xFFEF4444),
+                                modifier = Modifier.size(13.dp),
+                            )
+                            Spacer(modifier = Modifier.width(3.dp))
+                            Text(
+                                stringResource(R.string.continue_watching_clear_all),
+                                color = Color(0xFFEF4444),
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 9.sp,
+                            )
+                        }
+                    }
+                }
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f))
+                        .padding(horizontal = 7.dp, vertical = 3.dp),
+                ) {
+                    Text(
+                        if (continueWatching.isNotEmpty()) stringResource(R.string.dashboard_content_count, continueWatching.size) else stringResource(R.string.dashboard_recommended).uppercase(),
+                        color = MaterialTheme.colorScheme.primary,
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
             }
         }
 
@@ -713,18 +807,48 @@ private fun ContinueWatchingColumn(
                         )
                         Spacer(modifier = Modifier.height(10.dp))
 
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(MaterialTheme.colorScheme.primary)
-                                .padding(horizontal = 12.dp, vertical = 5.dp),
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
                         ) {
-                            Text(
-                                "▶ " + stringResource(R.string.dashboard_resume),
-                                color = MaterialTheme.colorScheme.onPrimary,
-                                style = MaterialTheme.typography.labelSmall,
-                                fontWeight = FontWeight.Bold,
-                            )
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .background(MaterialTheme.colorScheme.primary)
+                                    .padding(horizontal = 12.dp, vertical = 5.dp),
+                            ) {
+                                Text(
+                                    "▶ " + stringResource(R.string.dashboard_resume),
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                )
+                            }
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .background(Color.White.copy(alpha = 0.08f))
+                                    .border(1.dp, Color.White.copy(alpha = 0.15f), RoundedCornerShape(8.dp))
+                                    .clickable { onRemoveItem(primary) }
+                                    .padding(horizontal = 8.dp, vertical = 5.dp),
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.DeleteOutline,
+                                        contentDescription = stringResource(R.string.continue_watching_remove_item),
+                                        tint = Color(0xFFEF4444),
+                                        modifier = Modifier.size(13.dp),
+                                    )
+                                    Spacer(modifier = Modifier.width(3.dp))
+                                    Text(
+                                        stringResource(R.string.continue_watching_remove_item),
+                                        color = Color(0xFFEF4444),
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontWeight = FontWeight.Medium,
+                                        fontSize = 9.sp,
+                                    )
+                                }
+                            }
                         }
                     }
                 }
@@ -793,6 +917,22 @@ private fun ContinueWatchingColumn(
                                 color = if (subFocused) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary,
                                 fontSize = 12.sp,
                             )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Box(
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .clip(CircleShape)
+                                    .background(Color.White.copy(alpha = 0.1f))
+                                    .clickable { onRemoveItem(item) },
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Close,
+                                    contentDescription = stringResource(R.string.continue_watching_remove_item),
+                                    tint = if (subFocused) Color.White else Color(0xFFEF4444),
+                                    modifier = Modifier.size(13.dp),
+                                )
+                            }
                         }
                     }
                 }
@@ -1045,6 +1185,9 @@ private fun PhoneDashboardContent(
     onResume: (mediaKey: String, url: String, title: String) -> Unit,
     onOpenLicense: () -> Unit,
     onOpenSearch: () -> Unit,
+    onOpenFavorites: () -> Unit = {},
+    onRemoveResumeItem: (VodViewModel.ResumeItem) -> Unit = {},
+    onClearContinueWatching: () -> Unit = {},
     onOpenSettings: () -> Unit,
     onOpenMultiView: () -> Unit,
     onAddSource: () -> Unit,
@@ -1270,19 +1413,49 @@ private fun PhoneDashboardContent(
                             fontWeight = FontWeight.Bold,
                         )
                     }
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(6.dp))
-                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f))
-                            .padding(horizontal = 6.dp, vertical = 2.dp),
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
                     ) {
-                        Text(
-                            stringResource(R.string.dashboard_content_count, continueWatching.size),
-                            color = MaterialTheme.colorScheme.primary,
-                            style = MaterialTheme.typography.labelSmall,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 9.sp,
-                        )
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(6.dp))
+                                .background(Color(0xFFEF4444).copy(alpha = 0.15f))
+                                .border(1.dp, Color(0xFFEF4444).copy(alpha = 0.35f), RoundedCornerShape(6.dp))
+                                .clickable { onClearContinueWatching() }
+                                .padding(horizontal = 6.dp, vertical = 2.dp),
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    imageVector = Icons.Outlined.DeleteSweep,
+                                    contentDescription = stringResource(R.string.continue_watching_clear_all),
+                                    tint = Color(0xFFEF4444),
+                                    modifier = Modifier.size(11.dp),
+                                )
+                                Spacer(modifier = Modifier.width(2.dp))
+                                Text(
+                                    stringResource(R.string.continue_watching_clear_all),
+                                    color = Color(0xFFEF4444),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 8.5.sp,
+                                )
+                            }
+                        }
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(6.dp))
+                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f))
+                                .padding(horizontal = 6.dp, vertical = 2.dp),
+                        ) {
+                            Text(
+                                stringResource(R.string.dashboard_content_count, continueWatching.size),
+                                color = MaterialTheme.colorScheme.primary,
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 9.sp,
+                            )
+                        }
                     }
                 }
 
@@ -1352,19 +1525,49 @@ private fun PhoneDashboardContent(
                                 overflow = TextOverflow.Ellipsis,
                             )
                             Spacer(modifier = Modifier.height(8.dp))
-                            Box(
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(6.dp))
-                                    .background(MaterialTheme.colorScheme.primary)
-                                    .padding(horizontal = 10.dp, vertical = 4.dp),
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(6.dp),
                             ) {
-                                Text(
-                                    "▶ " + stringResource(R.string.dashboard_watch_now),
-                                    color = MaterialTheme.colorScheme.onPrimary,
-                                    style = MaterialTheme.typography.labelSmall,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 11.sp,
-                                )
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(6.dp))
+                                        .background(MaterialTheme.colorScheme.primary)
+                                        .padding(horizontal = 10.dp, vertical = 4.dp),
+                                ) {
+                                    Text(
+                                        "▶ " + stringResource(R.string.dashboard_watch_now),
+                                        color = MaterialTheme.colorScheme.onPrimary,
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 11.sp,
+                                    )
+                                }
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(6.dp))
+                                        .background(Color.White.copy(alpha = 0.08f))
+                                        .border(1.dp, Color.White.copy(alpha = 0.15f), RoundedCornerShape(6.dp))
+                                        .clickable { onRemoveResumeItem(primary) }
+                                        .padding(horizontal = 8.dp, vertical = 4.dp),
+                                ) {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Icon(
+                                            imageVector = Icons.Outlined.DeleteOutline,
+                                            contentDescription = stringResource(R.string.continue_watching_remove_item),
+                                            tint = Color(0xFFEF4444),
+                                            modifier = Modifier.size(11.dp),
+                                        )
+                                        Spacer(modifier = Modifier.width(2.dp))
+                                        Text(
+                                            stringResource(R.string.continue_watching_remove_item),
+                                            color = Color(0xFFEF4444),
+                                            style = MaterialTheme.typography.labelSmall,
+                                            fontWeight = FontWeight.Medium,
+                                            fontSize = 9.sp,
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
@@ -1547,6 +1750,7 @@ private fun PhoneDashboardContent(
             DashboardQuickToolsRow(
                 onOpenMultiView = onOpenMultiView,
                 onOpenSearch = onOpenSearch,
+                onOpenFavorites = onOpenFavorites,
                 onOpenQr = onOpenWebManager,
                 onOpenSettings = onOpenSettings,
             )
@@ -1771,6 +1975,7 @@ private fun PhonePosterCard(
 fun DashboardQuickToolsRow(
     onOpenMultiView: () -> Unit,
     onOpenSearch: () -> Unit,
+    onOpenFavorites: () -> Unit,
     onOpenQr: () -> Unit,
     onOpenSettings: () -> Unit,
     modifier: Modifier = Modifier,
@@ -1786,7 +1991,7 @@ fun DashboardQuickToolsRow(
             subtitle = stringResource(R.string.dashboard_tool_multiview_desc),
             icon = Icons.Default.GridView,
             accentColor = Color(0xFF10B981),
-            modifier = Modifier.weight(1.1f),
+            modifier = Modifier.weight(1.05f),
             onClick = onOpenMultiView,
         )
         QuickToolCard(
@@ -1798,10 +2003,18 @@ fun DashboardQuickToolsRow(
             onClick = onOpenSearch,
         )
         QuickToolCard(
+            title = stringResource(R.string.dashboard_tool_favorites),
+            subtitle = stringResource(R.string.dashboard_tool_favorites_desc),
+            icon = Icons.Filled.Star,
+            accentColor = Color(0xFFF59E0B),
+            modifier = Modifier.weight(1f),
+            onClick = onOpenFavorites,
+        )
+        QuickToolCard(
             title = stringResource(R.string.dashboard_tool_qr),
             subtitle = stringResource(R.string.dashboard_tool_qr_desc),
             icon = Icons.Filled.QrCode2,
-            accentColor = Color(0xFFF59E0B),
+            accentColor = Color(0xFF8B5CF6),
             modifier = Modifier.weight(1f),
             onClick = onOpenQr,
         )
@@ -1813,6 +2026,179 @@ fun DashboardQuickToolsRow(
             modifier = Modifier.weight(1f),
             onClick = onOpenSettings,
         )
+    }
+}
+
+@Composable
+private fun ContinueWatchingClearConfirmDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    androidx.compose.ui.window.Dialog(onDismissRequest = onDismiss) {
+        Box(
+            modifier = Modifier
+                .clip(RoundedCornerShape(16.dp))
+                .background(Color(0xFF0F172A))
+                .border(1.dp, Color(0xFFEF4444).copy(alpha = 0.4f), RoundedCornerShape(16.dp))
+                .padding(20.dp),
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .background(Color(0xFFEF4444).copy(alpha = 0.15f)),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.DeleteSweep,
+                        contentDescription = null,
+                        tint = Color(0xFFEF4444),
+                        modifier = Modifier.size(26.dp),
+                    )
+                }
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = stringResource(R.string.continue_watching_clear_confirm_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    textAlign = TextAlign.Center,
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(
+                    text = stringResource(R.string.continue_watching_clear_confirm_desc),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color(0xFF94A3B8),
+                    textAlign = TextAlign.Center,
+                )
+                Spacer(modifier = Modifier.height(18.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(Color.White.copy(alpha = 0.08f))
+                            .clickable { onDismiss() }
+                            .padding(vertical = 10.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            text = stringResource(R.string.common_cancel),
+                            color = Color(0xFFCBD5E1),
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(Color(0xFFEF4444))
+                            .clickable { onConfirm() }
+                            .padding(vertical = 10.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            text = stringResource(R.string.continue_watching_clear_all),
+                            color = Color.White,
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ContinueWatchingRemoveConfirmDialog(
+    itemTitle: String,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    androidx.compose.ui.window.Dialog(onDismissRequest = onDismiss) {
+        Box(
+            modifier = Modifier
+                .clip(RoundedCornerShape(16.dp))
+                .background(Color(0xFF0F172A))
+                .border(1.dp, Color(0xFFEF4444).copy(alpha = 0.4f), RoundedCornerShape(16.dp))
+                .padding(20.dp),
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .background(Color(0xFFEF4444).copy(alpha = 0.15f)),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.DeleteOutline,
+                        contentDescription = null,
+                        tint = Color(0xFFEF4444),
+                        modifier = Modifier.size(26.dp),
+                    )
+                }
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = stringResource(R.string.continue_watching_remove_confirm_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    textAlign = TextAlign.Center,
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(
+                    text = stringResource(R.string.continue_watching_remove_confirm_desc, itemTitle),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color(0xFF94A3B8),
+                    textAlign = TextAlign.Center,
+                )
+                Spacer(modifier = Modifier.height(18.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(Color.White.copy(alpha = 0.08f))
+                            .clickable { onDismiss() }
+                            .padding(vertical = 10.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            text = stringResource(R.string.common_cancel),
+                            color = Color(0xFFCBD5E1),
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(Color(0xFFEF4444))
+                            .clickable { onConfirm() }
+                            .padding(vertical = 10.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            text = stringResource(R.string.continue_watching_remove_item),
+                            color = Color.White,
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 

@@ -31,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.platform.LocalContext
@@ -164,8 +165,9 @@ fun DashboardScreen(
         numberFormatter.format(if (total > 0) total else recentMovies.size)
     }
 
-    if (!isTelevision) {
-        PhoneDashboardContent(
+    Box(modifier = Modifier.fillMaxSize()) {
+        if (!isTelevision) {
+            PhoneDashboardContent(
             recentMovies = recentMovies,
             recentSeries = recentSeries,
             recommendedMovies = recommendedMovies,
@@ -591,22 +593,23 @@ fun DashboardScreen(
         )
     }
 
-    if (showAllContinueWatching) {
-        AllContinueWatchingDialog(
-            continueWatching = continueWatching,
-            onResume = { mediaKey, url, title ->
-                showAllContinueWatching = false
-                onResume(mediaKey, url, title)
-            },
-            onRemoveItem = { item ->
-                itemToRemove = item
-            },
-            onClearAll = {
-                showClearAllConfirm = true
-            },
-            onDismiss = { showAllContinueWatching = false },
-            isTelevision = isTelevision,
-        )
+        if (showAllContinueWatching) {
+            AllContinueWatchingDialog(
+                continueWatching = continueWatching,
+                onResume = { mediaKey, url, title ->
+                    showAllContinueWatching = false
+                    onResume(mediaKey, url, title)
+                },
+                onRemoveItem = { item ->
+                    itemToRemove = item
+                },
+                onClearAll = {
+                    showClearAllConfirm = true
+                },
+                onDismiss = { showAllContinueWatching = false },
+                isTelevision = isTelevision,
+            )
+        }
     }
 }
 
@@ -2123,9 +2126,26 @@ private fun ContinueWatchingClearConfirmDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    androidx.compose.ui.window.Dialog(onDismissRequest = onDismiss) {
+    androidx.activity.compose.BackHandler(onBack = onDismiss)
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .zIndex(150f)
+            .background(Color.Black.copy(alpha = 0.8f))
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = onDismiss,
+            ),
+        contentAlignment = Alignment.Center,
+    ) {
         Box(
             modifier = Modifier
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    onClick = {},
+                )
                 .clip(RoundedCornerShape(16.dp))
                 .background(Color(0xFF0F172A))
                 .border(1.dp, Color(0xFFEF4444).copy(alpha = 0.4f), RoundedCornerShape(16.dp))
@@ -2210,9 +2230,26 @@ private fun ContinueWatchingRemoveConfirmDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    androidx.compose.ui.window.Dialog(onDismissRequest = onDismiss) {
+    androidx.activity.compose.BackHandler(onBack = onDismiss)
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .zIndex(150f)
+            .background(Color.Black.copy(alpha = 0.8f))
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = onDismiss,
+            ),
+        contentAlignment = Alignment.Center,
+    ) {
         Box(
             modifier = Modifier
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    onClick = {},
+                )
                 .clip(RoundedCornerShape(16.dp))
                 .background(Color(0xFF0F172A))
                 .border(1.dp, Color(0xFFEF4444).copy(alpha = 0.4f), RoundedCornerShape(16.dp))
@@ -3016,27 +3053,27 @@ private fun AllContinueWatchingDialog(
         runCatching { firstItemFocus.requestFocus() }
     }
 
-    androidx.compose.ui.window.Dialog(
-        onDismissRequest = onDismiss,
-        properties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false),
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .zIndex(100f)
+            .background(Color.Black.copy(alpha = 0.88f))
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = onDismiss,
+            ),
+        contentAlignment = Alignment.Center,
     ) {
         Box(
             modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.88f))
-                .then(
-                    if (!isTelevision) Modifier.clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null,
-                        onClick = onDismiss,
-                    ) else Modifier
-                ),
-            contentAlignment = Alignment.Center,
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize(if (isTelevision) 0.94f else 0.98f)
-                    .clip(RoundedCornerShape(20.dp))
+                .fillMaxSize(if (isTelevision) 0.94f else 0.98f)
+                .clip(RoundedCornerShape(20.dp))
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    onClick = {},
+                )
                     .background(
                         Brush.verticalGradient(
                             listOf(Color(0xFF0F172A), Color(0xFF0A0F1D))
@@ -3200,7 +3237,6 @@ private fun AllContinueWatchingDialog(
             }
         }
     }
-}
 
 @Composable
 private fun AllContinueWatchingCard(

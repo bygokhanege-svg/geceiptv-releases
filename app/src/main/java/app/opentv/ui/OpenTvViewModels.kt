@@ -913,7 +913,7 @@ class ChannelsViewModel(app: Application) : AndroidViewModel(app) {
     // This path is channel-only — no programme window — debounced, and capped by the DAO's LIMIT.
     private val searchInput = MutableStateFlow("")
 
-    fun setSearchQuery(text: String) { searchInput.value = text }
+    fun setSearchQuery(text: String) { searchInput.value = text.replace("+", " ") }
 
     @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
     val searchResults: StateFlow<List<Row>> =
@@ -1471,7 +1471,7 @@ class VodViewModel(app: Application) : AndroidViewModel(app) {
     // ---- VOD search (shared by the unified search screen) --------------------------------------
     private val vodSearchInput = MutableStateFlow("")
 
-    fun setVodSearchQuery(text: String) { vodSearchInput.value = text }
+    fun setVodSearchQuery(text: String) { vodSearchInput.value = text.replace("+", " ") }
 
     @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
     val movieResults: StateFlow<List<Movie>> =

@@ -316,10 +316,11 @@ object Routes {
     fun search(query: String = "", scope: String? = null): String {
         val params = mutableListOf<String>()
         if (query.isNotBlank()) {
-            params.add("q=${java.net.URLEncoder.encode(query, "UTF-8")}")
+            val cleanQuery = query.replace("+", " ").trim()
+            params.add("q=${android.net.Uri.encode(cleanQuery)}")
         }
         if (!scope.isNullOrBlank()) {
-            params.add("scope=${java.net.URLEncoder.encode(scope, "UTF-8")}")
+            params.add("scope=${android.net.Uri.encode(scope)}")
         }
         return if (params.isNotEmpty()) "search?${params.joinToString("&")}" else "search"
     }
@@ -465,7 +466,8 @@ private fun GeceIptvApp(isTelevision: Boolean) {
                     componentActivity?.onBackPressedDispatcher?.onBackPressed()
                 }
                 is app.opentv.core.RemoteControlSignals.RemoteCommand.SearchText -> {
-                    navController.navigate(Routes.search(cmd.query)) {
+                    val cleanQuery = cmd.query.replace("+", " ")
+                    navController.navigate(Routes.search(cleanQuery)) {
                         launchSingleTop = true
                     }
                 }
@@ -674,7 +676,10 @@ private fun GeceIptvApp(isTelevision: Boolean) {
                 ),
             ) { entry ->
                 val rawQ = entry.arguments?.getString("q")
-                val initialQuery = if (rawQ == null || rawQ == "{q}" || rawQ == "(q)" || rawQ.contains("{q}")) "" else rawQ
+                val decodedQ = rawQ?.let {
+                    runCatching { java.net.URLDecoder.decode(it, "UTF-8") }.getOrDefault(it)
+                }?.replace("+", " ")
+                val initialQuery = if (decodedQ == null || decodedQ == "{q}" || decodedQ == "(q)" || decodedQ.contains("{q}")) "" else decodedQ
                 val rawScope = entry.arguments?.getString("scope")
                 val initialScope = when (rawScope?.uppercase(java.util.Locale.ROOT)) {
                     "MOVIES" -> SearchScope.MOVIES

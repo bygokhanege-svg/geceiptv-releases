@@ -494,6 +494,28 @@
 
 ---
 
+### 23. Versiyon 0.12.16 - Arama Kelime Arası '+' Düzeltmesi & Menülerde Sanal Fare (Mouse/Touchpad) Katmanlama
+* **Kullanıcı İstekleri:**
+  * **İstek 1:** Arama yaparken iki kelime yazınca araya `+` işareti atıyor, buda aranan videoyu bulmakta zorluk yaratıyor. Kaç kelime yazılırsa yazılsın aralarda `+` işareti olmasın.
+  * **İstek 2:** Favoriler kısmında ve izlemeye devam et menülerinde kumandadan geçiş oluyor menüye ama telefondaki uygulama içerisindeki kumanda menüsünden mouse ve touchpad alt menüde kalıyor. O fixlensin.
+* **Teknik Çözüm ve Kararlar:**
+  * **Arama '+' Sorunu Çözümü:**
+    - `MainActivity.kt`: `Routes.search` fonksiyonunda `URLEncoder.encode` (boşlukları `+` yapan eski yöntem) yerine `android.net.Uri.encode(cleanQuery)` entegre edildi.
+    - `Routes.SEARCH` composable rotasında `URLDecoder.decode` ve `.replace("+", " ")` sanitize işlemi eklendi; rotaya nasıl girilirse girilsin boşlukların korunması garantiye alındı.
+    - `RemoteControlSignals.RemoteCommand.SearchText` dinleyicisinde gelen metin temizlendi (`.replace("+", " ")`).
+    - `SearchScreen.kt`: `cleanInitialQuery`, metin kutusu `onValueChange`, TV ekran klavyesi `onKey` ve `onSpace` ile ViewModel'e aktarılan `LaunchedEffect(query)` arındırıldı.
+    - `OpenTvViewModels.kt`: `setSearchQuery` ve `setVodSearchQuery` içerisine `.replace("+", " ")` eklenerek Room veritabanı sorgularının her zaman saf boşluklu metin araması yapması sağlandı.
+    - `RemoteScreen.kt`: Telefondan gönderilen arama komutlarındaki girdiler arındırıldı.
+  * **Sanal Fare (Mouse/Touchpad) Katmanlama Çözümü:**
+    - Kök Neden: Android'de `androidx.compose.ui.window.Dialog` kullanımı bağımsız yeni bir Android OS Window (`android.app.Dialog`) oluşturur. Bu nedenle Activity Window'undaki `VirtualMouseOverlay` (fare imleci) Dialog penceresinin altında kalıyor ve Activity'ye iletilen `dispatchTouchEvent` tıklamaları Dialog'a ulaşamıyordu.
+    - Çözüm: `FavoritesOverlay.kt` (`FavoritesDialog`), `DashboardScreen.kt` (`AllContinueWatchingDialog`, `ContinueWatchingClearConfirmDialog`, `ContinueWatchingRemoveConfirmDialog`) ve `LegalDisclaimerDialog.kt` pencereleri `Dialog` sarmalayıcısından çıkarılarak modern hiyerarşik bindirme (`Box(Modifier.fillMaxSize().zIndex(100f))` ve `BackHandler`) mimarisine geçirildi.
+    - `DashboardScreen.kt` kök seviyesinde `Box(Modifier.fillMaxSize())` ile sarmalandı.
+    - `VirtualMouseOverlay.kt` bileşenine `zIndex(99999f)` atanarak imlecin her zaman ekrandaki en üst katmanda çizilmesi ve tıklamaların doğrudan altındaki kartlara/butonlara iletilmesi sağlandı.
+  * **Doğrulama:**
+    - `.\gradlew compileDebugKotlin` başarıyla derlendi.
+
+---
+
 ## 📌 Hızlı Referans & Mimari Kurallar
 1. **Ekran Genişliği Sınırı (Mobil Breakpoint):**
    * `LocalConfiguration.current.screenWidthDp < 600` mobil/telefon cihazları temsil eder.

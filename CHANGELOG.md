@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.12.16
+
+- **Arama Kelimeleri Arasındaki '+' İşareti Sorunu Çözüldü:** Telefonda sanal kumandadan, URL yönlendirmelerinden veya ekran klavyesinden kaç kelime yazılırsa yazılsın kelime aralarına `+` işareti girmesi tamamen engellendi (`android.net.Uri.encode` ve otomatik sanitize işlemiyle boşluklar korundu). Veritabanı aramaları artık eksiksiz ve tam eşleşmeyle sonuç bulur.
+- **Sanal Fare (Mouse) ve Touchpad Katmanlama (Z-Index & Window) Düzeltmesi:** Favoriler menüsü ve Tüm İzlemeye Devam Et menüleri `Dialog` penceresinden modern hiyerarşik bindirme (in-hierarchy modal overlay) mimarisine taşındı. Böylece telefon uygulamasındaki kumanda sekmesinden fare imleci (mouse) ve touchpad hareketleri menülerin üzerinde kusursuz şekilde görünür, menü kartlarına ve butonlarına doğrudan tıklama ve kaydırma yapılabilir.
+- **Yasal Uyarı & Sözleşme Modalı Fare Desteği:** Yasal uyarı modalı da aynı katman mimarisine geçirilerek sanal kumanda faresiyle kabul etme ve tıklama yeteneği kazandırıldı.
+
 ## 0.12.15
 
 - **Favoriler Menüsü Kumanda (D-pad) Gezinme Düzeltmesi:** Favoriler menüsü açıldığında kumanda odağının doğrudan "TÜMÜ" sekmesine konumlanması sağlandı; menü içi odak tuzakları temizlendi ve kumanda ile sorunsuz gezinme garantilendi.

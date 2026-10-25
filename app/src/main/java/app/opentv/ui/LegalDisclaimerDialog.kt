@@ -52,7 +52,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.zIndex
 import app.opentv.R
 
 /**
@@ -66,9 +67,26 @@ fun LegalDisclaimerModal(
 ) {
     val acceptFocus = remember { FocusRequester() }
 
-    Dialog(onDismissRequest = onDismiss) {
+    androidx.activity.compose.BackHandler(onBack = onDismiss)
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .zIndex(200f)
+            .background(Color.Black.copy(alpha = 0.85f))
+            .clickable(
+                interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() },
+                indication = null,
+                onClick = onDismiss,
+            ),
+        contentAlignment = Alignment.Center,
+    ) {
         Surface(
             modifier = Modifier
+                .clickable(
+                    interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() },
+                    indication = null,
+                    onClick = {},
+                )
                 .widthIn(max = 680.dp)
                 .fillMaxWidth()
                 .padding(16.dp),

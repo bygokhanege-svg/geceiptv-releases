@@ -96,7 +96,8 @@ fun SearchScreen(
     vodViewModel: VodViewModel = viewModel(),
 ) {
     val cleanInitialQuery = remember(initialQuery) {
-        if (initialQuery == "{q}" || initialQuery == "(q)" || initialQuery.contains("{q}") || initialQuery.isBlank()) "" else initialQuery
+        if (initialQuery == "{q}" || initialQuery == "(q)" || initialQuery.contains("{q}") || initialQuery.isBlank()) ""
+        else initialQuery.replace("+", " ")
     }
     var query by remember(cleanInitialQuery) { mutableStateOf(cleanInitialQuery) }
     var selectedScope by remember(initialScope) { mutableStateOf(initialScope) }
@@ -118,8 +119,9 @@ fun SearchScreen(
     val totalCount = channelResults.size + movieResults.size + seriesResults.size
 
     LaunchedEffect(query) {
-        viewModel.setSearchQuery(query)
-        vodViewModel.setVodSearchQuery(query)
+        val clean = query.replace("+", " ")
+        viewModel.setSearchQuery(clean)
+        vodViewModel.setVodSearchQuery(clean)
     }
     BackHandler { onBack() }
 
@@ -146,7 +148,7 @@ fun SearchScreen(
 
             OutlinedTextField(
                 value = query,
-                onValueChange = { if (it.length <= 40) query = it },
+                onValueChange = { if (it.length <= 40) query = it.replace("+", " ") },
                 modifier = Modifier.fillMaxWidth(),
                 placeholder = { Text(stringResource(R.string.search_type_name)) },
                 singleLine = true,
@@ -248,8 +250,8 @@ fun SearchScreen(
 
             Row(Modifier.fillMaxSize()) {
                 OnScreenKeyboard(
-                    onKey = { if (query.length < 40) query += it },
-                    onSpace = { if (query.length < 40) query += " " },
+                    onKey = { if (query.length < 40) query = (query + it).replace("+", " ") },
+                    onSpace = { if (query.length < 40) query = (query + " ").replace("+", " ") },
                     onBackspace = { query = query.dropLast(1) },
                     onClear = { query = "" },
                 )

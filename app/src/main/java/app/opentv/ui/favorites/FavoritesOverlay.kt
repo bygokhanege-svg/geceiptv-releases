@@ -64,8 +64,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.zIndex
 import app.opentv.R
 import app.opentv.data.model.Movie
 import app.opentv.data.model.Series
@@ -98,27 +97,27 @@ fun FavoritesDialog(
         runCatching { firstTabFocus.requestFocus() }
     }
 
-    Dialog(
-        onDismissRequest = onDismiss,
-        properties = DialogProperties(usePlatformDefaultWidth = false),
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .zIndex(100f)
+            .background(Color.Black.copy(alpha = 0.88f))
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = onDismiss,
+            ),
+        contentAlignment = Alignment.Center,
     ) {
         Box(
             modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.88f))
-                .then(
-                    if (!isTelevision) Modifier.clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null,
-                        onClick = onDismiss,
-                    ) else Modifier
-                ),
-            contentAlignment = Alignment.Center,
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize(if (isTelevision) 0.94f else 0.98f)
-                    .clip(RoundedCornerShape(20.dp))
+                .fillMaxSize(if (isTelevision) 0.94f else 0.98f)
+                .clip(RoundedCornerShape(20.dp))
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    onClick = {},
+                )
                     .background(
                         Brush.verticalGradient(
                             listOf(Color(0xFF0F172A), Color(0xFF0A0F1D))
@@ -418,7 +417,6 @@ fun FavoritesDialog(
             }
         }
     }
-}
 
 @Composable
 private fun FavTabButton(

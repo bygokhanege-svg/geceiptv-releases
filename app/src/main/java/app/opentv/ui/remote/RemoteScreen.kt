@@ -800,7 +800,7 @@ fun RemoteScreen() {
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
                             keyboardActions = KeyboardActions(onSend = {
                                 if (searchInput.isNotBlank()) {
-                                    sendCommand("search", searchInput)
+                                    sendCommand("search", searchInput.replace("+", " "))
                                     keyboardController?.hide()
                                 }
                             }),
@@ -815,7 +815,7 @@ fun RemoteScreen() {
                         IconButton(
                             onClick = {
                                 if (searchInput.isNotBlank()) {
-                                    sendCommand("search", searchInput)
+                                    sendCommand("search", searchInput.replace("+", " "))
                                     keyboardController?.hide()
                                 }
                             },
@@ -928,7 +928,7 @@ fun RemoteScreen() {
                         isTvSearchActive = isTvSearchActive,
                         onSendSearch = { query ->
                             if (query.isNotBlank()) {
-                                sendCommand("search", query)
+                                sendCommand("search", query.replace("+", " "))
                             }
                         },
                     )

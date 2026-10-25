@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import app.opentv.pairing.VirtualMouseServer
 
 /**
@@ -42,8 +43,9 @@ fun VirtualMouseOverlay(server: VirtualMouseServer) {
         visible = isVisible,
         enter = fadeIn(),
         exit = fadeOut(),
+        modifier = Modifier.fillMaxSize().zIndex(99999f),
     ) {
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.fillMaxSize().zIndex(99999f)) {
             Box(
                 modifier = Modifier
                     .graphicsLayer {

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">GECE ip tv</string>
+    <string name="app_name">GECE İPTV Player</string>
 
     <!-- ============================ Common / reused ============================ -->
     <string name="common_done">Done</string>
@@ -14,7 +14,7 @@
     <string name="common_stop">Stop</string>
     <string name="common_delete">Delete</string>
     <string name="common_selected">Selected</string>
-    <string name="exit_title">Leave GECE IPTV?</string>
+    <string name="exit_title">Leave GECE İPTV Player?</string>
     <string name="exit_body">You\'ll go back to your TV\'s home screen.</string>
     <string name="exit_confirm">Leave</string>
     <string name="exit_cancel">Stay</string>
@@ -109,12 +109,12 @@
     <string name="rec_notification_one">Recording 1 programme</string>
     <string name="rec_notification_many">Recording %1$d programmes</string>
     <string name="rec_channel_name">Recording</string>
-    <string name="rec_channel_desc">Shown while GECE iptv is recording</string>
+    <string name="rec_channel_desc">Shown while GECE İPTV Player is recording</string>
     <string name="rec_error_nothing">Nothing was recorded</string>
     <string name="rec_error_usb_no_folder">No USB folder chosen. Open Recording settings and pick a folder on your drive.</string>
     <string name="rec_error_usb_unavailable">USB drive not available. Re-plug the drive and choose the folder again in Recording settings.</string>
     <string name="rec_background_prompt_title">Keep recording when you leave?</string>
-    <string name="rec_background_prompt_body">Android may stop this recording when the screen sleeps or you leave GECE iptv. Allow GECE iptv to ignore battery optimisation so recordings keep running, even in standby — the way a set-top box does.</string>
+    <string name="rec_background_prompt_body">Android may stop this recording when the screen sleeps or you leave GECE İPTV Player. Allow GECE İPTV Player to ignore battery optimisation so recordings keep running, even in standby — the way a set-top box does.</string>
     <string name="rec_background_prompt_allow">Allow</string>
     <string name="rec_background_prompt_not_now">Not now</string>
 
@@ -166,7 +166,7 @@
     <string name="settings_providers_subtitle">Add, remove and re-test your IPTV sources</string>
     <string name="settings_addons_title">Add-ons (Stremio)</string>
     <string name="settings_addons_subtitle">Play from Stremio add-ons you set up yourself</string>
-    <string name="addons_note">Add a Stremio add-on by pasting its manifest URL. GECE iptv ships with none — you bring your own. If the add-on is debrid-backed, set your debrid key up on the add-on\'s own site and paste the personalised URL it gives you; your key stays there, never in GECE iptv.</string>
+    <string name="addons_note">Add a Stremio add-on by pasting its manifest URL. GECE İPTV Player ships with none — you bring your own. If the add-on is debrid-backed, set your debrid key up on the add-on\'s own site and paste the personalised URL it gives you; your key stays there, never in GECE İPTV Player.</string>
     <string name="addons_url_label">Add-on manifest URL</string>
     <string name="addons_add">Add</string>
     <string name="addons_checking">Checking…</string>
@@ -295,7 +295,7 @@
     <string name="recset_usb_change">Change folder</string>
     <string name="recset_usb_saving_to">Saving to: %1$s</string>
     <string name="recset_usb_none">No folder chosen yet</string>
-    <string name="recset_usb_hint">Plug in a USB drive or external storage formatted exFAT or FAT32, then choose a folder on it. Recordings are written straight to that folder and still play back and delete inside GECE iptv.</string>
+    <string name="recset_usb_hint">Plug in a USB drive or external storage formatted exFAT or FAT32, then choose a folder on it. Recordings are written straight to that folder and still play back and delete inside GECE İPTV Player.</string>
     <string name="recset_usb_need_folder">Choose a folder before saving to USB.</string>
     <string name="recset_usb_no_picker">No folder picker is available on this device.</string>
     <string name="recset_nas_connection">NAS connection</string>
@@ -330,9 +330,9 @@
     <string name="recset_background_allowed">Allowed</string>
     <string name="recset_background_not_allowed">Not allowed</string>
     <string name="recset_background_fix">Fix</string>
-    <string name="recset_background_desc">Android may stop recordings when the device sleeps or you leave GECE iptv, unless GECE iptv is allowed to ignore battery optimisation. Allowing it keeps recordings running even in standby, like a set-top box.</string>
+    <string name="recset_background_desc">Android may stop recordings when the device sleeps or you leave GECE İPTV Player, unless GECE İPTV Player is allowed to ignore battery optimisation. Allowing it keeps recordings running even in standby, like a set-top box.</string>
     <string name="recset_background_on_title">Background recording is on</string>
-    <string name="recset_background_on_desc">Recordings will keep running when you leave GECE iptv or the TV goes to sleep.</string>
+    <string name="recset_background_on_desc">Recordings will keep running when you leave GECE İPTV Player or the TV goes to sleep.</string>
     <string name="recset_background_toast">Background recording enabled — recordings will keep going in the background.</string>
 
     <!-- ============================ TV guide (EPG) settings ============================ -->
@@ -345,7 +345,7 @@
     <string name="epg_add_guide">Add guide</string>
 
     <!-- ============================ Sync watch history ============================ -->
-    <string name="sync_desc">Copy your continue-watching between two GECE iptv devices over your own wifi — nothing leaves the house, and no account is involved.</string>
+    <string name="sync_desc">Copy your continue-watching between two GECE İPTV Player devices over your own wifi — nothing leaves the house, and no account is involved.</string>
     <string name="sync_share_from_here">Share from here</string>
     <string name="sync_receive">Receive</string>
     <string name="sync_ready_to_share">Ready to share</string>
@@ -372,7 +372,7 @@
     <string name="sync_nas_auto">Auto-sync when the app opens</string>
 
     <!-- ============================ About ============================ -->
-    <string name="about_title">About GECE iptv</string>
+    <string name="about_title">About GECE İPTV Player</string>
     <string name="about_version">Version</string>
     <string name="about_update_available">Update available: %1$s — see the prompt to install.</string>
     <string name="about_up_to_date">You\'re on the latest version.</string>
@@ -381,9 +381,9 @@
     <string name="about_what_is_title">What it is</string>
     <string name="about_what_is_body">A free, open-source IPTV player for Android TV, Fire TV and phones. It\'s a player only — it doesn\'t supply channels; you connect the service you already pay for. Nothing you enter leaves your device except to talk to your own provider.</string>
     <string name="about_built_open_title">Built in the open</string>
-    <string name="about_built_open_body">GECE IPTV is developed openly, with AI doing a large share of the coding under human direction — that\'s stated plainly, not hidden. Because it\'s open source, no single person going away can take it down: anyone can read every line, build it, and carry it on.</string>
+    <string name="about_built_open_body">GECE İPTV Player is developed openly, with AI doing a large share of the coding under human direction — that\'s stated plainly, not hidden. Because it\'s open source, no single person going away can take it down: anyone can read every line, build it, and carry it on.</string>
     <string name="about_support_title">Support the project</string>
-    <string name="about_support_body">GECE IPTV is free and always will be — nothing is gated. If it\'s useful and you\'d like to chip in, GitHub Sponsors or a one-off tip keeps the updates coming: new features, fixes and support all come out of spare evenings. Entirely optional, and genuinely appreciated.</string>
+    <string name="about_support_body">GECE İPTV Player is free and always will be — nothing is gated. If it\'s useful and you\'d like to chip in, GitHub Sponsors or a one-off tip keeps the updates coming: new features, fixes and support all come out of spare evenings. Entirely optional, and genuinely appreciated.</string>
     <string name="about_sponsor_github">GitHub Sponsors</string>
     <string name="about_donate_paypal">Donate via PayPal</string>
     <string name="about_scan_to_donate">Scan to donate</string>
@@ -397,7 +397,7 @@
     <string name="onboarding_default_provider_name">My provider</string>
     <string name="onboarding_default_playlist_name">My playlist</string>
     <string name="onboarding_add_provider_title">Add your provider</string>
-    <string name="onboarding_add_provider_desc">GECE IPTV is a player. It doesn\'t supply channels — you connect the service you already pay for.</string>
+    <string name="onboarding_add_provider_desc">GECE İPTV Player is a player. It doesn\'t supply channels — you connect the service you already pay for.</string>
     <string name="onboarding_xtream_login">Xtream Codes login</string>
     <string name="onboarding_m3u_url">M3U playlist URL</string>
     <string name="onboarding_stalker_portal">Stalker portal</string>
@@ -426,7 +426,7 @@
     <string name="onboarding_working">Working…</string>
     <string name="onboarding_save_load">Save and load</string>
     <string name="onboarding_use_phone">Use my phone instead</string>
-    <string name="onboarding_privacy_note">Your provider details are stored on this device only. GECE IPTV has no account system and no server of its own — nothing you type here is sent anywhere except to your provider.</string>
+    <string name="onboarding_privacy_note">Your provider details are stored on this device only. GECE İPTV Player has no account system and no server of its own — nothing you type here is sent anywhere except to your provider.</string>
 
     <!-- ============================ Phone pairing ============================ -->
     <string name="pairing_stopped">Pairing stopped</string>
@@ -623,7 +623,7 @@
     <string name="legal_disclaimer_close">Close</string>
     <string name="legal_disclaimer_must_accept">You must accept the legal agreement and disclaimer to proceed and use the application.</string>
     <string name="legal_clause_1_title">1. Neutral Media Player</string>
-    <string name="legal_clause_1_body">This application (GECE IPTV) is strictly a media player and interface tool designed to allow users to play their own media streams.</string>
+    <string name="legal_clause_1_body">This application (GECE İPTV Player) is strictly a media player and interface tool designed to allow users to play their own media streams.</string>
     <string name="legal_clause_2_title">2. No Content Provided or Hosted</string>
     <string name="legal_clause_2_body">Neither the application nor its developers host, provide, broadcast, or sell any media, stream, playlist, channel, movie, or series. The application is distributed completely empty.</string>
     <string name="legal_clause_3_title">3. Sole User Responsibility</string>
@@ -668,14 +668,14 @@
     <string name="settings_profile_ultra_desc">For 3 GB+ RAM high-end TV boxes (Shield TV). 30s buffer, full multi-view and max 4K/60FPS responsiveness.</string>
 
     <!-- Remote Control, Virtual Mouse & Touchpad -->
-    <string name="remote_title">GECE TV Remote</string>
+    <string name="remote_title">GECE İPTV Player Remote</string>
     <string name="remote_connected">Connected: %1$s</string>
     <string name="remote_scanning">Searching TV on Network…</string>
     <string name="remote_connecting_status">Connecting…</string>
     <string name="remote_waiting_tv">Waiting for TV (Same Wi-Fi)</string>
     <string name="remote_not_connected">TV Not Connected</string>
     <string name="remote_card_title_ready">Turn Your Phone Into a Remote</string>
-    <string name="remote_card_desc_paired">Paired previously! When you open GECE IPTV on your TV, it will connect automatically over the network.</string>
+    <string name="remote_card_desc_paired">Paired previously! When you open GECE İPTV Player on your TV, it will connect automatically over the network.</string>
     <string name="remote_card_desc_unpaired">Open Settings &gt; TV Remote on your television and scan the QR code to switch to remote control mode.</string>
     <string name="remote_status_connected">Connected</string>
     <string name="remote_status_not_connected">Not Connected</string>

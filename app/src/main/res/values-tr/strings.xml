@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- GECE iptv UI translation. Auto-assembled; English fallback for any gap. -->
 <resources>
-    <string name="app_name">GECE ip tv</string>
+    <string name="app_name">GECE İPTV Player</string>
+    <string name="exit_title">GECE İPTV Player\'dan Çıkılsın mı?</string>
+    <string name="exit_body">TV ana ekranına döneceksiniz.</string>
+    <string name="exit_confirm">Çıkış Yap</string>
+    <string name="exit_cancel">İptal</string>
+
     <string name="common_done">Tamam</string>
     <string name="common_cancel">İptal</string>
     <string name="common_close">Kapat</string>
@@ -98,12 +103,12 @@
     <string name="rec_notification_one">1 program kaydediliyor</string>
     <string name="rec_notification_many">%1$d program kaydediliyor</string>
     <string name="rec_channel_name">Kayıt</string>
-    <string name="rec_channel_desc">GECE iptv kayıt yaparken gösterilir</string>
+    <string name="rec_channel_desc">GECE İPTV Player kayıt yaparken gösterilir</string>
     <string name="rec_error_nothing">Hiçbir şey kaydedilmedi</string>
     <string name="rec_error_usb_no_folder">USB klasörü seçilmedi. Kayıt ayarlarını açıp sürücünüzde bir klasör seçin.</string>
     <string name="rec_error_usb_unavailable">USB sürücü kullanılamıyor. Sürücüyü yeniden takıp Kayıt ayarlarından klasörü tekrar seçin.</string>
     <string name="rec_background_prompt_title">Uygulamadan çıkınca kayıt devam etsin mi?</string>
-    <string name="rec_background_prompt_body">Ekran kapandığında veya GECE iptv\'den çıktığınızda Android bu kaydı durdurabilir. Kayıtların bekleme modunda bile devam etmesi için GECE iptv\'nin pil optimizasyonunu yok saymasına izin verin — tıpkı bir set üstü kutu gibi.</string>
+    <string name="rec_background_prompt_body">Ekran kapandığında veya GECE İPTV Player\'den çıktığınızda Android bu kaydı durdurabilir. Kayıtların bekleme modunda bile devam etmesi için GECE İPTV Player\'nin pil optimizasyonunu yok saymasına izin verin — tıpkı bir set üstü kutu gibi.</string>
     <string name="rec_background_prompt_allow">İzin ver</string>
     <string name="rec_background_prompt_not_now">Şimdi değil</string>
     <string name="player_rewind">Geri sar</string>
@@ -150,7 +155,7 @@
     <string name="settings_providers_subtitle">IPTV kaynaklarınızı ekleyin, kaldırın ve yeniden test edin</string>
     <string name="settings_addons_title">Eklentiler (Stremio)</string>
     <string name="settings_addons_subtitle">Kendi kurduğunuz Stremio eklentilerinden oynatın</string>
-    <string name="addons_note">Manifest URL\'sini yapıştırarak bir Stremio eklentisi ekleyin. GECE iptv hiçbir eklentiyle birlikte gelmez — kendi eklentinizi siz eklersiniz. Eklenti debrid destekliyse debrid anahtarınızı eklentinin kendi sitesinde ayarlayıp size verdiği kişiselleştirilmiş URL\'yi yapıştırın; anahtarınız orada kalır, asla GECE iptv\'ye girmez.</string>
+    <string name="addons_note">Manifest URL\'sini yapıştırarak bir Stremio eklentisi ekleyin. GECE İPTV Player hiçbir eklentiyle birlikte gelmez — kendi eklentinizi siz eklersiniz. Eklenti debrid destekliyse debrid anahtarınızı eklentinin kendi sitesinde ayarlayıp size verdiği kişiselleştirilmiş URL\'yi yapıştırın; anahtarınız orada kalır, asla GECE İPTV Player\'ye girmez.</string>
     <string name="addons_url_label">Eklenti manifest URL\'si</string>
     <string name="addons_add">Ekle</string>
     <string name="addons_checking">Kontrol ediliyor…</string>
@@ -269,7 +274,7 @@
     <string name="recset_usb_change">Klasörü değiştir</string>
     <string name="recset_usb_saving_to">Kaydediliyor: %1$s</string>
     <string name="recset_usb_none">Henüz klasör seçilmedi</string>
-    <string name="recset_usb_hint">exFAT veya FAT32 ile biçimlendirilmiş bir USB sürücü veya harici depolama takın, ardından üzerinde bir klasör seçin. Kayıtlar doğrudan bu klasöre yazılır ve yine GECE iptv içinden oynatılıp silinebilir.</string>
+    <string name="recset_usb_hint">exFAT veya FAT32 ile biçimlendirilmiş bir USB sürücü veya harici depolama takın, ardından üzerinde bir klasör seçin. Kayıtlar doğrudan bu klasöre yazılır ve yine GECE İPTV Player içinden oynatılıp silinebilir.</string>
     <string name="recset_usb_need_folder">USB\'ye kaydetmeden önce bir klasör seçin.</string>
     <string name="recset_usb_no_picker">Bu cihazda klasör seçici kullanılamıyor.</string>
     <string name="recset_nas_connection">NAS bağlantısı</string>
@@ -301,9 +306,9 @@
     <string name="recset_background_allowed">İzin verildi</string>
     <string name="recset_background_not_allowed">İzin verilmedi</string>
     <string name="recset_background_fix">Düzelt</string>
-    <string name="recset_background_desc">GECE iptv\'nin pil optimizasyonunu yok saymasına izin verilmedikçe, cihaz uyku moduna geçtiğinde veya GECE iptv\'den çıktığınızda Android kayıtları durdurabilir. İzin vermek, kayıtların bekleme modunda bile bir set üstü kutu gibi devam etmesini sağlar.</string>
+    <string name="recset_background_desc">GECE İPTV Player\'nin pil optimizasyonunu yok saymasına izin verilmedikçe, cihaz uyku moduna geçtiğinde veya GECE İPTV Player\'den çıktığınızda Android kayıtları durdurabilir. İzin vermek, kayıtların bekleme modunda bile bir set üstü kutu gibi devam etmesini sağlar.</string>
     <string name="recset_background_on_title">Arka planda kayıt açık</string>
-    <string name="recset_background_on_desc">GECE iptv\'den çıktığınızda veya TV uyku moduna geçtiğinde kayıtlar devam edecektir.</string>
+    <string name="recset_background_on_desc">GECE İPTV Player\'den çıktığınızda veya TV uyku moduna geçtiğinde kayıtlar devam edecektir.</string>
     <string name="recset_background_toast">Arka planda kayıt etkinleştirildi — kayıtlar arka planda devam edecek.</string>
     <string name="epg_updating">Güncelleniyor…</string>
     <string name="epg_update_now">Rehberi şimdi güncelle</string>
@@ -312,7 +317,7 @@
     <string name="epg_name_optional">Ad (isteğe bağlı)</string>
     <string name="epg_xmltv_url">XMLTV URL (.xml veya .xml.gz)</string>
     <string name="epg_add_guide">Rehber ekle</string>
-    <string name="sync_desc">\"İzlemeye devam et\" bilgisini iki GECE iptv cihazı arasında kendi Wi-Fi\'niz üzerinden kopyalayın — hiçbir şey evinizden çıkmaz, hesap gerekmez.</string>
+    <string name="sync_desc">\"İzlemeye devam et\" bilgisini iki GECE İPTV Player cihazı arasında kendi Wi-Fi\'niz üzerinden kopyalayın — hiçbir şey evinizden çıkmaz, hesap gerekmez.</string>
     <string name="sync_share_from_here">Buradan paylaş</string>
     <string name="sync_receive">Al</string>
     <string name="sync_ready_to_share">Paylaşıma hazır</string>
@@ -337,7 +342,7 @@
     <string name="sync_nas_uploaded">Bu cihaz NAS\'a kaydedildi. Henüz başka bir cihaz burada senkronize olmadı.</string>
     <string name="sync_nas_failed">NAS\'ınıza ulaşılamadı. Açık olduğundan ve Kayıt ayarlarındaki bilgilerin doğru olduğundan emin olun.</string>
     <string name="sync_nas_auto">Uygulama açıldığında otomatik senkronize et</string>
-    <string name="about_title">GECE iptv Hakkında </string>
+    <string name="about_title">GECE İPTV Player Hakkında</string>
     <string name="about_version">Sürüm</string>
     <string name="about_update_available">Güncelleme mevcut: %1$s — yüklemek için istemi görün.</string>
     <string name="about_up_to_date">En son sürümü kullanıyorsunuz.</string>
@@ -346,7 +351,7 @@
     <string name="about_what_is_title">Bu nedir</string>
     <string name="about_what_is_body">Android TV, Fire TV ve telefonlar için ücretsiz, açık kaynaklı bir IPTV oynatıcısı. Yalnızca bir oynatıcıdır — kanal sağlamaz; zaten ödeme yaptığınız hizmete bağlanırsınız. Girdiğiniz hiçbir bilgi, kendi sağlayıcınızla konuşmak dışında cihazınızdan çıkmaz.</string>
     <string name="about_built_open_title">Açık şekilde geliştirildi</string>
-    <string name="about_built_open_body">GECE IPTV açık bir şekilde geliştirilir; kodun büyük bir kısmını insan yönetiminde yapay zekâ yazar — bu açıkça belirtilir, gizlenmez. Açık kaynak olduğu için tek bir kişinin ayrılması projeyi sona erdiremez: herkes her satırı okuyabilir, derleyebilir ve geliştirmeye devam edebilir.</string>
+    <string name="about_built_open_body">GECE İPTV Player açık bir şekilde geliştirilir; kodun büyük bir kısmını insan yönetiminde yapay zekâ yazar — bu açıkça belirtilir, gizlenmez. Açık kaynak olduğu için tek bir kişinin ayrılması projeyi sona erdiremez: herkes her satırı okuyabilir, derleyebilir ve geliştirmeye devam edebilir.</string>
     <string name="about_support_title">Projeyi destekleyin</string>
     <string name="about_scan_to_donate">Bağış yapmak için tarayın</string>
     <string name="about_licence_links_title">Lisans ve bağlantılar</string>
@@ -357,7 +362,7 @@
     <string name="onboarding_default_provider_name">Sağlayıcım</string>
     <string name="onboarding_default_playlist_name">Oynatma listem</string>
     <string name="onboarding_add_provider_title">Sağlayıcınızı ekleyin</string>
-    <string name="onboarding_add_provider_desc">GECE IPTV bir oynatıcıdır. Kanal sağlamaz — zaten ödeme yaptığınız hizmete bağlanırsınız.</string>
+    <string name="onboarding_add_provider_desc">GECE İPTV Player bir oynatıcıdır. Kanal sağlamaz — zaten ödeme yaptığınız hizmete bağlanırsınız.</string>
     <string name="onboarding_xtream_login">Xtream Codes girişi</string>
     <string name="onboarding_m3u_url">M3U oynatma listesi URL\'si</string>
     <string name="onboarding_stalker_portal">Stalker portalı</string>
@@ -386,7 +391,7 @@
     <string name="onboarding_working">İşleniyor…</string>
     <string name="onboarding_save_load">Kaydet ve yükle</string>
     <string name="onboarding_use_phone">Telefonumu kullan</string>
-    <string name="onboarding_privacy_note">Sağlayıcı bilgileriniz yalnızca bu cihazda saklanır. GECE IPTV\'nin hesap sistemi ve kendi sunucusu yoktur — buraya yazdığınız hiçbir şey sağlayıcınız dışında hiçbir yere gönderilmez.</string>
+    <string name="onboarding_privacy_note">Sağlayıcı bilgileriniz yalnızca bu cihazda saklanır. GECE İPTV Player\'nin hesap sistemi ve kendi sunucusu yoktur — buraya yazdığınız hiçbir şey sağlayıcınız dışında hiçbir yere gönderilmez.</string>
     <string name="pairing_stopped">Eşleştirme durduruldu</string>
     <string name="pairing_type_here">Bunun yerine burada yazın</string>
     <string name="pairing_got_it">Alındı — sağlayıcınıza bağlanılıyor…</string>
@@ -557,7 +562,7 @@
     <string name="legal_disclaimer_close">Kapat</string>
     <string name="legal_disclaimer_must_accept">Uygulamaya giriş yapabilmek için lütfen yasal sorumluluk sözleşmesini onaylayınız.</string>
     <string name="legal_clause_1_title">1. Bağımsız Medya Oynatıcı Niteliği</string>
-    <string name="legal_clause_1_body">Bu uygulama (GECE IPTV), yalnızca kullanıcıların kendi temin ettikleri medya akışlarını oynatmalarına imkân sağlayan bağımsız bir medya oynatıcı ve arayüz aracıdır.</string>
+    <string name="legal_clause_1_body">Bu uygulama (GECE İPTV Player), yalnızca kullanıcıların kendi temin ettikleri medya akışlarını oynatmalarına imkân sağlayan bağımsız bir medya oynatıcı ve arayüz aracıdır.</string>
     <string name="legal_clause_2_title">2. İçerik Barındırmama İlkesi</string>
     <string name="legal_clause_2_body">Uygulama veya geliştiricileri hiçbir sunucu, canlı TV yayını, kanal listesi, film, dizi, video veya ses içeriği BARINDIRMAZ, SAĞLAMAZ, YAYINLAMAZ ve SATMAZ. Uygulama boş bir yürütücü olarak sunulmaktadır.</string>
     <string name="legal_clause_3_title">3. Münhasır Kullanıcı Sorumluluğu</string>
@@ -602,14 +607,14 @@
     <string name="settings_profile_ultra_desc">3 GB+ RAM ve güçlü işlemcili TV\'ler için. 30 sn geniş buffer, tam 4\'lü ekran ve maksimum 4K/60FPS akıcılık.</string>
 
     <!-- Remote Control, Virtual Mouse & Touchpad -->
-    <string name="remote_title">GECE TV Kumandası</string>
+    <string name="remote_title">GECE İPTV Player Kumandası</string>
     <string name="remote_connected">Bağlı: %1$s</string>
     <string name="remote_scanning">Ağda TV Aranıyor…</string>
     <string name="remote_connecting_status">Bağlanıyor…</string>
     <string name="remote_waiting_tv">TV Bekleniyor (Aynı Wi-Fi)</string>
     <string name="remote_not_connected">Televizyon Bağlı Değil</string>
     <string name="remote_card_title_ready">Telefonunuzu Kumandaya Dönüştürün</string>
-    <string name="remote_card_desc_paired">Daha önce eşleştiniz! TV\'nizde GECE IPTV uygulamasını açtığınızda ağ üzerinden otomatik olarak bağlanacaktır.</string>
+    <string name="remote_card_desc_paired">Daha önce eşleştiniz! TV\'nizde GECE İPTV Player uygulamasını açtığınızda ağ üzerinden otomatik olarak bağlanacaktır.</string>
     <string name="remote_card_desc_unpaired">Televizyonunuzda Ayarlar &gt; Telefon ile Yönet menüsündeki QR kodu okutarak kumanda moduna geçebilirsiniz.</string>
     <string name="remote_status_connected">Bağlandı</string>
     <string name="remote_status_not_connected">Bağlı Değil</string>

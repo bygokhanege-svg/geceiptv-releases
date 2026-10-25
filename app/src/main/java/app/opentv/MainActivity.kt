@@ -127,7 +127,7 @@ class MainActivity : ComponentActivity() {
 
         // On TV devices, keep the screen awake permanently while the app is in the foreground.
         // This prevents Android TV / Google TV / Fire TV screensavers and Daydream ambient mode
-        // from triggering while using GECE IPTV.
+        // from triggering while using GECE İPTV Player.
         ServiceLocator.get(this).virtualMouseServer.attachActivity(this)
         if (isTelevision) {
             window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)

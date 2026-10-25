@@ -437,7 +437,7 @@ private fun SubtitleLivePreview(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
-                    text = "— GECE TV: Harika bir film başlıyor! (01:23:45)",
+                    text = "— GECE İPTV Player: Harika bir film başlıyor! (01:23:45)",
                     color = textColor,
                     fontSize = fontSize,
                     lineHeight = lineHeight,

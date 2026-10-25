@@ -534,9 +534,34 @@
     - Kullanıcının cihazlara manuel APK yüklemek zorunda kalmaması için `bygokhanege-svg/geceiptv` reposu geçici olarak tekrar **PUBLIC** yapıldı.
     - `0.12.16` sürümü (içinde yeni `geceiptv-releases` yönlendirmesi bulunan yeni derlenmiş APK ile) `bygokhanege-svg/geceiptv` release bölümüne yüklendi.
     - Böylece cihazlardaki `0.12.15` sürümü doğrudan uygulama içinden "Güncelle" dediğinde `0.12.16`yı görecek ve **otomatik olarak** güncellenecektir.
-    - Cihazlar `0.12.16`ya geçtikten sonra artık otomatik olarak yeni adres olan `geceiptv-releases` deposunu dinlemeye başlayacaktır.
-    - Geçiş tamamlandıktan sonra `bygokhanege-svg/geceiptv` reposu kalıcı olarak tekrar **PRIVATE** yapılacaktır.
-    - Gelecek olan `0.12.17` ve sonraki tüm sürümler sadece `geceiptv-releases` deposundan yayınlanacaktır.
+  * **Geçiş Tamamlandı:**
+    - Cihazlar başarıyla `0.12.16` sürümüne güncellendi.
+    - Ana kaynak kod deposu (`bygokhanege-svg/geceiptv`) kalıcı olarak tekrar **PRIVATE** (gizli) yapıldı.
+
+---
+
+### 25. Versiyon 0.12.17 - Marka & Uygulama İsmi Yenilemesi: "GECE İPTV Player"
+* **Kullanıcı İstekleri:**
+  * Uygulamanın adı resmi olarak **GECE İPTV Player** yapılması istendi.
+  * Uygulama içerisindeki tüm menüler, açıklamalar, sözleşmeler, bildirimler, TV kumanda ekranı, kısa yollar ve "gece ip tv" / "GECE IPTV" yazan her yerin güncellenmesi istendi.
+  * Bu değişikliklerin `0.12.17` sürümü olarak derlenip yeni dağıtım deposundan (`geceiptv-releases`) yayınlanması istendi.
+* **Teknik Çözüm ve Kararlar:**
+  * **Uygulama İsmi ve String Kaynakları:**
+    - Tüm 31 dildeki `values*/strings.xml` dosyalarında `<string name="app_name">` değeri `GECE İPTV Player` olarak güncellendi.
+    - `values-tr/strings.xml` ve `values/strings.xml` içindeki kayıt bildirimleri, USB kayıt hedefleri, pil optimizasyonu açıklamaları, Stremio eklenti notları, senkronizasyon metinleri, yasal sorumluluk reddi maddeleri, TV kumanda başlıkları ve çıkış diyalogları `GECE İPTV Player` ile yenilendi.
+    - Türkçe için eksik olan `exit_title` ("GECE İPTV Player'dan Çıkılsın mı?"), `exit_body`, `exit_confirm` ve `exit_cancel` dizgileri eklendi.
+  * **Kod İçi Ekranlar & Arayüzler:**
+    - `UpdateScreen.kt`, `SettingsHubScreen.kt`, `RecordingSettingsScreen.kt`, `AdminPanelScreen.kt`, `AboutScreen.kt`, `SubtitleSettingsScreen.kt` güncellendi.
+    - `PhonePairingScreen.kt` ve `AddSourceScreen.kt` onboarding logoları ve başlıkları güncellendi.
+    - `MainScreen.kt` ve `DashboardScreen.kt` (üst başlık, profil kartı, aksiyon çubuğu) güncellendi.
+    - `RecordingService.kt`, `PairingPage.kt`, `ManagerServer.kt`, `ManagerPage.kt` ve `web-portal/index.html` yeni isimle senkronize edildi.
+  * **Versiyon ve Dağıtım:**
+    - `app/build.gradle.kts`: `versionCode = 38`, `versionName = "0.12.17"`.
+    - `.\gradlew compileDebugKotlin`: Başarılı (0 hata).
+    - `.\gradlew assembleRelease`: Başarılı.
+    - APK, `bygokhanege-svg/geceiptv-releases` deposuna `v0.12.17` etiketiyle yüklendi. Cihazlardaki `0.12.16` sürümü "Güncelle" dendiğinde doğrudan bu depodan otomatik güncelleme alacaktır.
+* **Doğrulama:**
+  - `https://api.github.com/repos/bygokhanege-svg/geceiptv-releases/releases/latest` üzerinden anonim sorgulama yapıldı; `v0.12.17` sürümünün herkese açık olarak başarıyla dağıtıldığı teyit edildi.
 
 ---
 
@@ -547,7 +572,7 @@
 2. **GitHub Bilgileri:**
    * Kaynak Kod Reposu (Private): `https://github.com/bygokhanege-svg/geceiptv.git`
    * Güncelleme / Dağıtım Reposu (Public): `https://github.com/bygokhanege-svg/geceiptv-releases.git`
-   * Release APK İndirme Bağlantısı: `https://github.com/bygokhanege-svg/geceiptv-releases/releases/download/v0.12.16/GECEiptv-release.apk`
+   * Release APK İndirme Bağlantısı: `https://github.com/bygokhanege-svg/geceiptv-releases/releases/download/v0.12.17/GECEiptv-release.apk`
    * Release APK Adı: `GECEiptv-release.apk`
    * Destek E-postası: `geceiptv@gmail.com`
 3. **Derleme Komutları:**

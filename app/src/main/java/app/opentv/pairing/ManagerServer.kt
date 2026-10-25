@@ -206,7 +206,7 @@ class ManagerServer(
             lastActivityMillis = System.currentTimeMillis()
             val supplied = query["t"] ?: ""
             val isTokenValid = token.isNotEmpty() && PairingHttp.secretsMatch(supplied, token)
-            output.write(PairingHttp.httpResponse("200 OK", "application/json", """{"ok":true,"app":"GECE IPTV","tv":true,"validToken":$isTokenValid,"isSearch":$isSearchActive}"""))
+            output.write(PairingHttp.httpResponse("200 OK", "application/json", """{"ok":true,"app":"GECE İPTV Player","tv":true,"validToken":$isTokenValid,"isSearch":$isSearchActive}"""))
             return
         }
 

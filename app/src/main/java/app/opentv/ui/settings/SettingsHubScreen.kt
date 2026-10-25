@@ -344,7 +344,7 @@ fun SettingsHubScreen(
                         text = if (showingOtherSettings) {
                             stringResource(R.string.settings_other_subtitle)
                         } else {
-                            if (isTv) "GECE IPTV • TV Kontrol Merkezi" else "GECE IPTV • Modern Ayarlar"
+                            if (isTv) "GECE İPTV Player • TV Kontrol Merkezi" else "GECE İPTV Player • Modern Ayarlar"
                         },
                         style = MaterialTheme.typography.bodySmall,
                         fontSize = if (isWideScreen) 12.sp else 10.5.sp,

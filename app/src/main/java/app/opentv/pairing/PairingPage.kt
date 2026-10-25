@@ -17,7 +17,7 @@ object PairingPage {
 
     fun form(token: String, error: String?): String = page(
         """
-        <h1>GECE IPTV Kurulumu</h1>
+        <h1>GECE İPTV Player Kurulumu</h1>
         <p class="sub">Bilgileri buradan girmek kumandayla yazmaktan çok daha kolaydır.</p>
 
         ${if (error != null) "<div class=\"error\">${escape(error)}</div>" else ""}
@@ -73,7 +73,7 @@ object PairingPage {
         </form>
 
         <p class="privacy">
-          Bu sayfa doğrudan televizyonunuz tarafından yerel ağınız üzerinden sunulmaktadır. Girdiğiniz bilgiler doğrudan TV'ye aktarılır — GECE IPTV hesabı veya harici bir sunucu yoktur. Bilgileriniz ev ağınızdan dışarı çıkmaz.
+          Bu sayfa doğrudan televizyonunuz tarafından yerel ağınız üzerinden sunulmaktadır. Girdiğiniz bilgiler doğrudan TV'ye aktarılır — GECE İPTV Player hesabı veya harici bir sunucu yoktur. Bilgileriniz ev ağınızdan dışarı çıkmaz.
         </p>
 
         <script>
@@ -107,7 +107,7 @@ object PairingPage {
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
         <meta name="robots" content="noindex, nofollow">
-        <title>GECE IPTV Kurulumu</title>
+        <title>GECE İPTV Player Kurulumu</title>
         <style>
           :root { --bg:#07080c; --surface:#12141d; --line:#2a2f3d; --text:#e8eaf0;
                   --muted:#a8aec0; --accent:#7c93ff; --err:#ff6b6b; }

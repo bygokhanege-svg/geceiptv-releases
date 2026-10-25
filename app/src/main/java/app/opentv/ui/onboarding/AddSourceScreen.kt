@@ -235,14 +235,14 @@ fun AddSourceScreen(
                 ) {
                     Image(
                         painter = painterResource(R.drawable.ic_opentv_logo),
-                        contentDescription = "GECE IPTV",
+                        contentDescription = "GECE İPTV Player",
                         modifier = Modifier.fillMaxSize(),
                     )
                 }
                 Spacer(Modifier.width(12.dp))
                 Column {
                     Text(
-                        "GECE IPTV",
+                        "GECE İPTV Player",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onBackground,

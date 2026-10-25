@@ -216,7 +216,7 @@ fun RecordingSettingsScreen(onBack: () -> Unit) {
             SectionCard(stringResource(R.string.recset_nas_connection)) {
                 Field(stringResource(R.string.recset_field_server), host, "192.168.1.10") { host = it }
                 Field(stringResource(R.string.recset_field_share), share, "video") { share = it }
-                Field(stringResource(R.string.recset_field_folder), folder, "GECE IPTV") { folder = it }
+                Field(stringResource(R.string.recset_field_folder), folder, "GECE İPTV Player") { folder = it }
                 Field(stringResource(R.string.recset_field_username), user, "") { user = it }
                 Field(stringResource(R.string.recset_field_password), password, "", isPassword = true) { password = it }
 

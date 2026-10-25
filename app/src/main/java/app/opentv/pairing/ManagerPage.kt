@@ -18,7 +18,7 @@ object ManagerPage {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="robots" content="noindex, nofollow">
-<title>GECE IPTV • Akıllı Mobil Kumanda & Panel</title>
+<title>GECE İPTV Player • Akıllı Mobil Kumanda & Panel</title>
 <style>
   :root {
     --bg: #090C15;
@@ -249,7 +249,7 @@ object ManagerPage {
   <div class="wrap">
     <header>
       <div class="brand">
-        <span>GECE IPTV</span>
+        <span>GECE İPTV Player</span>
       </div>
       <div class="badge-live">TV Bağlı</div>
     </header>

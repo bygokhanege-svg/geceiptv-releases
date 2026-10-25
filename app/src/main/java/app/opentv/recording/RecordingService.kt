@@ -263,7 +263,7 @@ class RecordingService : Service() {
             else -> getString(R.string.rec_notification_many, count)
         }
         return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("GECE IPTV")
+            .setContentTitle("GECE İPTV Player")
             .setContentText(text)
             .setSmallIcon(R.drawable.ic_opentv_logo)
             .setOngoing(true)

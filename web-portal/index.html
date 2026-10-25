@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GECE IPTV • Cihaz Aktivasyon & Yönetim Paneli</title>
+    <title>GECE İPTV Player • Cihaz Aktivasyon & Yönetim Paneli</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -230,7 +230,7 @@
 
     <div class="header">
         <div class="logo-badge">
-            <span>GECE TV PORTAL</span>
+            <span>GECE İPTV Player Portalı</span>
         </div>
         <h1 class="title">Cihaz &amp; Playlist Yönetimi</h1>
         <p class="subtitle">Televizyonunuzdaki MAC adresini ve Güvenlik Kodunu girerek listenizi hemen yükleyin veya sürenizi uzatın.</p>
@@ -354,8 +354,8 @@
         function openMail() {
             const mac = document.getElementById('mac').value.trim() || "BELİRTİLMEDİ";
             const key = document.getElementById('key').value.trim() || "BELİRTİLMEDİ";
-            const subject = encodeURIComponent(`Gece IPTV Premium Lisans Talebi - MAC: ${mac}`);
-            const body = encodeURIComponent(`Merhaba,\n\nGece IPTV uygulaması için lisans satın almak istiyorum.\n\nCihaz MAC: ${mac}\nCihaz Kodu: ${key}\n\nÖdeme bilgisi rica ederim.`);
+            const subject = encodeURIComponent(`GECE İPTV Player Premium Lisans Talebi - MAC: ${mac}`);
+            const body = encodeURIComponent(`Merhaba,\n\nGECE İPTV Player uygulaması için lisans satın almak istiyorum.\n\nCihaz MAC: ${mac}\nCihaz Kodu: ${key}\n\nÖdeme bilgisi rica ederim.`);
             window.location.href = `mailto:${SUPPORT_EMAIL}?subject=${subject}&body=${body}`;
         }
 

@@ -114,7 +114,7 @@ fun UpdateGate(viewModel: UpdateViewModel = viewModel()) {
                             .verticalScroll(rememberScrollState()),
                     ) {
                         Text(
-                            text = "GECE IPTV ${s.update.versionName} sürümü yayınlandı.",
+                            text = "GECE İPTV Player ${s.update.versionName} sürümü yayınlandı.",
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.SemiBold,
                             color = Color(0xFF38BDF8),

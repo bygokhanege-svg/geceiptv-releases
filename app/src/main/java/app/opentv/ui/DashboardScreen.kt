@@ -247,7 +247,7 @@ fun DashboardScreen(
                     Spacer(modifier = Modifier.width(10.dp))
                     Column {
                         Text(
-                            text = "GECE IPTV",
+                            text = "GECE İPTV Player",
                             color = MaterialTheme.colorScheme.onBackground,
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
@@ -1332,7 +1332,7 @@ private fun PhoneDashboardContent(
                         Spacer(modifier = Modifier.width(10.dp))
                         Column {
                             Text(
-                                text = "GECE IPTV",
+                                text = "GECE İPTV Player",
                                 color = Color.White,
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
@@ -1381,7 +1381,7 @@ private fun PhoneDashboardContent(
 
             // 2. ALT GRİD: Logo, Profil, Arama, Çoklu TV ve Ayarlar Barı (Kullanıcı isteğiyle üste abonelik/saat, alta bu bar alındı)
             PhoneActionBarCard(
-                title = "GECE IPTV",
+                title = "GECE İPTV Player",
                 activeProfileName = activeProfileName,
                 onOpenSearch = onOpenSearch,
                 onOpenMultiView = onOpenMultiView,

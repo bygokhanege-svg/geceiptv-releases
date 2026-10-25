@@ -189,7 +189,7 @@ fun AdminPanelScreen(
                     Column(modifier = Modifier.weight(1f)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
-                                "GECE IPTV • YÖNETİCİ PANELİ",
+                                "GECE İPTV PLAYER • YÖNETİCİ PANELİ",
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.ExtraBold,
                                 color = Color.White,

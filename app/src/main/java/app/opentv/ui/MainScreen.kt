@@ -228,7 +228,7 @@ fun MainScreen(
         if (!isTelevision && tab != Tab.HOME) {
             // Modern Phone Top App Bar (Only shown on other tabs; on HOME it is positioned below the subscription card)
             PhoneTopBar(
-                title = "GECE IPTV",
+                title = "GECE İPTV Player",
                 activeProfileName = activeProfileName,
                 onOpenSearch = {
                     val scope = when (tab) {
@@ -633,7 +633,7 @@ private fun NavRail(
                 ) {
                     Image(
                         painter = painterResource(R.drawable.ic_opentv_logo),
-                        contentDescription = "GECE iptv",
+                        contentDescription = "GECE İPTV Player",
                         modifier = Modifier.fillMaxSize(),
                     )
                 }
@@ -647,7 +647,7 @@ private fun NavRail(
                     Spacer(Modifier.width(8.dp))
                     Column {
                         Text(
-                            "GECE IPTV",
+                            "GECE İPTV Player",
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onSurface,
                             fontWeight = FontWeight.Bold,

@@ -689,6 +689,49 @@
 
 ---
 
+### 30. Televizyon, Tablet ve Telefon İçin Lüks Sinematik Açılış (Splash) Ekranı (v0.12.21)
+* **Kullanıcı Talebi:** "açılışa şık bir splash ekran olsun hem televizyon hemde telefon ve tablet için."
+* **Uygulanan Değişiklikler:**
+  1. **Sinematik ve Lüks Splash Ekranı (`SplashScreen.kt`):**
+     - `app/src/main/java/app/opentv/ui/SplashScreen.kt` oluşturuldu.
+     - **3-Renkli Kurumsal Palet & Ortam Işığı:**
+       - Zemin: Derin Obsidyen Siyah (`#090A0F`).
+       - Logonun arkasında nefes alan, genişleyen ve nabız gibi atan kehribar altın radyal ortam ışıması (`radialGradient` ve `glowPulse`/`haloScale` sonsuz animasyonları).
+     - **Lüks Amblem & Logo Kutusu:**
+       - TV'de `116.dp` (24dp köşe), Tablette `100.dp`, Mobilde `84.dp` boyutunda çok katmanlı altın gradyan çerçeveli (`#FFDF70` -> `#F59E0B` -> `#B45309`) ve grafit zeminli logo konteyneri.
+       - Dış kısımda genişleyen ve nabız gibi atan yarı saydam altın hale halkası.
+       - Yaylı giriş ölçeklenmesi (spring scale 0.75 -> 1.0) ve alfa geçişi.
+     - **Marka & Rozet Tipografisi:**
+       - "GECE" (Asil Kehribar Altın), "İPTV" (Kar Beyazı Kristal) ve "ULTRA" (Zıt Siyah/Altın dolgulu mikro rozet).
+       - Alt başlık: "PREMIUM MEDYA & YAYIN MERKEZİ" (Arduvaz gümüşü, geniş harf aralığı `2.5.sp`).
+     - **Cihaz Sürümü Tanımlama Rozeti (Pill):**
+       - TV: `[ 📺 ANDROİD TV • 4K ULTRA HD ]`
+       - Tablet: `[ 📱 TABLET EDİSYONU • ÇOKLU EKRAN ]`
+       - Telefon: `[ 📱 MOBİL EDİSYON • ULTRA HIZLI ]`
+     - **İlerleme ve Sistem Durum Geri Bildirimi:**
+       - İnce ve zarif altın gradyan ilerleme çubuğu (Progress bar).
+       - Dinamik aşamalı sistem durum bildirimleri:
+         - "Donanım hızlandırma ve ses motoru başlatılıyor…"
+         - "Kanal listeleri ve medya veritabanı yükleniyor…"
+         - "Arayüz hazırlandı, hoş geldiniz…"
+     - **Erken Atlama & Kumanda Desteği:**
+       - TV kumandasından "OK / Enter" tuşuyla veya ekrana dokunarak veritabanı yüklendiğinde anında açılışı tamamlama desteği.
+  2. **Ana Uygulama Entegrasyonu & Akıcı Geçiş (`MainActivity.kt`):**
+     - Uygulama ilk açıldığında `sourcesUi.loaded` henüz `false` iken eski basit çember gösterge (`CircularProgressIndicator`) kaldırıldı.
+     - `SplashScreen`, `AnimatedVisibility` ile üst katmana yerleştirildi.
+     - Arka planda veritabanı yüklenir yüklenmez `NavHost` sessizce ve donma/takılma olmadan oluşturuldu.
+     - Splash süresi dolduğunda veya kullanıcı erken geçiş yaptığında 600ms süren sinematik bir fade-out (`FastOutSlowInEasing`) ile doğrudan ana ekrana akıcı geçiş sağlandı.
+* **Versiyon ve Dağıtım:**
+  - `app/build.gradle.kts`: `versionCode = 42`, `versionName = "0.12.21"`.
+  - `.\gradlew compileDebugKotlin`: Başarılı (0 hata).
+  - `.\gradlew assembleRelease`: Başarılı (`GECEiptv-release.apk` - 13.45 MB).
+  - `bygokhanege-svg/geceiptv`: `main` dalına commit atıldı ve `v0.12.21` etiketi pushlandı.
+  - `bygokhanege-svg/geceiptv-releases`: `v0.12.21` sürümü oluşturulup APK yüklendi.
+* **Doğrulama:**
+  - `https://api.github.com/repos/bygokhanege-svg/geceiptv-releases/releases/latest` üzerinden `v0.12.21` ve `GECEiptv-release.apk` asset'inin aktif olduğu doğrulandı.
+
+---
+
 ## 📌 Hızlı Referans & Mimari Kurallar
 1. **Ekran Genişliği Sınırı (Mobil Breakpoint):**
    * `LocalConfiguration.current.screenWidthDp < 600` mobil/telefon cihazları temsil eder.
@@ -697,7 +740,7 @@
 2. **GitHub Bilgileri:**
    * Kaynak Kod Reposu (Private): `https://github.com/bygokhanege-svg/geceiptv.git`
    * Güncelleme / Dağıtım Reposu (Public): `https://github.com/bygokhanege-svg/geceiptv-releases.git`
-   * Release APK İndirme Bağlantısı: `https://github.com/bygokhanege-svg/geceiptv-releases/releases/download/v0.12.20/GECEiptv-release.apk`
+   * Release APK İndirme Bağlantısı: `https://github.com/bygokhanege-svg/geceiptv-releases/releases/download/v0.12.21/GECEiptv-release.apk`
    * Release APK Adı: `GECEiptv-release.apk`
    * Destek E-postası: `geceiptv@gmail.com`
 3. **Derleme Komutları:**

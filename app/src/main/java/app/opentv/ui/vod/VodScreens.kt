@@ -134,6 +134,26 @@ fun MoviesScreen(
     val hasContent = resume.isNotEmpty() || recommended.isNotEmpty() ||
         recentlyAdded.isNotEmpty() || genreRows.isNotEmpty()
 
+    val heroItems = remember(recommended, recentlyAdded) {
+        val candidates = (recommended + recentlyAdded).distinctBy { it.id }
+        val withBackdrop = candidates.filter { !it.backdropUrl.isNullOrBlank() }
+        val pool = if (withBackdrop.size >= 3) withBackdrop else candidates
+        pool.take(6).map { movie ->
+            VodHeroItem(
+                id = movie.id,
+                title = movie.displayTitle,
+                backdropUrl = movie.backdropUrl,
+                posterUrl = movie.posterUrl,
+                rating = movie.rating,
+                year = movie.year,
+                genre = movie.genre,
+                plot = movie.plot,
+                isSeries = false,
+                onClick = { onOpenMovie(movie) },
+            )
+        }
+    }
+
     val isPhone = LocalConfiguration.current.screenWidthDp < 600
     var showCategoryDialog by remember { mutableStateOf(false) }
     var phoneActionTarget by remember { mutableStateOf<VodActionTarget?>(null) }
@@ -171,6 +191,9 @@ fun MoviesScreen(
                         verticalArrangement = Arrangement.spacedBy(14.dp),
                         modifier = Modifier.fillMaxSize(),
                     ) {
+                        if (heroItems.isNotEmpty()) item(key = "hero_carousel") {
+                            VodHeroCarousel(items = heroItems)
+                        }
                         if (resume.isNotEmpty()) item(key = "cw") {
                             ContinueWatchingRow(
                                 items = resume,
@@ -241,6 +264,9 @@ fun MoviesScreen(
                         verticalArrangement = Arrangement.spacedBy(14.dp),
                         modifier = Modifier.fillMaxSize(),
                     ) {
+                        if (heroItems.isNotEmpty()) item(key = "hero_carousel") {
+                            VodHeroCarousel(items = heroItems)
+                        }
                         if (resume.isNotEmpty()) item(key = "cw") {
                             ContinueWatchingRow(
                                 items = resume,
@@ -332,6 +358,26 @@ fun SeriesScreen(
 
     val hasContent = resume.isNotEmpty() || recentlyAdded.isNotEmpty() || genreRows.isNotEmpty()
 
+    val heroItems = remember(recentlyAdded, genreRows) {
+        val allSeries = (recentlyAdded + genreRows.flatMap { it.items }).distinctBy { it.id }
+        val withBackdrop = allSeries.filter { !it.backdropUrl.isNullOrBlank() }
+        val pool = if (withBackdrop.size >= 3) withBackdrop else allSeries
+        pool.take(6).map { s ->
+            VodHeroItem(
+                id = s.id,
+                title = s.displayTitle,
+                backdropUrl = s.backdropUrl,
+                posterUrl = s.posterUrl,
+                rating = s.rating,
+                year = s.year,
+                genre = s.genre,
+                plot = s.plot,
+                isSeries = true,
+                onClick = { onOpenSeries(s) },
+            )
+        }
+    }
+
     val isPhone = LocalConfiguration.current.screenWidthDp < 600
     var showCategoryDialog by remember { mutableStateOf(false) }
     var phoneActionTarget by remember { mutableStateOf<VodActionTarget?>(null) }
@@ -369,6 +415,9 @@ fun SeriesScreen(
                         verticalArrangement = Arrangement.spacedBy(14.dp),
                         modifier = Modifier.fillMaxSize(),
                     ) {
+                        if (heroItems.isNotEmpty()) item(key = "hero_carousel") {
+                            VodHeroCarousel(items = heroItems)
+                        }
                         if (resume.isNotEmpty()) item(key = "cw") {
                             ContinueWatchingRow(
                                 items = resume,
@@ -435,6 +484,9 @@ fun SeriesScreen(
                         verticalArrangement = Arrangement.spacedBy(14.dp),
                         modifier = Modifier.fillMaxSize(),
                     ) {
+                        if (heroItems.isNotEmpty()) item(key = "hero_carousel") {
+                            VodHeroCarousel(items = heroItems)
+                        }
                         if (resume.isNotEmpty()) item(key = "cw") {
                             ContinueWatchingRow(
                                 items = resume,

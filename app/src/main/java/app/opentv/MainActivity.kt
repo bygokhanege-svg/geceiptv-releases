@@ -19,6 +19,11 @@ import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -96,6 +101,7 @@ import app.opentv.ui.settings.SettingsHubScreen
 import app.opentv.ui.settings.WebManagerScreen
 import app.opentv.ui.theme.OpenTvTheme
 import app.opentv.ui.LegalDisclaimerModal
+import app.opentv.ui.SplashScreen
 import app.opentv.ui.vod.MovieDetailScreen
 import app.opentv.ui.vod.PersonScreen
 import app.opentv.ui.vod.SeriesDetailScreen
@@ -370,16 +376,10 @@ private fun GeceIptvApp(isTelevision: Boolean) {
         }
     }
 
-    // Until the saved sources have loaded from the database, we cannot tell a first run from a
-    // returning user — and guessing "first run" drops a returning user on the setup screen and
-    // asks for their provider again. NavHost locks in its start destination on first
-    // composition, so wait for that first load before building it.
-    if (!sourcesUi.loaded) {
-        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
-        }
-        return
-    }
+    var splashActive by remember { mutableStateOf(true) }
+
+    Box(Modifier.fillMaxSize()) {
+        if (sourcesUi.loaded) {
 
     // First run goes straight to setup — an empty channel list with no explanation is the
     // worst possible first impression.
@@ -931,6 +931,28 @@ private fun GeceIptvApp(isTelevision: Boolean) {
 
         // "About to switch to a recording" banner — shows 30s before an auto-switch fires.
         RecordingSwitchBanner()
+        }
+    }
+
+        // Luxury Responsive Splash Screen for TV, Tablet & Mobile
+        AnimatedVisibility(
+            visible = splashActive || !sourcesUi.loaded,
+            enter = fadeIn(),
+            exit = fadeOut(
+                animationSpec = tween(
+                    durationMillis = 600,
+                    easing = FastOutSlowInEasing,
+                ),
+            ),
+        ) {
+            SplashScreen(
+                isTelevision = isTelevision,
+                isLoaded = sourcesUi.loaded,
+                onFinish = {
+                    splashActive = false
+                },
+            )
+        }
     }
 }
 

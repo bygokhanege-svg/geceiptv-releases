@@ -856,8 +856,12 @@
   * `ProfileAvatars.kt`: 8 tematik Netflix tarzı degrade renkli ve ikonlu avatar koleksiyonu oluşturuldu.
   * `ProfilesScreen.kt`: Sinematik "Kim İzliyor?" Netflix arayüzü, "+ Profil Ekle" kartı, "Profilleri Yönet" kalem modu, 4 daireli PIN kilit ekranı (`ProfilePinPromptDialog`) ve profil düzenleme ekranı (`ProfileEditScreen`) geliştirildi. TV'de D-pad `OnScreenKeyboard`, telefon/tablette yerel dokunmatik klavye sağlandı.
   * `MainScreen.kt` & `DashboardScreen.kt`: Seçili profilin menü tercihleri (`liveEnabled`, `moviesEnabled`, vb.) dinamik olarak ana ekrana ve navigasyon barlarına yansıtıldı.
-  * `OnlineSubtitleService.kt` & `VodPlayerScreen.kt`: `isTurkish` ve `isEnglish` filtreleri genişletilerek altyazı sonuçlarında Türkçe (🇹🇷) 1. sıraya, İngilizce (🇬🇧) 2. sıraya, diğer diller alfabetik olarak sonraki sıralara yerleştirildi.
-  * `.\gradlew compileDebugKotlin` ile derleme hatasız doğrulandı (`BUILD SUCCESSFUL in 58s`). Kullanıcı talimatı gereği release build ve git push bekletilmektedir.
+  * `app/build.gradle.kts`: `versionCode = 47`, `versionName = "0.12.26"`.
+  * `.\gradlew assembleRelease`: Başarılı (`GECEiptv-release.apk` - 13.50 MB).
+  * `bygokhanege-svg/geceiptv`: `main` dalına commit atıldı ve `v0.12.26` etiketi pushlandı.
+  * `bygokhanege-svg/geceiptv-releases`: `v0.12.26` sürümü oluşturulup APK yüklendi.
+* **Doğrulama:**
+  - `https://github.com/bygokhanege-svg/geceiptv-releases/releases/download/v0.12.26/GECEiptv-release.apk` aktif hale getirildi.
 
 ---
 
@@ -869,7 +873,7 @@
 2. **GitHub Bilgileri:**
    * Kaynak Kod Reposu (Private): `https://github.com/bygokhanege-svg/geceiptv.git`
    * Güncelleme / Dağıtım Reposu (Public): `https://github.com/bygokhanege-svg/geceiptv-releases.git`
-   * Release APK İndirme Bağlantısı: `https://github.com/bygokhanege-svg/geceiptv-releases/releases/download/v0.12.24/GECEiptv-release.apk`
+   * Release APK İndirme Bağlantısı: `https://github.com/bygokhanege-svg/geceiptv-releases/releases/download/v0.12.26/GECEiptv-release.apk`
    * Release APK Adı: `GECEiptv-release.apk`
    * Destek E-postası: `geceiptv@gmail.com`
 3. **Derleme Komutları:**

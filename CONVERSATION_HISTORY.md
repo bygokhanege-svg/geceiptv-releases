@@ -732,6 +732,42 @@
 
 ---
 
+### 31. Profesyonel & Glassmorphism Sağlayıcı Ekleme Menüsü (v0.12.22)
+* **Kullanıcı Talebi:** "sağlayıcı ekleme sayfası çok sade kaldı. daha profesonel bir menü haline getirelim o kısmı. gerekirse glassmoprhsym olarak şık yapalım. tv tablet ve telefon için aynı menü olsun"
+* **Uygulanan Değişiklikler:**
+  1. **Lüks Glassmorphism & Sinematik Atmosfer (`AddSourceScreen.kt`):**
+     - **Arka Plan:** Derin obsidyen gece siyahı (`#090A0F`) üzerinde kehribar altın radyal ışımalar.
+     - **Ana Gövde Cam Kartı (Frosted Glass Card):** Dumanlı yarı saydam cam zemin (`Brush.verticalGradient(listOf(Color(0xE6141926), Color(0xD90E121D)))`), ince altın/gümüş ışık kırılmalı çerçeve (`1.dp` gradient border) ve 24dp kavisli köşeler.
+     - **Giriş Alanları (Glass Inputs):** Yarı saydam koyu cam kutular (`Color(0x800E121D)`), odaklandığında kehribar altın çerçeve ve altın etiketler.
+  2. **Birleşik Menü Standardı (TV, Tablet ve Telefon Eşitliği):**
+     - TV cihazlarının ilk açılışta zorunlu QR ekranına yönlendirilmesi kaldırıldı; tüm cihazlar doğrudan aynı zengin ve profesyonel cam menüyle karşılanır.
+     - Dileyen kullanıcılar için menü içerisine entegre edilmiş şık bir **"Telefondan Kolay Kurulum (QR Kod)"** kartı eklendi.
+  3. **Segmentli Protokol Seçim Kartları (Xtream, M3U, Stalker):**
+     - Basit çipler yerine 3 adet bağımsız lüks cam kart:
+       - **Xtream Codes API:** Sunucu, kullanıcı adı ve şifre ile tam arşiv (*Önerilen • En Hızlı* rozetli).
+       - **M3U Çalma Listesi:** M3U / M3U8 veya dosya bağlantısı desteği.
+       - **Stalker Portal:** MAG cihazı ve MAC adresi yetkilendirmesi desteği.
+     - Seçili kartta kehribar altın dolgu, altın çerçeve ve kumanda odak göstergeleri.
+  4. **Kullanılabilirlik & Akıllı Yardımcılar:**
+     - **Şifre Göster/Gizle Butonu:** Kumanda ve mobilde şifre yazarken hataları önleyen göz ikonu eklendi.
+     - **Akıllı URL Analizcisi:** Tam bir Xtream linki yapıştırıldığında sunucu, kullanıcı adı ve şifreyi otomatik ayrıştırıp ilgili kutulara yerleştirme mantığı korundu ve güçlendirildi.
+     - **Gelişmiş MAG Kimlikleri:** Serial (`sn`), Device ID 1 ve 2 alanları açılır kapanır zarif cam kart içine alındı.
+     - **Gelişmiş Ayarlar:** Özel EPG URL ve User-Agent alanları cam akordiyon içerisine toplandı.
+  5. **Yüksek Kontrastlı Butonlar & Durum Geri Bildirimi:**
+     - Test başarılı (zümrüt yeşili) ve hata (yakut kırmızısı) yarı saydam cam bilgi kartları.
+     - **"Bağlantıyı Test Et"**: Şık yarı saydam çerçeveli cam buton.
+     - **"Kaydet ve Yayınları Başlat"**: Dolgun kehribar altın gradyan zemin ve **Simsiyah (Jet Black `#000000`)** yüksek kontrastlı yazı.
+* **Versiyon ve Dağıtım:**
+  - `app/build.gradle.kts`: `versionCode = 43`, `versionName = "0.12.22"`.
+  - `.\gradlew compileDebugKotlin`: Başarılı (0 hata).
+  - `.\gradlew assembleRelease`: Başarılı (`GECEiptv-release.apk` - 13.44 MB).
+  - `bygokhanege-svg/geceiptv`: `main` dalına commit atıldı ve `v0.12.22` etiketi pushlandı.
+  - `bygokhanege-svg/geceiptv-releases`: `v0.12.22` sürümü oluşturulup APK yüklendi.
+* **Doğrulama:**
+  - `https://api.github.com/repos/bygokhanege-svg/geceiptv-releases/releases/latest` üzerinden `v0.12.22` ve `GECEiptv-release.apk` asset'inin aktif olduğu doğrulandı.
+
+---
+
 ## 📌 Hızlı Referans & Mimari Kurallar
 1. **Ekran Genişliği Sınırı (Mobil Breakpoint):**
    * `LocalConfiguration.current.screenWidthDp < 600` mobil/telefon cihazları temsil eder.
@@ -740,7 +776,7 @@
 2. **GitHub Bilgileri:**
    * Kaynak Kod Reposu (Private): `https://github.com/bygokhanege-svg/geceiptv.git`
    * Güncelleme / Dağıtım Reposu (Public): `https://github.com/bygokhanege-svg/geceiptv-releases.git`
-   * Release APK İndirme Bağlantısı: `https://github.com/bygokhanege-svg/geceiptv-releases/releases/download/v0.12.21/GECEiptv-release.apk`
+   * Release APK İndirme Bağlantısı: `https://github.com/bygokhanege-svg/geceiptv-releases/releases/download/v0.12.22/GECEiptv-release.apk`
    * Release APK Adı: `GECEiptv-release.apk`
    * Destek E-postası: `geceiptv@gmail.com`
 3. **Derleme Komutları:**

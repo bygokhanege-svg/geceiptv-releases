@@ -80,6 +80,7 @@ import coil.compose.AsyncImage
 import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
 import java.util.*
+import app.opentv.ui.theme.GecePalette
 
 @Composable
 fun DashboardScreen(
@@ -208,8 +209,8 @@ fun DashboardScreen(
             .background(
                 Brush.radialGradient(
                     colors = listOf(
-                        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                        MaterialTheme.colorScheme.background,
+                        GecePalette.CardElevated.copy(alpha = 0.5f),
+                        GecePalette.CanvasBg,
                     ),
                     radius = 1600f,
                 ),
@@ -234,8 +235,8 @@ fun DashboardScreen(
                         modifier = Modifier
                             .size(42.dp)
                             .clip(RoundedCornerShape(10.dp))
-                            .background(Color(0xFF090D16))
-                            .border(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.45f), RoundedCornerShape(10.dp)),
+                            .background(GecePalette.CardSurface)
+                            .border(1.dp, GecePalette.Accent.copy(alpha = 0.45f), RoundedCornerShape(10.dp)),
                         contentAlignment = Alignment.Center,
                     ) {
                         Image(
@@ -248,13 +249,13 @@ fun DashboardScreen(
                     Column {
                         Text(
                             text = "GECE İPTV Player",
-                            color = MaterialTheme.colorScheme.onBackground,
+                            color = GecePalette.TextPrimary,
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                         )
                         Text(
                             text = stringResource(R.string.dashboard_brand_subtitle),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            color = GecePalette.TextSecondary,
                             style = MaterialTheme.typography.labelSmall,
                         )
                     }
@@ -281,13 +282,13 @@ fun DashboardScreen(
                             .height(46.dp)
                             .clip(RoundedCornerShape(8.dp))
                             .background(
-                                if (isStatusFocused) MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
-                                else MaterialTheme.colorScheme.surface,
+                                if (isStatusFocused) GecePalette.AccentSubtle
+                                else GecePalette.CardSurface,
                             )
                             .border(
                                 1.dp,
-                                if (isStatusFocused) MaterialTheme.colorScheme.primary
-                                else MaterialTheme.colorScheme.outline.copy(alpha = 0.4f),
+                                if (isStatusFocused) GecePalette.Accent
+                                else GecePalette.CardBorder,
                                 RoundedCornerShape(8.dp),
                             )
                             .clickable(
@@ -306,7 +307,7 @@ fun DashboardScreen(
                             ) {
                                 Text(
                                     stringResource(R.string.dashboard_status_label),
-                                    color = if (isStatusFocused) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                                    color = if (isStatusFocused) GecePalette.Accent else GecePalette.TextSecondary,
                                     style = MaterialTheme.typography.labelSmall,
                                     fontSize = 7.5.sp,
                                     fontWeight = FontWeight.Bold,
@@ -315,13 +316,13 @@ fun DashboardScreen(
                                     modifier = Modifier
                                         .size(6.5.dp)
                                         .clip(CircleShape)
-                                        .background(Color(0xFF22C55E)),
+                                        .background(GecePalette.Accent),
                                 )
                             }
                             Spacer(modifier = Modifier.height(2.dp))
                             Text(
                                 text = expiryDisplayText,
-                                color = MaterialTheme.colorScheme.onSurface,
+                                color = GecePalette.TextPrimary,
                                 style = MaterialTheme.typography.labelMedium,
                                 fontSize = 11.5.sp,
                                 fontWeight = FontWeight.Bold,
@@ -334,15 +335,15 @@ fun DashboardScreen(
                         modifier = Modifier
                             .height(46.dp)
                             .clip(RoundedCornerShape(8.dp))
-                            .background(MaterialTheme.colorScheme.surface)
-                            .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.4f), RoundedCornerShape(8.dp))
+                            .background(GecePalette.CardSurface)
+                            .border(1.dp, GecePalette.CardBorder, RoundedCornerShape(8.dp))
                             .padding(horizontal = 10.dp, vertical = 5.dp),
                         contentAlignment = Alignment.CenterStart,
                     ) {
                         Column {
                             Text(
                                 dateFormatter.format(currentTime),
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                color = GecePalette.TextSecondary,
                                 style = MaterialTheme.typography.labelSmall,
                                 fontSize = 7.5.sp,
                                 maxLines = 1,
@@ -350,7 +351,7 @@ fun DashboardScreen(
                             Spacer(modifier = Modifier.height(1.dp))
                             Text(
                                 timeFormatter.format(currentTime),
-                                color = MaterialTheme.colorScheme.onSurface,
+                                color = GecePalette.TextPrimary,
                                 style = MaterialTheme.typography.labelLarge,
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold,
@@ -367,13 +368,13 @@ fun DashboardScreen(
                             .height(46.dp)
                             .clip(RoundedCornerShape(8.dp))
                             .background(
-                                if (isThemeFocused) MaterialTheme.colorScheme.primary.copy(alpha = 0.25f)
-                                else MaterialTheme.colorScheme.surface,
+                                if (isThemeFocused) GecePalette.AccentSubtle
+                                else GecePalette.CardSurface,
                             )
                             .border(
                                 1.dp,
-                                if (isThemeFocused) MaterialTheme.colorScheme.primary
-                                else MaterialTheme.colorScheme.outline.copy(alpha = 0.4f),
+                                if (isThemeFocused) GecePalette.Accent
+                                else GecePalette.CardBorder,
                                 RoundedCornerShape(8.dp),
                             )
                             .clickable(
@@ -396,12 +397,12 @@ fun DashboardScreen(
                             Icon(
                                 imageVector = if (isDark) Icons.Outlined.DarkMode else Icons.Outlined.LightMode,
                                 contentDescription = "Tema Değiştir",
-                                tint = if (isDark) Color(0xFFFACC15) else Color(0xFFF59E0B),
+                                tint = GecePalette.Accent,
                                 modifier = Modifier.size(17.dp),
                             )
                             Text(
                                 text = if (isDark) stringResource(R.string.dashboard_theme_dark) else stringResource(R.string.dashboard_theme_light),
-                                color = MaterialTheme.colorScheme.onSurface,
+                                color = if (isThemeFocused) GecePalette.Accent else GecePalette.TextPrimary,
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 11.sp,
@@ -620,17 +621,17 @@ private fun StatCard(title: String, value: String, unit: String) {
             .width(88.dp)
             .height(46.dp)
             .clip(RoundedCornerShape(8.dp))
-            .background(MaterialTheme.colorScheme.surface)
-            .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.4f), RoundedCornerShape(8.dp))
+            .background(GecePalette.CardSurface)
+            .border(1.dp, GecePalette.CardBorder, RoundedCornerShape(8.dp))
             .padding(horizontal = 8.dp, vertical = 5.dp),
     ) {
         Column {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(modifier = Modifier.size(5.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primary))
+                Box(modifier = Modifier.size(5.dp).clip(CircleShape).background(GecePalette.Accent))
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     title,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = GecePalette.TextSecondary,
                     style = MaterialTheme.typography.labelSmall,
                     fontSize = 7.5.sp,
                     fontWeight = FontWeight.Bold,
@@ -641,7 +642,7 @@ private fun StatCard(title: String, value: String, unit: String) {
             Row(verticalAlignment = Alignment.Bottom) {
                 Text(
                     value,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = GecePalette.TextPrimary,
                     style = MaterialTheme.typography.titleSmall,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
@@ -649,7 +650,7 @@ private fun StatCard(title: String, value: String, unit: String) {
                 Spacer(modifier = Modifier.width(2.dp))
                 Text(
                     unit,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = GecePalette.TextSecondary,
                     style = MaterialTheme.typography.labelSmall,
                     fontSize = 7.5.sp,
                     modifier = Modifier.padding(bottom = 1.dp),
@@ -1125,8 +1126,8 @@ private fun ListColumn(
         modifier = Modifier
             .fillMaxSize()
             .clip(RoundedCornerShape(14.dp))
-            .background(MaterialTheme.colorScheme.surface)
-            .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.35f), RoundedCornerShape(14.dp))
+            .background(GecePalette.CardSurface)
+            .border(1.dp, GecePalette.CardBorder, RoundedCornerShape(14.dp))
             .padding(14.dp),
     ) {
         Row(
@@ -1139,7 +1140,7 @@ private fun ListColumn(
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
                     title,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = GecePalette.TextPrimary,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                 )
@@ -1147,12 +1148,13 @@ private fun ListColumn(
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(8.dp))
-                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f))
+                    .background(GecePalette.AccentSubtle)
+                    .border(1.dp, GecePalette.Accent.copy(alpha = 0.35f), RoundedCornerShape(8.dp))
                     .padding(horizontal = 7.dp, vertical = 3.dp),
             ) {
                 Text(
                     badge,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = GecePalette.Accent,
                     style = MaterialTheme.typography.labelSmall,
                     fontWeight = FontWeight.Bold,
                 )
@@ -1177,9 +1179,9 @@ private fun ListItemCard(item: Any, isMovie: Boolean, onClick: () -> Unit) {
     val year = if (isMovie) (item as Movie).year?.toString() ?: "" else (item as Series).year?.toString() ?: ""
     
     var focused by remember { mutableStateOf(false) }
-    val bg = if (focused) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
-    val contentColor = if (focused) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
-    val subColor = if (focused) MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f) else MaterialTheme.colorScheme.onSurfaceVariant
+    val bg = if (focused) GecePalette.Accent else GecePalette.CardElevated
+    val contentColor = if (focused) GecePalette.OnAccent else GecePalette.TextPrimary
+    val subColor = if (focused) GecePalette.OnAccent.copy(alpha = 0.8f) else GecePalette.TextSecondary
 
     Row(
         modifier = Modifier
@@ -1188,8 +1190,8 @@ private fun ListItemCard(item: Any, isMovie: Boolean, onClick: () -> Unit) {
             .clip(RoundedCornerShape(8.dp))
             .background(bg)
             .border(
-                if (focused) 1.5.dp else 0.dp,
-                if (focused) MaterialTheme.colorScheme.primary else Color.Transparent,
+                if (focused) 2.dp else 1.dp,
+                if (focused) GecePalette.Accent else GecePalette.CardBorder,
                 RoundedCornerShape(8.dp),
             )
             .clickable { onClick() }
@@ -1233,21 +1235,21 @@ private fun ListItemCard(item: Any, isMovie: Boolean, onClick: () -> Unit) {
 // TELEFON VE TABLET İÇİN 3-RENKLİ MODERN TASARIM SİSTEMİ (3-COLOR DESIGN SYSTEM)
 // ==============================================================================
 // 1. ZEMİN (CANVAS)
-private val MobileCanvasBg = Color(0xFF090A0F)         // Renk 1: Saf derin obsidyen gece siyahı
+private val MobileCanvasBg = GecePalette.CanvasBg
 
 // 2. KART & YÜZEY (SURFACE)
-private val MobileCardSurface = Color(0xFF131722)      // Renk 2: Grafit kart/panel yüzeyi
-private val MobileCardBorder = Color(0xFF22283A)       // Renk 2 Alt: Zarif mikro kart çerçevesi
-private val MobileCardElevated = Color(0xFF1A1F2E)     // Renk 2 Alt: İkincil hafif kabarık yüzey
+private val MobileCardSurface = GecePalette.CardSurface
+private val MobileCardBorder = GecePalette.CardBorder
+private val MobileCardElevated = GecePalette.CardElevated
 
 // 3. VURGU (ACCENT)
-private val MobileAccent = Color(0xFFF59E0B)           // Renk 3: Canlı asil kehribar/altın vurgu rengi
-private val MobileAccentSubtle = Color(0x26F59E0B)     // Renk 3 (%15 opaklık): Rozet ve hafif zemin vurgusu
+private val MobileAccent = GecePalette.Accent
+private val MobileAccentSubtle = GecePalette.AccentSubtle
 
 // ZIT RENK VE KONTRAST KURALLARI (HIGH CONTRAST RULES)
-private val MobileTextPrimary = Color(0xFFFFFFFF)      // Koyu zemin üzerinde bembeyaz, kristal netliğinde başlıklar
-private val MobileTextSecondary = Color(0xFF94A3B8)    // Koyu zemin üzerinde gümüş/gri okunaklı alt metinler
-private val MobileOnAccent = Color(0xFF000000)         // VURGULU (ALTIN) BUTON VE ÇİPLERDE SİMSİYAH ZIT METİN!
+private val MobileTextPrimary = GecePalette.TextPrimary
+private val MobileTextSecondary = GecePalette.TextSecondary
+private val MobileOnAccent = GecePalette.OnAccent
 
 /**
  * Telefon ve Tablet İçin Baştan Sona Modernize Edilmiş Ana Sayfa Beslemesi.
@@ -2556,7 +2558,7 @@ fun DashboardQuickToolsRow(
             title = stringResource(R.string.dashboard_tool_multiview),
             subtitle = stringResource(R.string.dashboard_tool_multiview_desc),
             icon = Icons.Default.GridView,
-            accentColor = Color(0xFF10B981),
+            accentColor = GecePalette.Accent,
             modifier = Modifier.weight(1.05f),
             onClick = onOpenMultiView,
         )
@@ -2564,7 +2566,7 @@ fun DashboardQuickToolsRow(
             title = stringResource(R.string.dashboard_tool_search),
             subtitle = stringResource(R.string.dashboard_tool_search_desc),
             icon = Icons.Outlined.Search,
-            accentColor = Color(0xFF38BDF8),
+            accentColor = GecePalette.Accent,
             modifier = Modifier.weight(1f),
             onClick = onOpenSearch,
         )
@@ -2572,7 +2574,7 @@ fun DashboardQuickToolsRow(
             title = stringResource(R.string.dashboard_tool_favorites),
             subtitle = stringResource(R.string.dashboard_tool_favorites_desc),
             icon = Icons.Filled.Star,
-            accentColor = Color(0xFFF59E0B),
+            accentColor = GecePalette.Accent,
             modifier = Modifier.weight(1f),
             onClick = onOpenFavorites,
         )
@@ -2580,7 +2582,7 @@ fun DashboardQuickToolsRow(
             title = stringResource(R.string.dashboard_tool_qr),
             subtitle = stringResource(R.string.dashboard_tool_qr_desc),
             icon = Icons.Filled.QrCode2,
-            accentColor = Color(0xFF8B5CF6),
+            accentColor = GecePalette.Accent,
             modifier = Modifier.weight(1f),
             onClick = onOpenQr,
         )
@@ -2588,7 +2590,7 @@ fun DashboardQuickToolsRow(
             title = stringResource(R.string.dashboard_tool_settings),
             subtitle = stringResource(R.string.dashboard_tool_settings_desc),
             icon = Icons.Outlined.Settings,
-            accentColor = Color(0xFFA855F7),
+            accentColor = GecePalette.Accent,
             modifier = Modifier.weight(1f),
             onClick = onOpenSettings,
         )
@@ -2830,13 +2832,13 @@ private fun QuickToolCard(
             .clip(RoundedCornerShape(10.dp))
             .background(
                 Brush.horizontalGradient(
-                    if (isFocused) listOf(accentColor.copy(alpha = 0.35f), Color(0xFF1E293B))
-                    else listOf(Color(0xFF0F172A), Color(0xFF1E293B).copy(alpha = 0.8f))
+                    if (isFocused) listOf(GecePalette.AccentSubtle, GecePalette.CardElevated)
+                    else listOf(GecePalette.CardSurface, GecePalette.CardElevated)
                 )
             )
             .border(
                 width = if (isFocused) 2.dp else 1.dp,
-                color = if (isFocused) accentColor else Color.White.copy(alpha = 0.12f),
+                color = if (isFocused) GecePalette.Accent else GecePalette.CardBorder,
                 shape = RoundedCornerShape(10.dp),
             )
             .clickable(
@@ -2856,20 +2858,20 @@ private fun QuickToolCard(
                 modifier = Modifier
                     .size(32.dp)
                     .clip(RoundedCornerShape(6.dp))
-                    .background(accentColor.copy(alpha = if (isFocused) 0.35f else 0.18f)),
+                    .background(if (isFocused) GecePalette.Accent else GecePalette.AccentSubtle),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
                     imageVector = icon,
                     contentDescription = title,
-                    tint = if (isFocused) Color.White else accentColor,
+                    tint = if (isFocused) GecePalette.OnAccent else GecePalette.Accent,
                     modifier = Modifier.size(18.dp),
                 )
             }
             Column(verticalArrangement = Arrangement.Center) {
                 Text(
                     text = title,
-                    color = Color.White,
+                    color = GecePalette.TextPrimary,
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold,
                     fontSize = 11.5.sp,
@@ -2878,7 +2880,7 @@ private fun QuickToolCard(
                 )
                 Text(
                     text = subtitle,
-                    color = if (isFocused) Color.White.copy(alpha = 0.85f) else Color(0xFF94A3B8),
+                    color = if (isFocused) GecePalette.TextPrimary.copy(alpha = 0.85f) else GecePalette.TextSecondary,
                     style = MaterialTheme.typography.labelSmall,
                     fontSize = 9.sp,
                     maxLines = 1,
@@ -2909,8 +2911,8 @@ private fun ProviderQuickChipsBar(
             modifier = modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(10.dp))
-                .background(Color(0xFF0D1527))
-                .border(1.dp, Color(0xFF38BDF8).copy(alpha = 0.25f), RoundedCornerShape(10.dp))
+                .background(GecePalette.CardSurface)
+                .border(1.dp, GecePalette.CardBorder, RoundedCornerShape(10.dp))
                 .clickable(onClick = onAddSource)
                 .padding(horizontal = 14.dp, vertical = 10.dp),
             contentAlignment = Alignment.Center,
@@ -2920,7 +2922,7 @@ private fun ProviderQuickChipsBar(
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     stringResource(R.string.dashboard_provider_empty),
-                    color = Color(0xFF38BDF8),
+                    color = GecePalette.Accent,
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Bold,
                     fontSize = 11.5.sp,
@@ -2938,10 +2940,10 @@ private fun ProviderQuickChipsBar(
     val borderColor = if (isDisconnected) {
         Color(0xFFEF4444)
     } else {
-        Color(0xFF38BDF8).copy(alpha = 0.2f)
+        GecePalette.CardBorder
     }
 
-    val barBg = if (isDisconnected) Color(0xFF1E1010) else Color(0xFF0D1527)
+    val barBg = if (isDisconnected) Color(0xFF1E1010) else GecePalette.CardSurface
 
     Column(
         modifier = modifier
@@ -2966,7 +2968,7 @@ private fun ProviderQuickChipsBar(
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
                     stringResource(R.string.dashboard_providers_title),
-                    color = if (isDisconnected) Color(0xFFFCA5A5) else Color(0xFF94A3B8),
+                    color = if (isDisconnected) Color(0xFFFCA5A5) else GecePalette.TextSecondary,
                     style = MaterialTheme.typography.labelSmall,
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Bold,
@@ -2974,7 +2976,7 @@ private fun ProviderQuickChipsBar(
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
                     "(${sources.size})",
-                    color = Color(0xFF64748B),
+                    color = GecePalette.TextSecondary,
                     style = MaterialTheme.typography.labelSmall,
                     fontSize = 9.5.sp,
                 )
@@ -2987,12 +2989,12 @@ private fun ProviderQuickChipsBar(
                             .clip(RoundedCornerShape(4.dp))
                             .background(
                                 if (isDisconnected) Color(0xFFEF4444).copy(alpha = 0.18f)
-                                else Color(0xFF10B981).copy(alpha = 0.2f)
+                                else GecePalette.AccentSubtle
                             )
                             .border(
                                 1.dp,
                                 if (isDisconnected) Color(0xFFEF4444).copy(alpha = 0.4f)
-                                else Color(0xFF10B981).copy(alpha = 0.4f),
+                                else GecePalette.Accent.copy(alpha = 0.4f),
                                 RoundedCornerShape(4.dp)
                             )
                             .padding(horizontal = 6.dp, vertical = 1.5.dp),
@@ -3000,7 +3002,7 @@ private fun ProviderQuickChipsBar(
                         Text(
                             text = if (isDisconnected) stringResource(R.string.dashboard_provider_disconnected)
                             else "⚡ ${health.speedMbps} Mbps • ${health.pingMs}ms",
-                            color = if (isDisconnected) Color(0xFFFCA5A5) else Color(0xFF34D399),
+                            color = if (isDisconnected) Color(0xFFFCA5A5) else GecePalette.Accent,
                             style = MaterialTheme.typography.labelSmall,
                             fontSize = 8.5.sp,
                             fontWeight = FontWeight.Bold,
@@ -3011,7 +3013,7 @@ private fun ProviderQuickChipsBar(
 
             Text(
                 text = stringResource(R.string.dashboard_providers_quick_switch),
-                color = Color(0xFF64748B),
+                color = GecePalette.TextSecondary,
                 style = MaterialTheme.typography.labelSmall,
                 fontSize = 9.sp,
             )
@@ -3037,9 +3039,9 @@ private fun ProviderQuickChipsBar(
                         .clip(RoundedCornerShape(8.dp))
                         .background(
                             when {
-                                isItemFocused -> Color(0xFF0284C7).copy(alpha = 0.35f)
-                                isSelected -> Color(0xFF1E293B)
-                                else -> Color(0xFF131C2E)
+                                isItemFocused -> GecePalette.AccentSubtle
+                                isSelected -> GecePalette.CardElevated
+                                else -> GecePalette.CardSurface
                             }
                         )
                         .border(
@@ -3049,9 +3051,9 @@ private fun ProviderQuickChipsBar(
                                 else -> 1.dp
                             },
                             color = when {
-                                isItemFocused -> Color(0xFF38BDF8)
-                                isSelected -> Color(0xFF22C55E)
-                                else -> Color.White.copy(alpha = 0.12f)
+                                isItemFocused -> GecePalette.Accent
+                                isSelected -> GecePalette.Accent
+                                else -> GecePalette.CardBorder
                             },
                             shape = RoundedCornerShape(8.dp),
                         )
@@ -3074,7 +3076,7 @@ private fun ProviderQuickChipsBar(
                         ) {
                             Text(
                                 text = src.name,
-                                color = if (isSelected) Color.White else Color(0xFFE2E8F0),
+                                color = if (isSelected) GecePalette.TextPrimary else GecePalette.TextSecondary,
                                 style = MaterialTheme.typography.titleSmall,
                                 fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.Bold,
                                 fontSize = 11.5.sp,
@@ -3087,12 +3089,12 @@ private fun ProviderQuickChipsBar(
                                 Box(
                                     modifier = Modifier
                                         .clip(RoundedCornerShape(3.dp))
-                                        .background(Color(0xFF22C55E).copy(alpha = 0.22f))
+                                        .background(GecePalette.AccentSubtle)
                                         .padding(horizontal = 4.dp, vertical = 1.dp),
                                 ) {
                                     Text(
                                         stringResource(R.string.dashboard_provider_active),
-                                        color = Color(0xFF22C55E),
+                                        color = GecePalette.Accent,
                                         style = MaterialTheme.typography.labelSmall,
                                         fontSize = 7.5.sp,
                                         fontWeight = FontWeight.Bold,
@@ -3102,7 +3104,7 @@ private fun ProviderQuickChipsBar(
                         }
                         Text(
                             text = "${src.kind.name} · ${hostOf(src.url)}",
-                            color = if (isSelected) Color(0xFF86EFAC) else Color(0xFF94A3B8),
+                            color = if (isSelected) GecePalette.Accent else GecePalette.TextSecondary,
                             style = MaterialTheme.typography.labelSmall,
                             fontSize = 8.5.sp,
                             maxLines = 1,
@@ -3121,10 +3123,10 @@ private fun ProviderQuickChipsBar(
                     modifier = Modifier
                         .height(50.dp)
                         .clip(RoundedCornerShape(8.dp))
-                        .background(if (isAddFocused) Color(0xFF0284C7).copy(alpha = 0.35f) else Color(0xFF0F172A))
+                        .background(if (isAddFocused) GecePalette.AccentSubtle else GecePalette.CardSurface)
                         .border(
                             if (isAddFocused) 2.dp else 1.dp,
-                            if (isAddFocused) Color(0xFF38BDF8) else Color(0xFF0284C7).copy(alpha = 0.35f),
+                            if (isAddFocused) GecePalette.Accent else GecePalette.CardBorder,
                             RoundedCornerShape(8.dp)
                         )
                         .clickable(
@@ -3141,7 +3143,7 @@ private fun ProviderQuickChipsBar(
                         Spacer(modifier = Modifier.width(5.dp))
                         Text(
                             stringResource(R.string.dashboard_provider_add),
-                            color = Color(0xFF38BDF8),
+                            color = GecePalette.Accent,
                             style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.Bold,
                             fontSize = 11.sp,
@@ -3307,8 +3309,8 @@ fun DashboardMediaHubGrid(
             badge = stringResource(R.string.dashboard_nav_live_badge),
             isLiveBadge = true,
             icon = Icons.Outlined.LiveTv,
-            gradientColors = listOf(Color(0xFF0369A1), Color(0xFF0284C7), Color(0xFF075985)),
-            accentColor = Color(0xFF38BDF8),
+            gradientColors = listOf(GecePalette.CardSurface, GecePalette.CardElevated),
+            accentColor = GecePalette.Accent,
             onClick = onNavigateLive,
         )
 
@@ -3324,8 +3326,8 @@ fun DashboardMediaHubGrid(
             badge = stringResource(R.string.dashboard_nav_movies_badge),
             isLiveBadge = false,
             icon = Icons.Outlined.Movie,
-            gradientColors = listOf(Color(0xFF4338CA), Color(0xFF6366F1), Color(0xFF312E81)),
-            accentColor = Color(0xFF818CF8),
+            gradientColors = listOf(GecePalette.CardSurface, GecePalette.CardElevated),
+            accentColor = GecePalette.Accent,
             onClick = onNavigateMovies,
         )
 
@@ -3341,8 +3343,8 @@ fun DashboardMediaHubGrid(
             badge = stringResource(R.string.dashboard_nav_series_badge),
             isLiveBadge = false,
             icon = Icons.Outlined.VideoLibrary,
-            gradientColors = listOf(Color(0xFF7C3AED), Color(0xFF8B5CF6), Color(0xFF4C1D95)),
-            accentColor = Color(0xFFA78BFA),
+            gradientColors = listOf(GecePalette.CardSurface, GecePalette.CardElevated),
+            accentColor = GecePalette.Accent,
             onClick = onNavigateSeries,
         )
     }
@@ -3402,13 +3404,13 @@ private fun DashboardMediaHeroCard(
             .clip(RoundedCornerShape(14.dp))
             .background(
                 Brush.horizontalGradient(
-                    if (isFocused) gradientColors.map { it.copy(alpha = 0.95f) }
-                    else gradientColors.map { it.copy(alpha = 0.50f) }
+                    if (isFocused) listOf(GecePalette.AccentSubtle, GecePalette.CardElevated)
+                    else listOf(GecePalette.CardSurface, GecePalette.CardElevated)
                 )
             )
             .border(
                 width = if (isFocused) 2.5.dp else 1.dp,
-                color = if (isFocused) Color.White else accentColor.copy(alpha = 0.40f),
+                color = if (isFocused) GecePalette.Accent else GecePalette.CardBorder,
                 shape = RoundedCornerShape(14.dp),
             )
             .clickable(
@@ -3430,19 +3432,19 @@ private fun DashboardMediaHeroCard(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.weight(1f),
             ) {
-                // Elevated Frosted Glass Icon
+                // Elevated Icon Box
                 Box(
                     modifier = Modifier
                         .size(46.dp)
                         .clip(RoundedCornerShape(10.dp))
                         .background(
-                            if (isFocused) Color.White.copy(alpha = 0.25f)
-                            else Color.Black.copy(alpha = 0.35f)
+                            if (isFocused) GecePalette.Accent
+                            else GecePalette.AccentSubtle
                         )
                         .border(
                             1.dp,
-                            if (isFocused) Color.White.copy(alpha = 0.6f)
-                            else accentColor.copy(alpha = 0.35f),
+                            if (isFocused) GecePalette.Accent
+                            else GecePalette.CardBorder,
                             RoundedCornerShape(10.dp),
                         ),
                     contentAlignment = Alignment.Center,
@@ -3450,7 +3452,7 @@ private fun DashboardMediaHeroCard(
                     Icon(
                         imageVector = icon,
                         contentDescription = title,
-                        tint = if (isFocused) Color.White else accentColor,
+                        tint = if (isFocused) GecePalette.OnAccent else GecePalette.Accent,
                         modifier = Modifier.size(26.dp),
                     )
                 }
@@ -3458,7 +3460,7 @@ private fun DashboardMediaHeroCard(
                 Column(verticalArrangement = Arrangement.Center) {
                     Text(
                         text = title,
-                        color = Color.White,
+                        color = GecePalette.TextPrimary,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.ExtraBold,
                         fontSize = 15.sp,
@@ -3469,7 +3471,7 @@ private fun DashboardMediaHeroCard(
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = subtitle,
-                        color = if (isFocused) Color.White.copy(alpha = 0.92f) else Color.White.copy(alpha = 0.70f),
+                        color = if (isFocused) GecePalette.TextPrimary.copy(alpha = 0.92f) else GecePalette.TextSecondary,
                         style = MaterialTheme.typography.labelSmall,
                         fontSize = 11.5.sp,
                         maxLines = 1,
@@ -3483,24 +3485,20 @@ private fun DashboardMediaHeroCard(
                 modifier = Modifier
                     .clip(RoundedCornerShape(6.dp))
                     .background(
-                        if (isFocused) Color.White.copy(alpha = 0.22f)
-                        else if (isLiveBadge) Color(0xFF22C55E).copy(alpha = 0.25f)
-                        else accentColor.copy(alpha = 0.22f)
+                        if (isFocused) GecePalette.Accent
+                        else GecePalette.AccentSubtle
                     )
                     .border(
                         1.dp,
-                        if (isFocused) Color.White.copy(alpha = 0.6f)
-                        else if (isLiveBadge) Color(0xFF22C55E).copy(alpha = 0.5f)
-                        else accentColor.copy(alpha = 0.4f),
+                        if (isFocused) GecePalette.Accent
+                        else GecePalette.CardBorder,
                         RoundedCornerShape(6.dp),
                     )
                     .padding(horizontal = 8.dp, vertical = 4.dp),
             ) {
                 Text(
                     text = badge,
-                    color = if (isFocused) Color.White
-                    else if (isLiveBadge) Color(0xFF4ADE80)
-                    else Color.White,
+                    color = if (isFocused) GecePalette.OnAccent else GecePalette.Accent,
                     style = MaterialTheme.typography.labelSmall,
                     fontSize = 9.sp,
                     fontWeight = FontWeight.Bold,
@@ -3550,18 +3548,12 @@ private fun AllContinueWatchingDialog(
                 )
                     .background(
                         Brush.verticalGradient(
-                            listOf(Color(0xFF0F172A), Color(0xFF0A0F1D))
+                            listOf(GecePalette.CardSurface, GecePalette.CanvasBg)
                         )
                     )
                     .border(
                         1.5.dp,
-                        Brush.linearGradient(
-                            listOf(
-                                MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
-                                Color(0xFF38BDF8).copy(alpha = 0.2f),
-                                Color.White.copy(alpha = 0.05f),
-                            )
-                        ),
+                        GecePalette.CardBorder,
                         RoundedCornerShape(20.dp),
                     )
                     .padding(if (isTelevision) 24.dp else 16.dp),
@@ -3580,11 +3572,8 @@ private fun AllContinueWatchingDialog(
                                 modifier = Modifier
                                     .size(44.dp)
                                     .clip(RoundedCornerShape(12.dp))
-                                    .background(
-                                        Brush.linearGradient(
-                                            listOf(MaterialTheme.colorScheme.primary, Color(0xFF0284C7))
-                                        )
-                                    ),
+                                    .background(GecePalette.AccentSubtle)
+                                    .border(1.dp, GecePalette.CardBorder, RoundedCornerShape(12.dp)),
                                 contentAlignment = Alignment.Center,
                             ) {
                                 Text("⏱️", fontSize = 22.sp)
@@ -3597,12 +3586,12 @@ private fun AllContinueWatchingDialog(
                                     text = stringResource(R.string.continue_watching_all_title),
                                     style = MaterialTheme.typography.titleLarge,
                                     fontWeight = FontWeight.Bold,
-                                    color = Color.White,
+                                    color = GecePalette.TextPrimary,
                                 )
                                 Text(
                                     text = stringResource(R.string.dashboard_content_count, continueWatching.size),
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = Color(0xFF94A3B8),
+                                    color = GecePalette.TextSecondary,
                                 )
                             }
                         }
@@ -3650,10 +3639,10 @@ private fun AllContinueWatchingDialog(
                                     .size(38.dp)
                                     .onFocusChanged { closeFocused = it.isFocused }
                                     .clip(CircleShape)
-                                    .background(if (closeFocused) MaterialTheme.colorScheme.primary else Color.White.copy(alpha = 0.08f))
+                                    .background(if (closeFocused) GecePalette.Accent else GecePalette.CardElevated)
                                     .border(
                                         width = if (closeFocused) 2.dp else 1.dp,
-                                        color = if (closeFocused) MaterialTheme.colorScheme.primary else Color.White.copy(alpha = 0.15f),
+                                        color = if (closeFocused) GecePalette.Accent else GecePalette.CardBorder,
                                         shape = CircleShape,
                                     )
                                     .focusable(),
@@ -3661,7 +3650,7 @@ private fun AllContinueWatchingDialog(
                                 Icon(
                                     imageVector = Icons.Outlined.Close,
                                     contentDescription = "Close",
-                                    tint = if (closeFocused) MaterialTheme.colorScheme.onPrimary else Color.White,
+                                    tint = if (closeFocused) GecePalette.OnAccent else GecePalette.TextPrimary,
                                 )
                             }
                         }
@@ -3682,7 +3671,7 @@ private fun AllContinueWatchingDialog(
                                 Text(
                                     text = stringResource(R.string.continue_watching_empty),
                                     style = MaterialTheme.typography.titleMedium,
-                                    color = Color(0xFF94A3B8),
+                                    color = GecePalette.TextSecondary,
                                     fontWeight = FontWeight.Medium,
                                 )
                             }
@@ -3729,10 +3718,10 @@ private fun AllContinueWatchingCard(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .background(if (isAnyFocused) MaterialTheme.colorScheme.primary.copy(alpha = 0.15f) else Color(0xFF1E293B).copy(alpha = 0.7f))
+            .background(if (isAnyFocused) GecePalette.AccentSubtle else GecePalette.CardSurface)
             .border(
                 width = if (isAnyFocused) 2.dp else 1.dp,
-                color = if (isAnyFocused) MaterialTheme.colorScheme.primary else Color.White.copy(alpha = 0.1f),
+                color = if (isAnyFocused) GecePalette.Accent else GecePalette.CardBorder,
                 shape = RoundedCornerShape(12.dp),
             )
             .padding(10.dp),
@@ -3750,7 +3739,7 @@ private fun AllContinueWatchingCard(
                     model = item.posterUrl,
                     contentDescription = item.title,
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize().background(Color(0xFF0F172A)),
+                    modifier = Modifier.fillMaxSize().background(GecePalette.CanvasBg),
                 )
 
                 // Dark gradient overlay
@@ -3773,12 +3762,12 @@ private fun AllContinueWatchingCard(
                         .padding(6.dp)
                         .clip(RoundedCornerShape(6.dp))
                         .background(Color.Black.copy(alpha = 0.75f))
-                        .border(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f), RoundedCornerShape(6.dp))
+                        .border(1.dp, GecePalette.Accent.copy(alpha = 0.5f), RoundedCornerShape(6.dp))
                         .padding(horizontal = 6.dp, vertical = 2.dp),
                 ) {
                     Text(
                         text = "%$percent",
-                        color = MaterialTheme.colorScheme.primary,
+                        color = GecePalette.Accent,
                         style = MaterialTheme.typography.labelSmall,
                         fontSize = 9.sp,
                         fontWeight = FontWeight.Bold,
@@ -3791,13 +3780,13 @@ private fun AllContinueWatchingCard(
                         .size(34.dp)
                         .align(Alignment.Center)
                         .clip(CircleShape)
-                        .background(if (playFocused) MaterialTheme.colorScheme.primary else Color.Black.copy(alpha = 0.6f)),
+                        .background(if (playFocused) GecePalette.Accent else Color.Black.copy(alpha = 0.6f)),
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
                         imageVector = Icons.Filled.PlayArrow,
                         contentDescription = "Play",
-                        tint = Color.White,
+                        tint = if (playFocused) GecePalette.OnAccent else Color.White,
                         modifier = Modifier.size(20.dp),
                     )
                 }
@@ -3809,7 +3798,7 @@ private fun AllContinueWatchingCard(
                         .fillMaxWidth()
                         .height(4.dp)
                         .align(Alignment.BottomCenter),
-                    color = MaterialTheme.colorScheme.primary,
+                    color = GecePalette.Accent,
                     trackColor = Color.White.copy(alpha = 0.25f),
                 )
             }
@@ -3819,7 +3808,7 @@ private fun AllContinueWatchingCard(
             // Title
             Text(
                 text = item.title,
-                color = if (isAnyFocused) Color.White else Color(0xFFF1F5F9),
+                color = if (isAnyFocused) GecePalette.TextPrimary else GecePalette.TextSecondary,
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.Bold,
                 maxLines = 1,
@@ -3840,10 +3829,10 @@ private fun AllContinueWatchingCard(
                         .weight(1f)
                         .then(if (focusRequester != null) Modifier.focusRequester(focusRequester) else Modifier)
                         .clip(RoundedCornerShape(8.dp))
-                        .background(if (playFocused) MaterialTheme.colorScheme.primary else Color.White.copy(alpha = 0.1f))
+                        .background(if (playFocused) GecePalette.Accent else GecePalette.CardElevated)
                         .border(
                             width = if (playFocused) 1.5.dp else 1.dp,
-                            color = if (playFocused) Color.White else Color.White.copy(alpha = 0.15f),
+                            color = if (playFocused) GecePalette.Accent else GecePalette.CardBorder,
                             shape = RoundedCornerShape(8.dp),
                         )
                         .clickable { onResume() }
@@ -3854,7 +3843,7 @@ private fun AllContinueWatchingCard(
                 ) {
                     Text(
                         text = "▶ " + stringResource(R.string.dashboard_resume),
-                        color = if (playFocused) MaterialTheme.colorScheme.onPrimary else Color.White,
+                        color = if (playFocused) GecePalette.OnAccent else GecePalette.TextPrimary,
                         style = MaterialTheme.typography.labelSmall,
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Bold,

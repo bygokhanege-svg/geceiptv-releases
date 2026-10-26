@@ -106,6 +106,7 @@ import app.opentv.ui.remote.RemoteScreen
 import app.opentv.ui.vod.MoviesScreen
 import app.opentv.ui.vod.SeriesScreen
 import app.opentv.ui.DashboardScreen
+import app.opentv.ui.theme.GecePalette
 
 /**
  * Modern TV Navigation Shell:
@@ -329,8 +330,8 @@ private fun PhoneTopBar(
             .fillMaxWidth()
             .statusBarsPadding()
             .height(54.dp)
-            .background(Color(0xF90A0F1D))
-            .border(width = 0.5.dp, color = Color(0x22FFFFFF), shape = RoundedCornerShape(0.dp))
+            .background(GecePalette.CanvasBg)
+            .border(width = 0.5.dp, color = GecePalette.CardBorder, shape = RoundedCornerShape(0.dp))
             .padding(horizontal = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -344,8 +345,8 @@ private fun PhoneTopBar(
                 modifier = Modifier
                     .size(34.dp)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(Color(0xFF090D16))
-                    .border(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.45f), RoundedCornerShape(8.dp)),
+                    .background(GecePalette.CardSurface)
+                    .border(1.dp, GecePalette.Accent.copy(alpha = 0.45f), RoundedCornerShape(8.dp)),
                 contentAlignment = Alignment.Center,
             ) {
                 Image(
@@ -359,7 +360,7 @@ private fun PhoneTopBar(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = title,
-                        color = Color.White,
+                        color = GecePalette.TextPrimary,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         fontSize = 15.sp,
@@ -369,13 +370,13 @@ private fun PhoneTopBar(
                         modifier = Modifier
                             .size(6.dp)
                             .clip(CircleShape)
-                            .background(Color(0xFF22C55E)),
+                            .background(GecePalette.Accent),
                     )
                 }
                 if (activeProfileName.isNotBlank() && activeProfileName != "Varsayılan") {
                     Text(
                         text = activeProfileName,
-                        color = MaterialTheme.colorScheme.primary,
+                        color = GecePalette.Accent,
                         style = MaterialTheme.typography.labelSmall,
                         fontSize = 10.sp,
                     )
@@ -395,7 +396,7 @@ private fun PhoneTopBar(
                 Icon(
                     imageVector = Icons.Outlined.Search,
                     contentDescription = stringResource(R.string.nav_search),
-                    tint = Color.White.copy(alpha = 0.9f),
+                    tint = GecePalette.TextSecondary,
                     modifier = Modifier.size(20.dp),
                 )
             }
@@ -406,7 +407,7 @@ private fun PhoneTopBar(
                 Icon(
                     imageVector = Icons.Default.GridView,
                     contentDescription = stringResource(R.string.multiview_title),
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = GecePalette.Accent,
                     modifier = Modifier.size(20.dp),
                 )
             }
@@ -417,7 +418,7 @@ private fun PhoneTopBar(
                 Icon(
                     imageVector = Icons.Outlined.Settings,
                     contentDescription = stringResource(R.string.nav_settings),
-                    tint = Color.White.copy(alpha = 0.9f),
+                    tint = GecePalette.TextSecondary,
                     modifier = Modifier.size(20.dp),
                 )
             }
@@ -580,26 +581,17 @@ private fun NavRail(
                 shape = if (expanded) RoundedCornerShape(topEnd = 16.dp, bottomEnd = 16.dp) else RoundedCornerShape(0.dp),
             )
             .background(
-                brush = if (expanded) {
-                    Brush.horizontalGradient(
-                        listOf(
-                            Color(0xF90A0F1D),
-                            Color(0xF410182C),
-                        )
+                brush = Brush.horizontalGradient(
+                    listOf(
+                        GecePalette.CanvasBg,
+                        GecePalette.CardSurface,
                     )
-                } else {
-                    Brush.horizontalGradient(
-                        listOf(
-                            Color(0xF2090D18),
-                            Color(0xEE090D18),
-                        )
-                    )
-                },
+                ),
                 shape = if (expanded) RoundedCornerShape(topEnd = 16.dp, bottomEnd = 16.dp) else RoundedCornerShape(0.dp),
             )
             .border(
                 width = 1.dp,
-                color = if (expanded) Color(0x3538BDF8) else Color(0x15FFFFFF),
+                color = if (expanded) GecePalette.Accent.copy(alpha = 0.35f) else GecePalette.CardBorder,
                 shape = if (expanded) RoundedCornerShape(topEnd = 16.dp, bottomEnd = 16.dp) else RoundedCornerShape(0.dp),
             )
             .focusGroup()
@@ -627,8 +619,8 @@ private fun NavRail(
                     modifier = Modifier
                         .size(34.dp)
                         .clip(RoundedCornerShape(9.dp))
-                        .background(Color(0xFF090D16))
-                        .border(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.55f), RoundedCornerShape(9.dp)),
+                        .background(GecePalette.CardSurface)
+                        .border(1.dp, GecePalette.Accent.copy(alpha = 0.55f), RoundedCornerShape(9.dp)),
                     contentAlignment = Alignment.Center,
                 ) {
                     Image(
@@ -649,7 +641,7 @@ private fun NavRail(
                         Text(
                             "GECE İPTV Player",
                             style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.onSurface,
+                            color = GecePalette.TextPrimary,
                             fontWeight = FontWeight.Bold,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
@@ -657,7 +649,7 @@ private fun NavRail(
                         Text(
                             "Canlı & Sinema",
                             style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.primary,
+                            color = GecePalette.Accent,
                             fontSize = 9.sp,
                             fontWeight = FontWeight.SemiBold,
                         )
@@ -748,14 +740,14 @@ private fun RailItem(
     val bg = when {
         focused -> Brush.horizontalGradient(
             listOf(
-                MaterialTheme.colorScheme.primary,
-                MaterialTheme.colorScheme.primary.copy(alpha = 0.85f),
+                GecePalette.Accent,
+                GecePalette.Accent.copy(alpha = 0.90f),
             )
         )
         selected -> Brush.horizontalGradient(
             listOf(
-                MaterialTheme.colorScheme.primary.copy(alpha = 0.22f),
-                MaterialTheme.colorScheme.primary.copy(alpha = 0.10f),
+                GecePalette.AccentSubtle,
+                GecePalette.AccentSubtle.copy(alpha = 0.50f),
             )
         )
         else -> Brush.horizontalGradient(
@@ -764,14 +756,14 @@ private fun RailItem(
     }
 
     val tint = when {
-        focused -> Color.White
-        selected -> MaterialTheme.colorScheme.primary
-        else -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
+        focused -> GecePalette.OnAccent
+        selected -> GecePalette.Accent
+        else -> GecePalette.TextSecondary
     }
 
     val borderColor = when {
-        focused -> Color.White.copy(alpha = 0.7f)
-        selected -> MaterialTheme.colorScheme.primary.copy(alpha = 0.45f)
+        focused -> GecePalette.Accent
+        selected -> GecePalette.Accent.copy(alpha = 0.45f)
         else -> Color.Transparent
     }
 
@@ -799,8 +791,8 @@ private fun RailItem(
                 .height(18.dp)
                 .clip(RoundedCornerShape(1.5.dp))
                 .background(
-                    if (focused) Color.White
-                    else if (selected) MaterialTheme.colorScheme.primary
+                    if (focused) GecePalette.OnAccent
+                    else if (selected) GecePalette.Accent
                     else Color.Transparent
                 )
         )
@@ -830,7 +822,7 @@ private fun RailItem(
                     text = label,
                     style = MaterialTheme.typography.titleSmall,
                     color = tint,
-                    fontWeight = if (selected || focused) FontWeight.Bold else FontWeight.Medium,
+                    fontWeight = if (focused) FontWeight.ExtraBold else if (selected) FontWeight.Bold else FontWeight.Medium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -847,19 +839,17 @@ private fun ThemeToggleRailItem(
 ) {
     var focused by remember { mutableStateOf(false) }
 
-    val darkAccent = Color(0xFF6366F1)
-    val lightAccent = Color(0xFFF59E0B)
-    val activeAccent = if (isDark) darkAccent else lightAccent
+    val activeAccent = GecePalette.Accent
 
     val containerBg = when {
-        focused -> MaterialTheme.colorScheme.primary
-        isDark -> Color(0xFF131A2C)
+        focused -> GecePalette.Accent
+        isDark -> GecePalette.CardSurface
         else -> Color(0xFFFEF3C7)
     }
     val containerBorderColor = when {
-        focused -> Color.White.copy(alpha = 0.9f)
-        isDark -> darkAccent.copy(alpha = 0.55f)
-        else -> lightAccent.copy(alpha = 0.65f)
+        focused -> GecePalette.Accent
+        isDark -> GecePalette.CardBorder
+        else -> GecePalette.Accent.copy(alpha = 0.65f)
     }
 
     val icon = if (isDark) Icons.Outlined.DarkMode else Icons.Outlined.LightMode
@@ -892,14 +882,14 @@ private fun ThemeToggleRailItem(
                         .size(width = 44.dp, height = 24.dp)
                         .clip(RoundedCornerShape(12.dp))
                         .background(
-                            if (focused) Color.White.copy(alpha = 0.25f)
-                            else if (isDark) Color(0xFF1E2846)
+                            if (focused) GecePalette.OnAccent.copy(alpha = 0.2f)
+                            else if (isDark) GecePalette.CardElevated
                             else Color(0xFFFDE68A),
                         )
                         .border(
                             1.dp,
-                            if (focused) Color.White.copy(alpha = 0.7f)
-                            else activeAccent.copy(alpha = 0.7f),
+                            if (focused) GecePalette.OnAccent.copy(alpha = 0.4f)
+                            else GecePalette.CardBorder,
                             RoundedCornerShape(12.dp),
                         ),
                     contentAlignment = if (isDark) Alignment.CenterEnd else Alignment.CenterStart,
@@ -910,7 +900,7 @@ private fun ThemeToggleRailItem(
                             .size(19.dp)
                             .clip(RoundedCornerShape(9.5.dp))
                             .background(
-                                if (focused) Color.White
+                                if (focused) GecePalette.OnAccent
                                 else activeAccent,
                             ),
                         contentAlignment = Alignment.Center,
@@ -918,7 +908,7 @@ private fun ThemeToggleRailItem(
                         Icon(
                             imageVector = icon,
                             contentDescription = label,
-                            tint = if (focused) MaterialTheme.colorScheme.primary else Color.White,
+                            tint = if (focused) GecePalette.Accent else if (isDark) GecePalette.OnAccent else Color.White,
                             modifier = Modifier.size(12.dp),
                         )
                     }
@@ -932,16 +922,15 @@ private fun ThemeToggleRailItem(
                     .size(28.dp)
                     .clip(RoundedCornerShape(8.dp))
                     .background(
-                        if (focused) Color.White.copy(alpha = 0.25f)
-                        else if (isDark) darkAccent.copy(alpha = 0.25f)
-                        else lightAccent.copy(alpha = 0.25f),
+                        if (focused) GecePalette.OnAccent.copy(alpha = 0.2f)
+                        else GecePalette.AccentSubtle
                     ),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
                     imageVector = icon,
                     contentDescription = label,
-                    tint = if (focused) Color.White else activeAccent,
+                    tint = if (focused) GecePalette.OnAccent else activeAccent,
                     modifier = Modifier.size(16.dp),
                 )
             }
@@ -954,14 +943,14 @@ private fun ThemeToggleRailItem(
                     style = MaterialTheme.typography.labelSmall,
                     fontSize = 8.sp,
                     fontWeight = FontWeight.Bold,
-                    color = if (focused) Color.White.copy(alpha = 0.8f) else activeAccent,
+                    color = if (focused) GecePalette.OnAccent else activeAccent,
                 )
                 Text(
                     text = label,
                     style = MaterialTheme.typography.titleSmall,
                     fontSize = 11.5.sp,
                     fontWeight = FontWeight.Bold,
-                    color = if (focused) Color.White else MaterialTheme.colorScheme.onSurface,
+                    color = if (focused) GecePalette.OnAccent else GecePalette.TextPrimary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -974,13 +963,12 @@ private fun ThemeToggleRailItem(
                     .size(width = 42.dp, height = 22.dp)
                     .clip(RoundedCornerShape(11.dp))
                     .background(
-                        if (focused) Color.White.copy(alpha = 0.35f)
-                        else if (isDark) darkAccent
-                        else lightAccent,
+                        if (focused) GecePalette.OnAccent.copy(alpha = 0.25f)
+                        else GecePalette.Accent,
                     )
                     .border(
                         1.dp,
-                        if (focused) Color.White.copy(alpha = 0.8f) else Color.White.copy(alpha = 0.35f),
+                        if (focused) GecePalette.OnAccent.copy(alpha = 0.5f) else GecePalette.CardBorder,
                         RoundedCornerShape(11.dp),
                     ),
                 contentAlignment = if (isDark) Alignment.CenterEnd else Alignment.CenterStart,
@@ -990,14 +978,14 @@ private fun ThemeToggleRailItem(
                         .padding(2.dp)
                         .size(17.dp)
                         .clip(RoundedCornerShape(8.5.dp))
-                        .background(Color.White),
+                        .background(if (focused) GecePalette.OnAccent else Color.White),
                     contentAlignment = Alignment.Center,
                 ) {
                     Box(
                         modifier = Modifier
                             .size(6.dp)
                             .clip(RoundedCornerShape(3.dp))
-                            .background(activeAccent),
+                            .background(if (focused) GecePalette.Accent else activeAccent),
                     )
                 }
             }

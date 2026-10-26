@@ -657,6 +657,38 @@
 
 ---
 
+### 29. Televizyon (TV) Arayüzü & Kabuk Bileşenleri 3-Renkli Palet ve Zıt Kontrast Yenilemesi (v0.12.20)
+* **Kullanıcı Talebi:** "televizyon içinde renkleri bu şekilde yapalım." (Mobil ve alt ekranlarda uygulanan 3-renkli kurumsal renk paleti ve yüksek kontrastlı okunabilirlik sisteminin televizyon arayüzüne, kumanda odak sistemine ve kabuk bileşenlerine uygulanması).
+* **Uygulanan Değişiklikler:**
+  1. **Televizyon Dashboard & Kabuk (`DashboardScreen.kt`):**
+     - **TV Üst Katman Zemin Radyal Gradyanı:** Eski koyu mavi-mor tonlar yerine `GecePalette.CardElevated` ve `GecePalette.CanvasBg` (`#090A0F`) radyal gradyanına bağlandı.
+     - **TV Üst Başlık (Header Row):** Logo kutusu `GecePalette.CardSurface`, altın mikro çerçeve `GecePalette.Accent.copy(0.45f)`, başlık saf beyaz (`#FFFFFF`), alt metin arduvaz gümüşü (`#94A3B8`).
+     - **Aktif Durum & Lisans Kartı:** D-pad odaklandığında `GecePalette.AccentSubtle`, altın çerçeve, durum göstergesi parıltılı kehribar altın (`#F59E0B`).
+     - **Saat & Tema Değiştirici:** Grafit kart yüzeyleri, TV kumanda odaklandığında altın ışıma ve zıt ikon renklendirmesi.
+     - **İstatistik Kartları (`StatCard`):** Sayılar beyaz, etiketler gümüş, durum noktaları asil kehribar altın.
+     - **Sunucu Hızlı Seçim Çipleri (`ProviderQuickChipsBar`):** Eski camgöbeği/yeşil tonlar kaldırıldı; grafit zemin, altın çerçeve ve aktif seçimde kehribar altın rozet ile senkronize edildi.
+     - **Medya Odak Kartları (`DashboardMediaHeroCard` & `DashboardMediaHubGrid`):**
+       - Canlı TV, Filmler ve Diziler dev odak kartlarındaki neon gradyanlar temizlendi.
+       - D-pad ile kartın üzerine gelindiğinde `2.5.dp` `GecePalette.Accent` altın çerçeve, altın simge arka planı ve simge rengi **Simsiyah (Jet Black `#000000`)** zıt kontrast kuralına kavuşturuldu.
+       - Kart içi durum pilleri ("Yayın Akışı", "Yeni Eklenenler", "Popüler Diziler") altın zemin üzerine siyah metinle kumanda mesafesinden anında okunur kılındı.
+     - **Hızlı Araçlar (`DashboardQuickToolsRow` & `QuickToolCard`):** 5 hızlı araç kartı (Çoklu TV, Arama, Favoriler, QR Giriş, Ayarlar) `GecePalette.Accent` vurgusuna taşındı. Odaklandığında simge zemini dolgun altın, simge ise simsiyah zıt renk oldu.
+     - **İzlemeye Devam Et (`AllContinueWatchingDialog` & `AllContinueWatchingCard`):** Diyalog konteyneri, kapatma butonu ve kartlar 3-renk temasına taşındı.
+  2. **Televizyon Yan Gezinme Çubuğu & Üst Bar (`MainScreen.kt`):**
+     - **TV Üst Çubuk:** Zemin `GecePalette.CanvasBg`, sınır `GecePalette.CardBorder`, logo kutusu `GecePalette.CardSurface`, durum noktası kehribar altın.
+     - **TV Yan Rayı (`NavigationRail`):** Genişleyen çekmece ve sabit sol ray `GecePalette.CanvasBg` ile `GecePalette.CardSurface` yatay gradyanına bağlandı.
+     - **Kumanda Odak Kontrastı (`RailItem`):** D-pad ile yan menü elemanlarına gelindiğinde buton zemini kehribar altına (`#F59E0B`) dönerken, ikon, metin ve gösterge çizgisi **Simsiyah (`#000000`)** zıt renge bürünerek TV kumanda mesafesinden kusursuz okunabilirlik sağlandı. Seçili elemanlarda koyu zemin üzerinde altın vurgu korundu.
+     - **Ray Tema Butonu (`ThemeToggleRailItem`):** Eski çivit mavisi (`#6366F1`) kaldırılarak `GecePalette.Accent` ile eşitlendi; odaklandığında zemin altın, ikon ve anahtar simsiyah yapıldı.
+* **Versiyon ve Dağıtım:**
+  - `app/build.gradle.kts`: `versionCode = 41`, `versionName = "0.12.20"`.
+  - `.\gradlew compileDebugKotlin`: Başarılı (0 hata).
+  - `.\gradlew assembleRelease`: Başarılı (`GECEiptv-release.apk` - 13.45 MB).
+  - `bygokhanege-svg/geceiptv`: `main` dalına commit atıldı ve `v0.12.20` etiketi pushlandı.
+  - `bygokhanege-svg/geceiptv-releases`: `v0.12.20` sürümü oluşturulup APK yüklendi.
+* **Doğrulama:**
+  - `https://api.github.com/repos/bygokhanege-svg/geceiptv-releases/releases/latest` üzerinden `v0.12.20` ve `GECEiptv-release.apk` asset'inin aktif olduğu doğrulandı.
+
+---
+
 ## 📌 Hızlı Referans & Mimari Kurallar
 1. **Ekran Genişliği Sınırı (Mobil Breakpoint):**
    * `LocalConfiguration.current.screenWidthDp < 600` mobil/telefon cihazları temsil eder.
@@ -665,7 +697,7 @@
 2. **GitHub Bilgileri:**
    * Kaynak Kod Reposu (Private): `https://github.com/bygokhanege-svg/geceiptv.git`
    * Güncelleme / Dağıtım Reposu (Public): `https://github.com/bygokhanege-svg/geceiptv-releases.git`
-   * Release APK İndirme Bağlantısı: `https://github.com/bygokhanege-svg/geceiptv-releases/releases/download/v0.12.19/GECEiptv-release.apk`
+   * Release APK İndirme Bağlantısı: `https://github.com/bygokhanege-svg/geceiptv-releases/releases/download/v0.12.20/GECEiptv-release.apk`
    * Release APK Adı: `GECEiptv-release.apk`
    * Destek E-postası: `geceiptv@gmail.com`
 3. **Derleme Komutları:**

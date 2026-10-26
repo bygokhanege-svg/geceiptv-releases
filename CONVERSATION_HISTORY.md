@@ -791,6 +791,39 @@
 * **Doğrulama:**
   - `https://api.github.com/repos/bygokhanege-svg/geceiptv-releases/releases/latest` üzerinden `v0.12.23` ve `GECEiptv-release.apk` asset'inin aktif olduğu doğrulandı.
 
+### 33. Filmler ve Diziler Menüsüne Sinematik Vitrin (Featured Hero Carousel) Entegrasyonu (v0.12.24)
+* **Kullanıcı Talebi:** "film veya dizi menüsüne tıklandığında üst kısımda büyük kapak fotoğrafları ile otomatik ve manuel slider şeklinde afiş fotoğrafı filmin kaç puan aldığı , filmin yada dizinin özeti gibi seçenekler gelsin istiyorum onun altında menümüz olduğu gibi devam edebilir. bu çok kasmaya donmaya sebep olur mu ?"
+* **Mimari & Performans Analizi:**
+  - Sadece en seçkin 5-6 içerik kullanılır.
+  - Ekstra ağ isteği yapılmaz (zaten çekilmiş olan kütüphanedeki `recommended` ve `recentlyAdded` listesinden filtrelenir).
+  - Coil bellek ve disk önbelleklemesi sayesinde görsel dönüşleri RAM'den milisaniyede yapılır.
+  - Jetpack Compose Pager yapısıyla sadece ekrandaki slayt GPU'da işlenir. Kullanıcı listeyi aşağı kaydırdığında vitrin ekran dışına çıktığı için arka planı meşgul etmez (sıfır donma/kasma garantisi).
+* **Uygulanan Değişiklikler:**
+  1. **`VodHeroCarousel.kt` Bileşeni Geliştirildi:**
+     - `HorizontalPager` ve `rememberPagerState` tabanlı akıcı sinematik slider.
+     - 6 saniyede bir otomatik geçiş (`LaunchedEffect` + `delay(6000)` + `animateScrollToPage(tween(650))`).
+     - Kullanıcı dokunduğunda veya kumandayla odaklandığında otomatik geçişi akıllıca duraklatma (`isDragged`, `isUserInteracting`).
+     - **Görsel Tasarım:**
+       - Yüksek çözünürlüklü yatay backdrop (arka plan) görseli (`AsyncImage`).
+       - Çok katmanlı koyu degrade (gradient scrim) gölgelendirme (alt ve soldan şık siyah erime).
+       - 🌟 *"ÖNE ÇIKAN FİLM"* / *"ÖNE ÇIKAN DİZİ"* kehribar altın rozet.
+       - ⭐ IMDb/TMDB Puan Rozeti (`⭐ 8.5`).
+       - 📅 Çıkış Yılı ve Tür etiketleri.
+       - 📝 2-3 satırlık akıcı ve merak uyandıran konu özeti (plot).
+       - 🎮 Butonlar: **"Hemen İzle" / "Bölümleri Aç"** (Altın sarısı) ve **"Detay"** (Yarı şeffaf cam efektli).
+       - 🔘 Alt kısımda modern, aktif olduğunda genişleyen hap biçiminde dot indicators ve büyük ekranlar için manuel ok butonları.
+  2. **`VodScreens.kt` Entegrasyonu:**
+     - `MoviesScreen`: Hem telefon hem TV modundaki `LazyColumn`'ın en tepesine `heroItems` vitrini yerleştirildi. Altında `ContinueWatchingRow`, `MoviePosterRow` ve kategori menüleri kesintisiz devam eder.
+     - `SeriesScreen`: Hem telefon hem TV modundaki `LazyColumn`'ın en tepesine `heroItems` vitrini yerleştirildi.
+* **Versiyon ve Dağıtım:**
+  - `app/build.gradle.kts`: `versionCode = 45`, `versionName = "0.12.24"`.
+  - `.\gradlew compileReleaseKotlin`: Başarılı (0 hata).
+  - `.\gradlew assembleRelease`: Başarılı (`GECEiptv-release.apk` - 13.47 MB).
+  - `bygokhanege-svg/geceiptv`: `main` dalına commit atıldı ve `v0.12.24` etiketi pushlandı.
+  - `bygokhanege-svg/geceiptv-releases`: `v0.12.24` sürümü oluşturulup APK yüklendi.
+* **Doğrulama:**
+  - `https://github.com/bygokhanege-svg/geceiptv-releases/releases/download/v0.12.24/GECEiptv-release.apk` aktif hale getirildi.
+
 ---
 
 ## 📌 Hızlı Referans & Mimari Kurallar
@@ -801,12 +834,13 @@
 2. **GitHub Bilgileri:**
    * Kaynak Kod Reposu (Private): `https://github.com/bygokhanege-svg/geceiptv.git`
    * Güncelleme / Dağıtım Reposu (Public): `https://github.com/bygokhanege-svg/geceiptv-releases.git`
-   * Release APK İndirme Bağlantısı: `https://github.com/bygokhanege-svg/geceiptv-releases/releases/download/v0.12.23/GECEiptv-release.apk`
+   * Release APK İndirme Bağlantısı: `https://github.com/bygokhanege-svg/geceiptv-releases/releases/download/v0.12.24/GECEiptv-release.apk`
    * Release APK Adı: `GECEiptv-release.apk`
    * Destek E-postası: `geceiptv@gmail.com`
 3. **Derleme Komutları:**
-   * Kod Doğrulama: `.\gradlew compileDebugKotlin`
+   * Kod Doğrulama: `.\gradlew compileDebugKotlin` veya `.\gradlew compileReleaseKotlin`
    * Release APK Üretimi: `.\gradlew assembleRelease`
    * Çıktı Yolu: `app\build\outputs\apk\release\GECEiptv-release.apk`
+
 
 

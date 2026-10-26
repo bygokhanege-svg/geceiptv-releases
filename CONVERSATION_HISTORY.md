@@ -824,6 +824,41 @@
 * **Doğrulama:**
   - `https://github.com/bygokhanege-svg/geceiptv-releases/releases/download/v0.12.24/GECEiptv-release.apk` aktif hale getirildi.
 
+### 21. Canlı TV Player, VOD Hero, Kumanda Fare ve Anti-Freeze İyileştirmeleri
+* **Kullanıcı İstekleri:**
+  * Destek kanallarına Telegram adresinin (`@geceiptv`) eklenmesi.
+  * Canlı yayın oynatıcı alt kontrol çubuğuna ISS bant daraltmalarını önleyici DoH (DNS-over-HTTPS) "Anti-Freeze" butonu eklenmesi.
+  * Oynatıcı kontrollerinin tek satıra sığacak şekilde modernleştirilmesi: Play/Pause/İleri/Geri yuvarlak butonlar, kırmızı yuvarlak kayıt ikonu, "CC" altyazı butonu ve "PİP" mini oynatıcı etiketi.
+  * Film ve dizi vitrinindeki (Hero Carousel) banner genişliğinin tam ekran (`fillMaxWidth()`) yapılması ve kategori menüsünün bannerın altından başlatılması.
+  * Dizi oynatıcısında bölümler açıldığında D-pad odaklanmasının doğrudan açık olan bölüme konumlandırılması.
+  * Sanal kumanda fare imlecinde tıklama halkasının okun tam ucunda gösterilmesi.
+* **Teknik Çözüm:**
+  * `PlayerScreen.kt`, `VodScreens.kt`, `VodPlayerScreen.kt`, `VirtualMouseOverlay.kt`, `AntiFreezeDns.kt` güncellendi ve derleme doğrulandı.
+
+---
+
+### 22. Mobil/Tablet Anasayfa Çoklu Ekran ve 5'li Hızlı Araçlar Düzenlemesi
+* **Kullanıcı İstekleri:**
+  * Telefon ve tablet anasayfasında sağ üst köşedeki Ayarlar butonunun yanındaki Çoklu Ekran butonunun kaldırılması.
+  * Sayfanın altındaki Favoriler, Arama, Çoklu Ekran, Kumanda QR ve Ayarlar'dan oluşan 5 menülük hızlı işlem çubuğunun (`PhoneQuickToolsBar`), 4'lü medya gridi (Diziler/Çoklu Ekran) ile "İzlemeye Devam Et" bölümünün arasına taşınması.
+* **Teknik Çözüm ve Kararlar:**
+  * `MainScreen.kt` ve `DashboardScreen.kt` içindeki telefon üst çubuğundan (`PhoneTopBar`, `PhoneHeaderBar`) Çoklu TV butonu kaldırıldı.
+  * `PhoneQuickToolsBar` bileşeni `PhoneMainNavigationCards` (Canlı TV, Filmler, Diziler, Çoklu TV) hemen altına, `continueWatching` ("İzlemeye Devam Et") bölümünün hemen üstüne yerleştirildi; alt kısımdaki eski konumu temizlendi.
+### 23. Netflix Tarzı Profil Yönetimi, PIN Kilidi ve Altyazı Dil Sıralaması
+* **Kullanıcı İstekleri:**
+  * Profiller bölümünün Netflix tarzında yeniden tasarlanması.
+  * Klavye düzeninin TV (kumanda D-pad), telefon ve tablete (sanal dokunmatik klavye) göre uyarlanması.
+  * Kullanıcının kendi profiline isteğe bağlı 4 haneli PIN şifresi koyabilmesi; şifreli profile girişte PIN doğrulama ekranı açılması.
+  * Kullanıcının kendi menülerini profil bazında düzenleyebilmesi (Canlı TV, Filmler, Diziler, Çoklu Ekran açma/kapatma).
+  * İnternetten altyazı aratıldığında Türkçe altyazıların en üstte, İngilizce altyazıların onun altında yer alması, diğer dillerin sonraya sıralanması.
+* **Teknik Çözüm ve Kararlar:**
+  * `Models.kt` & `OpenTvDatabase.kt`: Room veritabanı sürümü 11'den 12'ye yükseltildi (`MIGRATION_11_12`). `Profile` tablosuna `avatarId`, `pin`, `isKids`, `liveEnabled`, `moviesEnabled`, `seriesEnabled`, `multiViewEnabled` sütunları eklendi.
+  * `ProfileAvatars.kt`: 8 tematik Netflix tarzı degrade renkli ve ikonlu avatar koleksiyonu oluşturuldu.
+  * `ProfilesScreen.kt`: Sinematik "Kim İzliyor?" Netflix arayüzü, "+ Profil Ekle" kartı, "Profilleri Yönet" kalem modu, 4 daireli PIN kilit ekranı (`ProfilePinPromptDialog`) ve profil düzenleme ekranı (`ProfileEditScreen`) geliştirildi. TV'de D-pad `OnScreenKeyboard`, telefon/tablette yerel dokunmatik klavye sağlandı.
+  * `MainScreen.kt` & `DashboardScreen.kt`: Seçili profilin menü tercihleri (`liveEnabled`, `moviesEnabled`, vb.) dinamik olarak ana ekrana ve navigasyon barlarına yansıtıldı.
+  * `OnlineSubtitleService.kt` & `VodPlayerScreen.kt`: `isTurkish` ve `isEnglish` filtreleri genişletilerek altyazı sonuçlarında Türkçe (🇹🇷) 1. sıraya, İngilizce (🇬🇧) 2. sıraya, diğer diller alfabetik olarak sonraki sıralara yerleştirildi.
+  * `.\gradlew compileDebugKotlin` ile derleme hatasız doğrulandı (`BUILD SUCCESSFUL in 58s`). Kullanıcı talimatı gereği release build ve git push bekletilmektedir.
+
 ---
 
 ## 📌 Hızlı Referans & Mimari Kurallar

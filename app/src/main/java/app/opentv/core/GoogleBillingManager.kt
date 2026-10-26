@@ -52,7 +52,7 @@ class GoogleBillingManager private constructor(
     fun launchPurchaseFlow(activity: Activity, productId: String) {
         if (!isGooglePlayStoreActive) {
             _purchaseState.value = PurchaseStatus.Error(
-                "Google Play ile ödeme altyapısı şu anda beklemede. Lütfen QR kod veya e-posta (geceiptv@gmail.com) üzerinden aktive ediniz.",
+                "Google Play ile ödeme altyapısı şu anda beklemede. Lütfen QR kod, Telegram (@geceiptv) veya e-posta (geceiptv@gmail.com) üzerinden aktive ediniz.",
             )
             return
         }

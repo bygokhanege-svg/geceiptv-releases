@@ -360,7 +360,7 @@ fun AdminPanelScreen(
                             )
                         }
                         Text(
-                            "Müşterinin e-postadan (geceiptv@gmail.com) ilettiği MAC adresi ve Cihaz Kodunu buraya girip tek tıkla lisans kodunu oluşturun:",
+                            "Müşterinin e-posta (geceiptv@gmail.com) veya Telegram (@geceiptv) üzerinden ilettiği MAC adresi ve Cihaz Kodunu buraya girip tek tıkla lisans kodunu oluşturun:",
                             style = MaterialTheme.typography.bodySmall,
                             color = Color(0xFF94A3B8),
                             modifier = Modifier.padding(top = 4.dp, bottom = 12.dp),

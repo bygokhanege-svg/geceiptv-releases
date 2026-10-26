@@ -5,6 +5,8 @@
  */
 package app.opentv.ui.settings
 
+import android.content.Intent
+import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -519,6 +521,7 @@ private fun WebActivationCard(qrBitmap: android.graphics.Bitmap?) {
 
 @Composable
 private fun SupportContactCard() {
+    val context = LocalContext.current
     Surface(
         shape = RoundedCornerShape(14.dp),
         color = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f),
@@ -537,7 +540,20 @@ private fun SupportContactCard() {
                 fontSize = 11.sp,
             )
             Spacer(modifier = Modifier.height(10.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .clip(RoundedCornerShape(6.dp))
+                    .clickable {
+                        runCatching {
+                            context.startActivity(
+                                Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:geceiptv@gmail.com"))
+                                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+                            )
+                        }
+                    }
+                    .padding(vertical = 2.dp),
+            ) {
                 Text(
                     text = "✉️ E-posta: ",
                     style = MaterialTheme.typography.bodySmall,
@@ -546,6 +562,36 @@ private fun SupportContactCard() {
                 )
                 Text(
                     text = "geceiptv@gmail.com",
+                    style = MaterialTheme.typography.bodySmall,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .clip(RoundedCornerShape(6.dp))
+                    .clickable {
+                        runCatching {
+                            context.startActivity(
+                                Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/geceiptv"))
+                                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+                            )
+                        }.onFailure {
+                            Toast.makeText(context, "Telegram: @geceiptv", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    .padding(vertical = 2.dp),
+            ) {
+                Text(
+                    text = "✈️ Telegram: ",
+                    style = MaterialTheme.typography.bodySmall,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF29B6F6),
+                )
+                Text(
+                    text = "@geceiptv  (t.me/geceiptv)",
                     style = MaterialTheme.typography.bodySmall,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface,

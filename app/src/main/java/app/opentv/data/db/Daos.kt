@@ -714,6 +714,12 @@ interface ProfileDao {
     @Insert
     suspend fun insert(profile: Profile): Long
 
+    @Update
+    suspend fun update(profile: Profile)
+
+    @Query("SELECT * FROM profiles WHERE id = :id LIMIT 1")
+    suspend fun byId(id: Long): Profile?
+
     @Query("UPDATE profiles SET name = :name WHERE id = :id")
     suspend fun rename(id: Long, name: String)
 

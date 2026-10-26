@@ -372,12 +372,22 @@ data class PlaybackPosition(
         get() = durationMillis > 0 && positionMillis.toDouble() / durationMillis > 0.95
 }
 
-/** A local viewing profile — just a name. No account, no password; it lives on this device. */
+/**
+ * A local viewing profile. Includes Netflix-style personalization:
+ * avatar choice, optional 4-digit PIN lock, kids profile mode, and custom menu visibility.
+ */
 @Entity(tableName = "profiles")
 data class Profile(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val name: String,
     val createdAtMillis: Long = 0,
+    @ColumnInfo(defaultValue = "'avatar_1'") val avatarId: String = "avatar_1",
+    val pin: String? = null,
+    @ColumnInfo(defaultValue = "0") val isKids: Boolean = false,
+    @ColumnInfo(defaultValue = "1") val liveEnabled: Boolean = true,
+    @ColumnInfo(defaultValue = "1") val moviesEnabled: Boolean = true,
+    @ColumnInfo(defaultValue = "1") val seriesEnabled: Boolean = true,
+    @ColumnInfo(defaultValue = "1") val multiViewEnabled: Boolean = true,
 )
 
 /** Where a recording is in its lifecycle. */

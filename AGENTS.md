@@ -23,7 +23,7 @@ Kullanıcı yeni bir istekte bulunduğunda veya bir güncelleme istediğinde:
 ## 🛠️ GitHub & Release İş Akışı
 * **Repository (Private - Kod):** `https://github.com/bygokhanege-svg/geceiptv.git`
 * **Release Repo (Public - Sadece APK):** `https://github.com/bygokhanege-svg/geceiptv-releases.git`
-* **Destek İletişim:** `geceiptv@gmail.com` (Telefon numarası asla kullanılmaz).
+* **Destek İletişim:** `geceiptv@gmail.com` ve Telegram: `@geceiptv` (`https://t.me/geceiptv`) (Telefon numarası asla kullanılmaz).
 * **Versiyon Güncelleme:** `app/build.gradle.kts` içinde `versionCode` ve `versionName` artırılır.
 * **Release APK:** `.\gradlew assembleRelease` çalıştırılır.
   * Çıktı: `app\build\outputs\apk\release\GECEiptv-release.apk`

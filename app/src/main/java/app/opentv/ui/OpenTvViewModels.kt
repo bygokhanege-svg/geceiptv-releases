@@ -1581,22 +1581,58 @@ class ProfilesViewModel(app: Application) : AndroidViewModel(app) {
         // Fresh installs create the table empty (no migration runs), so seed the default profile.
         viewModelScope.launch {
             if (graph.profiles.all().isEmpty()) {
-                graph.profiles.insert(Profile(name = "Me", createdAtMillis = 0))
+                graph.profiles.insert(
+                    Profile(
+                        name = "Varsayılan",
+                        createdAtMillis = System.currentTimeMillis(),
+                        avatarId = "avatar_1",
+                    ),
+                )
             }
         }
     }
 
-    fun addProfile(name: String) {
+    fun addProfile(
+        name: String,
+        avatarId: String = "avatar_1",
+        pin: String? = null,
+        isKids: Boolean = false,
+        liveEnabled: Boolean = true,
+        moviesEnabled: Boolean = true,
+        seriesEnabled: Boolean = true,
+        multiViewEnabled: Boolean = true,
+    ) {
         viewModelScope.launch {
             val id = graph.profiles.insert(
-                Profile(name = name.trim().ifBlank { "New profile" }, createdAtMillis = 0),
+                Profile(
+                    name = name.trim().ifBlank { "Yeni Profil" },
+                    createdAtMillis = System.currentTimeMillis(),
+                    avatarId = avatarId,
+                    pin = pin?.takeIf { it.isNotBlank() },
+                    isKids = isKids,
+                    liveEnabled = liveEnabled,
+                    moviesEnabled = moviesEnabled,
+                    seriesEnabled = seriesEnabled,
+                    multiViewEnabled = multiViewEnabled,
+                ),
             )
             settings.setActiveProfile(id)
         }
     }
 
+    fun saveProfile(profile: Profile) {
+        viewModelScope.launch {
+            if (profile.id <= 0) {
+                val id = graph.profiles.insert(profile)
+                settings.setActiveProfile(id)
+            } else {
+                graph.profiles.update(profile)
+            }
+        }
+    }
+
     fun rename(id: Long, name: String) {
-        viewModelScope.launch { graph.profiles.rename(id, name.trim().ifBlank { "Profile" }) }
+        viewModelScope.launch { graph.profiles.rename(id, name.trim().ifBlank { "Profil" }) }
     }
 
     fun select(id: Long) { settings.setActiveProfile(id) }

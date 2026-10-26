@@ -37,9 +37,12 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import android.widget.Toast
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -47,6 +50,7 @@ import androidx.compose.material.icons.filled.Analytics
 import androidx.compose.material.icons.filled.AspectRatio
 import androidx.compose.material.icons.filled.Audiotrack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.ClosedCaption
 import androidx.compose.material.icons.filled.FastForward
 import androidx.compose.material.icons.filled.FastRewind
 import androidx.compose.material.icons.filled.FiberManualRecord
@@ -55,6 +59,7 @@ import androidx.compose.material.icons.filled.HighQuality
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PictureInPictureAlt
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.Subtitles
 import androidx.compose.material.icons.filled.Tv
 import androidx.compose.material3.Button
@@ -157,6 +162,7 @@ fun PlayerScreen(
     val settings = remember { graph.settings }
     val scope = remember { CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate) }
     val subtitlesDefault by settings.subtitlesEnabled.collectAsState()
+    val dohEnabled by settings.dohEnabled.collectAsState()
     val controller = remember {
         PlayerController(
             context, scope, graph.streamingHttpClient,
@@ -599,54 +605,101 @@ fun PlayerScreen(
                 }
 
                 Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
                 ) {
                     if (controller.isSeekable) {
-                        BarChip(Icons.Filled.FastRewind, stringResource(R.string.player_rewind), false) {
-                            controller.seekBackward(); interaction++
-                        }
+                        CircularMediaButton(
+                            icon = Icons.Filled.FastRewind,
+                            contentDescription = stringResource(R.string.player_rewind),
+                            size = 38.dp,
+                            iconSize = 20.dp,
+                            onClick = {
+                                controller.seekBackward()
+                                interaction++
+                            },
+                        )
                     }
-                    BarChip(
+                    CircularMediaButton(
                         icon = if (paused) Icons.Filled.PlayArrow else Icons.Filled.Pause,
-                        label = if (paused) stringResource(R.string.common_play) else stringResource(R.string.player_pause),
-                        selected = false,
+                        contentDescription = if (paused) stringResource(R.string.common_play) else stringResource(R.string.player_pause),
+                        size = 42.dp,
+                        iconSize = 24.dp,
                         focusRequester = barFocus,
-                    ) {
-                        paused = !paused
-                        controller.player.playWhenReady = !paused
-                        interaction++
-                    }
+                        onClick = {
+                            paused = !paused
+                            controller.player.playWhenReady = !paused
+                            interaction++
+                        },
+                    )
                     if (controller.isSeekable) {
-                        BarChip(Icons.Filled.FastForward, stringResource(R.string.player_forward), false) {
-                            controller.seekForward(); interaction++
-                        }
+                        CircularMediaButton(
+                            icon = Icons.Filled.FastForward,
+                            contentDescription = stringResource(R.string.player_forward),
+                            size = 38.dp,
+                            iconSize = 20.dp,
+                            onClick = {
+                                controller.seekForward()
+                                interaction++
+                            },
+                        )
                     }
 
-                    BarChip(Icons.Filled.Subtitles, stringResource(R.string.player_subtitles), panel == Panel.SUBTITLES) {
-                        panel = if (panel == Panel.SUBTITLES) Panel.NONE else Panel.SUBTITLES; interaction++
+                    BarChip(
+                        icon = Icons.Filled.ClosedCaption,
+                        label = "CC",
+                        selected = panel == Panel.SUBTITLES,
+                    ) {
+                        panel = if (panel == Panel.SUBTITLES) Panel.NONE else Panel.SUBTITLES
+                        interaction++
                     }
                     BarChip(Icons.Filled.Audiotrack, stringResource(R.string.player_audio), panel == Panel.AUDIO) {
-                        panel = if (panel == Panel.AUDIO) Panel.NONE else Panel.AUDIO; interaction++
+                        panel = if (panel == Panel.AUDIO) Panel.NONE else Panel.AUDIO
+                        interaction++
                     }
                     BarChip(Icons.Filled.HighQuality, stringResource(R.string.player_quality), panel == Panel.QUALITY) {
-                        panel = if (panel == Panel.QUALITY) Panel.NONE else Panel.QUALITY; interaction++
+                        panel = if (panel == Panel.QUALITY) Panel.NONE else Panel.QUALITY
+                        interaction++
                     }
                     BarChip(Icons.Filled.AspectRatio, stringResource(R.string.player_aspect), panel == Panel.ASPECT) {
-                        panel = if (panel == Panel.ASPECT) Panel.NONE else Panel.ASPECT; interaction++
+                        panel = if (panel == Panel.ASPECT) Panel.NONE else Panel.ASPECT
+                        interaction++
+                    }
+                    BarChip(
+                        icon = Icons.Filled.Shield,
+                        label = "Anti-Freeze",
+                        selected = dohEnabled,
+                        iconTint = if (dohEnabled) Color(0xFF00E5FF) else null,
+                    ) {
+                        val next = !dohEnabled
+                        settings.setDohEnabled(next)
+                        Toast.makeText(
+                            context,
+                            if (next) "Anti-Freeze (DoH) Aktif ⚡" else "Anti-Freeze Devre Dışı",
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                        interaction++
                     }
                     BarChip(Icons.Filled.Analytics, stringResource(R.string.player_stats), showStatsDialog) {
-                        showStatsDialog = true; interaction++
+                        showStatsDialog = true
+                        interaction++
                     }
                     val recordingThis = activeRecordings.any { it.channelId == currentId }
-                    BarChip(
+                    CircularMediaButton(
                         icon = Icons.Filled.FiberManualRecord,
-                        label = if (recordingThis) stringResource(R.string.common_stop) else stringResource(R.string.player_record),
-                        selected = recordingThis,
+                        contentDescription = if (recordingThis) stringResource(R.string.common_stop) else stringResource(R.string.player_record),
+                        size = 38.dp,
+                        iconSize = 18.dp,
                         iconTint = Color(0xFFE53935),
-                    ) { toggleRecord() }
+                        active = recordingThis,
+                        activeTint = Color(0xFFE53935),
+                        onClick = { toggleRecord() },
+                    )
                     if (pipSupported) {
-                        BarChip(Icons.Filled.PictureInPictureAlt, stringResource(R.string.player_pop_out), false) {
+                        BarChip(Icons.Filled.PictureInPictureAlt, "PİP", false) {
                             (context.findActivity() as? app.opentv.MainActivity)?.enterPipNow()
                             interaction++
                         }
@@ -1064,7 +1117,7 @@ private fun BarChip(
                 else Modifier,
             )
             .clickable(onClick = onClick)
-            .padding(horizontal = 10.dp, vertical = 6.dp),
+            .padding(horizontal = 8.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
@@ -1073,8 +1126,59 @@ private fun BarChip(
             tint = if (focused) content else (iconTint ?: content),
             modifier = Modifier.size(16.dp),
         )
-        Spacer(Modifier.width(5.dp))
+        Spacer(Modifier.width(4.dp))
         Text(label, style = MaterialTheme.typography.labelMedium, color = content, maxLines = 1)
+    }
+}
+
+@Composable
+private fun CircularMediaButton(
+    icon: ImageVector,
+    contentDescription: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    size: androidx.compose.ui.unit.Dp = 38.dp,
+    iconSize: androidx.compose.ui.unit.Dp = 20.dp,
+    focusRequester: FocusRequester? = null,
+    iconTint: Color? = null,
+    active: Boolean = false,
+    activeTint: Color? = null,
+) {
+    var focused by remember { mutableStateOf(false) }
+    val container = when {
+        focused -> MaterialTheme.colorScheme.primary
+        active -> (activeTint ?: MaterialTheme.colorScheme.primary).copy(alpha = 0.35f)
+        else -> Color.White.copy(alpha = 0.12f)
+    }
+    val content = when {
+        focused -> MaterialTheme.colorScheme.onPrimary
+        active -> (activeTint ?: MaterialTheme.colorScheme.primary)
+        iconTint != null -> iconTint
+        else -> Color.White
+    }
+    val borderColor = when {
+        focused -> MaterialTheme.colorScheme.primary
+        active -> (activeTint ?: MaterialTheme.colorScheme.primary)
+        else -> Color.White.copy(alpha = 0.18f)
+    }
+
+    Box(
+        modifier = modifier
+            .size(size)
+            .then(if (focusRequester != null) Modifier.focusRequester(focusRequester) else Modifier)
+            .onFocusChanged { focused = it.isFocused }
+            .clip(CircleShape)
+            .background(container)
+            .border(if (focused) 2.dp else 1.dp, borderColor, CircleShape)
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = contentDescription,
+            tint = content,
+            modifier = Modifier.size(iconSize),
+        )
     }
 }
 

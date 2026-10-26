@@ -52,6 +52,8 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -363,6 +365,7 @@ fun VodPlayerScreen(
     var interaction by remember { androidx.compose.runtime.mutableIntStateOf(0) }
     val barFocus = remember { FocusRequester() }
     val rootFocus = remember { FocusRequester() }
+    val episodesDrawerFocus = remember { FocusRequester() }
 
     var posterUrl by remember { mutableStateOf<String?>(null) }
     var plot by remember { mutableStateOf<String?>(null) }
@@ -669,8 +672,11 @@ fun VodPlayerScreen(
         }
     }
 
-    LaunchedEffect(controlsVisible, vodPanel) {
-        if (controlsVisible) {
+    LaunchedEffect(controlsVisible, vodPanel, showEpisodesDrawer) {
+        if (showEpisodesDrawer) {
+            delay(60)
+            runCatching { episodesDrawerFocus.requestFocus() }
+        } else if (controlsVisible) {
             delay(40)
             runCatching { if (vodPanel != VodPanel.NONE) panelFocus.requestFocus() else barFocus.requestFocus() }
         } else {
@@ -1099,9 +1105,16 @@ fun VodPlayerScreen(
                         VodChip(
                             icon = Icons.Filled.VideoLibrary,
                             label = stringResource(R.string.player_episodes),
+                            selected = showEpisodesDrawer,
                             onClick = {
                                 showEpisodesDrawer = !showEpisodesDrawer
                                 interaction++
+                                if (showEpisodesDrawer) {
+                                    scope.launch {
+                                        delay(80)
+                                        runCatching { episodesDrawerFocus.requestFocus() }
+                                    }
+                                }
                             },
                         )
                     }
@@ -1175,6 +1188,7 @@ fun VodPlayerScreen(
                     showEpisodesDrawer = false
                     interaction++
                 },
+                firstFocus = episodesDrawerFocus,
             )
         }
 
@@ -1201,11 +1215,16 @@ fun VodPlayerScreen(
 private fun VodChip(
     icon: ImageVector,
     label: String,
+    selected: Boolean = false,
     focusRequester: FocusRequester? = null,
     onClick: () -> Unit,
 ) {
     var focused by remember { mutableStateOf(false) }
-    val container = if (focused) MaterialTheme.colorScheme.primary else Color.White.copy(alpha = 0.12f)
+    val container = when {
+        focused -> MaterialTheme.colorScheme.primary
+        selected -> MaterialTheme.colorScheme.primary.copy(alpha = 0.55f)
+        else -> Color.White.copy(alpha = 0.12f)
+    }
     val content = if (focused) MaterialTheme.colorScheme.onPrimary else Color.White
     Row(
         modifier = Modifier
@@ -1322,7 +1341,11 @@ private fun TrackPanel(
 
             // Fetched online subtitles with source tag
             onlineSubtitles.forEach { sub ->
-                val flag = if (sub.lang.lowercase() in listOf("tur", "tr")) "🇹🇷 " else "🌐 "
+                val flag = when {
+                    app.opentv.player.OnlineSubtitleService.isTurkish(sub) -> "🇹🇷 "
+                    app.opentv.player.OnlineSubtitleService.isEnglish(sub) -> "🇬🇧 "
+                    else -> "🌐 "
+                }
                 val label = "$flag[${sub.langLabel}] ${sub.name} • [${sub.source}]"
                 val isSelected = selectedOnlineSubId == sub.id
                 options += Triple(label, isSelected) {
@@ -1849,11 +1872,23 @@ private fun SeriesEpisodesDrawer(
     onSelectSeason: (Int) -> Unit,
     onSelectEpisode: (Episode) -> Unit,
     onClose: () -> Unit,
+    firstFocus: FocusRequester? = null,
 ) {
     val seasons = remember(episodes) { episodes.map { it.season }.distinct().sorted() }
     val activeSeason = if (selectedSeason in seasons) selectedSeason else (seasons.firstOrNull() ?: 1)
     val seasonEpisodes = remember(episodes, activeSeason) {
         episodes.filter { it.season == activeSeason }.sortedBy { it.episodeNumber }
+    }
+    val currentIdx = remember(seasonEpisodes, currentEpisodeId) {
+        seasonEpisodes.indexOfFirst { it.id == currentEpisodeId }
+    }
+    val initialTargetIdx = if (currentIdx >= 0) currentIdx else 0
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(activeSeason, currentEpisodeId) {
+        if (initialTargetIdx > 0) {
+            listState.scrollToItem((initialTargetIdx - 1).coerceAtLeast(0))
+        }
     }
 
     Box(
@@ -1955,18 +1990,21 @@ private fun SeriesEpisodesDrawer(
 
             // Episode list
             LazyColumn(
+                state = listState,
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                items(seasonEpisodes) { ep ->
+                itemsIndexed(seasonEpisodes) { index, ep ->
                     val isCurrent = (ep.id == currentEpisodeId)
+                    val shouldAttachFocus = (index == initialTargetIdx && firstFocus != null)
                     var focused by remember { mutableStateOf(false) }
 
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .then(if (shouldAttachFocus) Modifier.focusRequester(firstFocus!!) else Modifier)
                             .onFocusChanged { focused = it.isFocused }
                             .clip(RoundedCornerShape(12.dp))
                             .background(

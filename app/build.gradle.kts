@@ -18,8 +18,8 @@ android {
         applicationId = "com.geceiptv.app"
         minSdk = 23
         targetSdk = 35
-        versionCode = 45
-        versionName = "0.12.24"
+        versionCode = 47
+        versionName = "0.12.26"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         setProperty("archivesBaseName", "GECEiptv")
     }

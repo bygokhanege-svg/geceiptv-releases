@@ -365,7 +365,8 @@ private fun GeceIptvApp(isTelevision: Boolean) {
     val sourcesUi by sourcesViewModel.ui.collectAsState()
     val profiles by profilesViewModel.profiles.collectAsState()
     val activeProfileId by profilesViewModel.activeProfileId.collectAsState()
-    val activeProfileName = profiles.firstOrNull { it.id == activeProfileId }?.name ?: "Me"
+    val activeProfile = profiles.firstOrNull { it.id == activeProfileId }
+    val activeProfileName = activeProfile?.name ?: "Varsayılan"
 
     // Background cloud license & remote playlists check with Supabase on app startup
     LaunchedEffect(Unit) {
@@ -648,6 +649,7 @@ private fun GeceIptvApp(isTelevision: Boolean) {
                         navController.navigate(Routes.vodPlayer(key, url, title, ua))
                     },
                     activeProfileName = activeProfileName,
+                    activeProfile = activeProfile,
                     onOpenMultiView = { navController.navigate(Routes.multiView()) },
                     onOpenWebManager = { navController.navigate(Routes.WEB_MANAGER) },
                 )
@@ -655,6 +657,7 @@ private fun GeceIptvApp(isTelevision: Boolean) {
 
             composable(Routes.PROFILES) {
                 ProfilesScreen(
+                    isTelevision = isTelevision,
                     viewModel = profilesViewModel,
                     onBack = { navController.popBackStack() },
                 )

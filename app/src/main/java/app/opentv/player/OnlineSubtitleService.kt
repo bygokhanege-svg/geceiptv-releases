@@ -81,7 +81,7 @@ class OnlineSubtitleService(
             }.awaitAll().flatten()
         }
 
-        // Deduplicate and prioritize Turkish first, then English, then others
+        // Deduplicate and prioritize Turkish first, then English, then other languages neatly grouped
         val seen = mutableSetOf<String>()
         val deduped = mutableListOf<OnlineSubtitle>()
         for (sub in allResults) {
@@ -92,12 +92,13 @@ class OnlineSubtitleService(
 
         deduped.sortedWith(
             compareBy<OnlineSubtitle> { sub ->
-                when (sub.lang.lowercase()) {
-                    "tur", "tr", "turkish" -> 0
-                    "eng", "en", "english" -> 1
+                when {
+                    isTurkish(sub) -> 0
+                    isEnglish(sub) -> 1
                     else -> 2
                 }
-            }.thenBy { it.source }
+            }.thenBy { it.langLabel }
+                .thenBy { it.source }
                 .thenBy { it.name },
         )
     }
@@ -277,7 +278,28 @@ class OnlineSubtitleService(
             .replace('ğ', 'g').replace('Ğ', 'G')
     }
 
-    private companion object {
+    companion object {
         const val TAG = "OnlineSubtitleService"
+
+        fun isTurkish(sub: OnlineSubtitle): Boolean {
+            val l = sub.lang.lowercase().trim()
+            val label = sub.langLabel.lowercase().trim()
+            val name = sub.name.lowercase().trim()
+            return l in listOf("tur", "tr", "turkish", "turkce", "tr-tr", "tr_tr") ||
+                l.startsWith("tr-") || l.startsWith("tr_") ||
+                label.contains("türk") || label.contains("turk") ||
+                name.contains("türkçe") || name.contains("turkish") ||
+                name.contains("[tr]") || name.contains("(tr)") || name.contains(".tr.")
+        }
+
+        fun isEnglish(sub: OnlineSubtitle): Boolean {
+            val l = sub.lang.lowercase().trim()
+            val label = sub.langLabel.lowercase().trim()
+            val name = sub.name.lowercase().trim()
+            return l in listOf("eng", "en", "english", "en-us", "en-gb", "en_us", "en_gb") ||
+                l.startsWith("en-") || l.startsWith("en_") ||
+                label.contains("eng") || label.contains("ingiliz") ||
+                name.contains("english") || name.contains("[en]") || name.contains("(en)") || name.contains(".en.")
+        }
     }
 }

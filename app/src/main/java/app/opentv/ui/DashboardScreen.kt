@@ -72,6 +72,7 @@ import androidx.compose.material3.IconButton
 import app.opentv.R
 import app.opentv.core.AppSettings
 import app.opentv.data.model.Movie
+import app.opentv.data.model.Profile
 import app.opentv.data.model.Series
 import app.opentv.data.model.Source
 import app.opentv.data.parser.displayTitle
@@ -93,6 +94,7 @@ fun DashboardScreen(
     onOpenMultiView: () -> Unit = {},
     onAddSource: () -> Unit = {},
     activeProfileName: String = "Me",
+    activeProfile: Profile? = null,
     onOpenProfiles: () -> Unit = {},
     isTelevision: Boolean = true,
     onNavigateTab: ((Tab) -> Unit)? = null,
@@ -194,6 +196,7 @@ fun DashboardScreen(
             onOpenMultiView = onOpenMultiView,
             onAddSource = onAddSource,
             activeProfileName = activeProfileName,
+            activeProfile = activeProfile,
             onOpenProfiles = onOpenProfiles,
             onOpenWebManager = onOpenWebManager,
             sources = sourcesUi.sources,
@@ -1283,6 +1286,7 @@ private fun PhoneDashboardContent(
     onOpenMultiView: () -> Unit,
     onAddSource: () -> Unit,
     activeProfileName: String,
+    activeProfile: Profile? = null,
     onOpenProfiles: () -> Unit,
     onOpenWebManager: () -> Unit = {},
     sources: List<Source>,
@@ -1314,7 +1318,6 @@ private fun PhoneDashboardContent(
                 expiryDisplayText = expiryDisplayText,
                 onOpenLicense = onOpenLicense,
                 onOpenSearch = onOpenSearch,
-                onOpenMultiView = onOpenMultiView,
                 onOpenSettings = onOpenSettings,
                 onOpenProfiles = onOpenProfiles,
             )
@@ -1341,6 +1344,18 @@ private fun PhoneDashboardContent(
                 formattedSeries = formattedSeries,
                 onNavigateTab = onNavigateTab,
                 onOpenMultiView = onOpenMultiView,
+                activeProfile = activeProfile,
+            )
+
+            Spacer(modifier = Modifier.height(14.dp))
+
+            // HIZLI İŞLEM ARAÇLARI (5 MENÜLÜK GRİD: FAVORİLER, ARAMA, ÇOKLU EKRAN, KUMANDA QR, AYARLAR)
+            PhoneQuickToolsBar(
+                onOpenMultiView = onOpenMultiView,
+                onOpenSearch = onOpenSearch,
+                onOpenFavorites = onOpenFavorites,
+                onOpenQr = onOpenWebManager,
+                onOpenSettings = onOpenSettings,
             )
 
             Spacer(modifier = Modifier.height(18.dp))
@@ -1678,7 +1693,7 @@ private fun PhoneDashboardContent(
             Spacer(modifier = Modifier.height(18.dp))
 
             // 5. YENİ DİZİLER (YATAY KAYAN KARUSEL)
-            if (recentSeries.isNotEmpty()) {
+            if (recentSeries.isNotEmpty() && (activeProfile?.seriesEnabled != false)) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -1733,7 +1748,7 @@ private fun PhoneDashboardContent(
             }
 
             // 6. YENİ FİLMLER (YATAY KAYAN KARUSEL)
-            if (recentMovies.isNotEmpty()) {
+            if (recentMovies.isNotEmpty() && (activeProfile?.moviesEnabled != false)) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -1787,16 +1802,7 @@ private fun PhoneDashboardContent(
                 Spacer(modifier = Modifier.height(18.dp))
             }
 
-            // 7. HIZLI İŞLEM ARAÇLARI (QUICK TOOLS)
-            PhoneQuickToolsBar(
-                onOpenMultiView = onOpenMultiView,
-                onOpenSearch = onOpenSearch,
-                onOpenFavorites = onOpenFavorites,
-                onOpenQr = onOpenWebManager,
-                onOpenSettings = onOpenSettings,
-            )
-
-            Spacer(modifier = Modifier.height(28.dp))
+            Spacer(modifier = Modifier.height(18.dp))
         }
 
         // Sağlayıcı Çevrimdışı Uyarısı
@@ -1852,7 +1858,6 @@ private fun PhoneHeaderBar(
     expiryDisplayText: String,
     onOpenLicense: () -> Unit,
     onOpenSearch: () -> Unit,
-    onOpenMultiView: () -> Unit,
     onOpenSettings: () -> Unit,
     onOpenProfiles: () -> Unit,
 ) {
@@ -1922,7 +1927,7 @@ private fun PhoneHeaderBar(
             }
         }
 
-        // Sağ: Hızlı İşlem Butonları (Arama, Çoklu TV, Ayarlar)
+        // Sağ: Hızlı İşlem Butonları (Arama, Ayarlar)
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(6.dp),
@@ -1931,11 +1936,6 @@ private fun PhoneHeaderBar(
                 icon = Icons.Outlined.Search,
                 contentDescription = "Arama",
                 onClick = onOpenSearch,
-            )
-            PhoneHeaderButton(
-                icon = Icons.Default.GridView,
-                contentDescription = "Çoklu TV",
-                onClick = onOpenMultiView,
             )
             PhoneHeaderButton(
                 icon = Icons.Outlined.Settings,
@@ -2176,101 +2176,117 @@ private fun PhoneMainNavigationCards(
     formattedSeries: String,
     onNavigateTab: ((Tab) -> Unit)?,
     onOpenMultiView: () -> Unit,
+    activeProfile: Profile? = null,
 ) {
-    if (isTablet) {
-        // TABLET: Tek satırda 4 sütun
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-        ) {
-            PhoneMenuCard(
-                title = stringResource(R.string.dashboard_nav_live_tv),
-                count = formattedChannels,
-                unit = stringResource(R.string.dashboard_unit_channels),
-                badge = stringResource(R.string.dashboard_nav_live_badge),
-                icon = Icons.Outlined.LiveTv,
-                modifier = Modifier.weight(1f),
-                onClick = { onNavigateTab?.invoke(Tab.LIVE) },
-            )
-            PhoneMenuCard(
-                title = stringResource(R.string.dashboard_nav_movies),
-                count = formattedMovies,
-                unit = stringResource(R.string.dashboard_unit_items),
-                badge = stringResource(R.string.dashboard_nav_movies_badge),
-                icon = Icons.Outlined.Movie,
-                modifier = Modifier.weight(1f),
-                onClick = { onNavigateTab?.invoke(Tab.MOVIES) },
-            )
-            PhoneMenuCard(
-                title = stringResource(R.string.dashboard_nav_series),
-                count = formattedSeries,
-                unit = stringResource(R.string.dashboard_unit_items),
-                badge = stringResource(R.string.dashboard_nav_series_badge),
-                icon = Icons.Outlined.VideoLibrary,
-                modifier = Modifier.weight(1f),
-                onClick = { onNavigateTab?.invoke(Tab.SHOWS) },
-            )
-            PhoneMenuCard(
-                title = stringResource(R.string.dashboard_tool_multiview),
-                count = "4x",
-                unit = "TV",
-                badge = "MULTI",
-                icon = Icons.Default.GridView,
-                modifier = Modifier.weight(1f),
-                onClick = onOpenMultiView,
-            )
-        }
-    } else {
-        // TELEFON: 2x2 Grid
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-            ) {
-                PhoneMenuCard(
+    val showLive = activeProfile?.liveEnabled ?: true
+    val showMovies = activeProfile?.moviesEnabled ?: true
+    val showSeries = activeProfile?.seriesEnabled ?: true
+    val showMultiView = activeProfile?.multiViewEnabled ?: true
+
+    data class NavItem(
+        val title: String,
+        val count: String,
+        val unit: String,
+        val badge: String,
+        val icon: ImageVector,
+        val onClick: () -> Unit,
+    )
+
+    val items = buildList {
+        if (showLive) {
+            add(
+                NavItem(
                     title = stringResource(R.string.dashboard_nav_live_tv),
                     count = formattedChannels,
                     unit = stringResource(R.string.dashboard_unit_channels),
                     badge = stringResource(R.string.dashboard_nav_live_badge),
                     icon = Icons.Outlined.LiveTv,
-                    modifier = Modifier.weight(1f),
                     onClick = { onNavigateTab?.invoke(Tab.LIVE) },
-                )
-                PhoneMenuCard(
+                ),
+            )
+        }
+        if (showMovies) {
+            add(
+                NavItem(
                     title = stringResource(R.string.dashboard_nav_movies),
                     count = formattedMovies,
                     unit = stringResource(R.string.dashboard_unit_items),
                     badge = stringResource(R.string.dashboard_nav_movies_badge),
                     icon = Icons.Outlined.Movie,
-                    modifier = Modifier.weight(1f),
                     onClick = { onNavigateTab?.invoke(Tab.MOVIES) },
-                )
-            }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-            ) {
-                PhoneMenuCard(
+                ),
+            )
+        }
+        if (showSeries) {
+            add(
+                NavItem(
                     title = stringResource(R.string.dashboard_nav_series),
                     count = formattedSeries,
                     unit = stringResource(R.string.dashboard_unit_items),
                     badge = stringResource(R.string.dashboard_nav_series_badge),
                     icon = Icons.Outlined.VideoLibrary,
-                    modifier = Modifier.weight(1f),
                     onClick = { onNavigateTab?.invoke(Tab.SHOWS) },
-                )
-                PhoneMenuCard(
+                ),
+            )
+        }
+        if (showMultiView) {
+            add(
+                NavItem(
                     title = stringResource(R.string.dashboard_tool_multiview),
                     count = "4x",
                     unit = "TV",
                     badge = "MULTI",
                     icon = Icons.Default.GridView,
-                    modifier = Modifier.weight(1f),
                     onClick = onOpenMultiView,
+                ),
+            )
+        }
+    }
+
+    if (items.isEmpty()) return
+
+    if (isTablet) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            items.forEach { item ->
+                PhoneMenuCard(
+                    title = item.title,
+                    count = item.count,
+                    unit = item.unit,
+                    badge = item.badge,
+                    icon = item.icon,
+                    modifier = Modifier.weight(1f),
+                    onClick = item.onClick,
                 )
+            }
+        }
+    } else {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            items.chunked(2).forEach { rowItems ->
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                ) {
+                    rowItems.forEach { item ->
+                        PhoneMenuCard(
+                            title = item.title,
+                            count = item.count,
+                            unit = item.unit,
+                            badge = item.badge,
+                            icon = item.icon,
+                            modifier = Modifier.weight(1f),
+                            onClick = item.onClick,
+                        )
+                    }
+                    if (rowItems.size == 1) {
+                        Spacer(modifier = Modifier.weight(1f))
+                    }
+                }
             }
         }
     }

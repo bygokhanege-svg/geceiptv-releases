@@ -98,6 +98,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import app.opentv.data.model.Channel
 import app.opentv.data.model.Movie
+import app.opentv.data.model.Profile
 import app.opentv.data.model.Recording
 import app.opentv.data.model.Series
 import app.opentv.ui.channels.HomeScreen
@@ -149,6 +150,7 @@ fun MainScreen(
     onPlayRecording: (Recording) -> Unit,
     onPlayCatchup: (mediaKey: String, url: String, title: String, ua: String) -> Unit,
     activeProfileName: String,
+    activeProfile: Profile? = null,
     onOpenMultiView: () -> Unit = {},
     onOpenWebManager: () -> Unit = {},
 ) {
@@ -161,12 +163,15 @@ fun MainScreen(
     val liveEnabled by settings.liveEnabled.collectAsState()
     val moviesEnabled by settings.moviesEnabled.collectAsState()
     val seriesEnabled by settings.seriesEnabled.collectAsState()
-    val visibleTabs = remember(isTelevision, liveEnabled, moviesEnabled, seriesEnabled) {
+    val effLive = activeProfile?.liveEnabled ?: liveEnabled
+    val effMovies = activeProfile?.moviesEnabled ?: moviesEnabled
+    val effSeries = activeProfile?.seriesEnabled ?: seriesEnabled
+    val visibleTabs = remember(isTelevision, effLive, effMovies, effSeries) {
         buildList {
             add(Tab.HOME)
-            if (liveEnabled) add(Tab.LIVE)
-            if (moviesEnabled) add(Tab.MOVIES)
-            if (seriesEnabled) add(Tab.SHOWS)
+            if (effLive) add(Tab.LIVE)
+            if (effMovies) add(Tab.MOVIES)
+            if (effSeries) add(Tab.SHOWS)
             if (isTelevision) {
                 add(Tab.RECORDINGS)
             } else {
@@ -240,7 +245,6 @@ fun MainScreen(
                     }
                     onOpenSearch(scope)
                 },
-                onOpenMultiView = onOpenMultiView,
                 onOpenSettings = onOpenSettings,
                 onOpenProfiles = onOpenProfiles,
             )
@@ -267,6 +271,7 @@ fun MainScreen(
                         onOpenMultiView = onOpenMultiView,
                         onAddSource = onAddSource,
                         activeProfileName = activeProfileName,
+                        activeProfile = activeProfile,
                         onOpenProfiles = onOpenProfiles,
                         onNavigateTab = { tab = it },
                         onOpenWebManager = onOpenWebManager,
@@ -321,7 +326,6 @@ private fun PhoneTopBar(
     title: String,
     activeProfileName: String,
     onOpenSearch: () -> Unit,
-    onOpenMultiView: () -> Unit,
     onOpenSettings: () -> Unit,
     onOpenProfiles: () -> Unit,
 ) {
@@ -397,17 +401,6 @@ private fun PhoneTopBar(
                     imageVector = Icons.Outlined.Search,
                     contentDescription = stringResource(R.string.nav_search),
                     tint = GecePalette.TextSecondary,
-                    modifier = Modifier.size(20.dp),
-                )
-            }
-            IconButton(
-                onClick = onOpenMultiView,
-                modifier = Modifier.size(36.dp),
-            ) {
-                Icon(
-                    imageVector = Icons.Default.GridView,
-                    contentDescription = stringResource(R.string.multiview_title),
-                    tint = GecePalette.Accent,
                     modifier = Modifier.size(20.dp),
                 )
             }

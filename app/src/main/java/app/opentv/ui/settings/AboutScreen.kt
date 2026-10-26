@@ -134,6 +134,13 @@ fun AboutScreen(onBack: () -> Unit) {
 
         Spacer(Modifier.height(16.dp))
 
+        Section("İletişim & Destek") {
+            LinkLine("✉️ E-posta", "geceiptv@gmail.com", "mailto:geceiptv@gmail.com")
+            LinkLine("✈️ Telegram", "@geceiptv", "https://t.me/geceiptv")
+        }
+
+        Spacer(Modifier.height(16.dp))
+
         Section(stringResource(R.string.legal_disclaimer_short_title)) {
             Text(
                 stringResource(R.string.legal_disclaimer_subtitle),

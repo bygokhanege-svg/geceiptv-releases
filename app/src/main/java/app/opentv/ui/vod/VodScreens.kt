@@ -215,58 +215,63 @@ fun MoviesScreen(
             }
         }
     } else {
-        Row(Modifier.fillMaxSize()) {
-            Column(
-                Modifier
-                    .width(260.dp)
-                    .fillMaxHeight()
-                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
-            ) {
-                SearchAffordance(onOpenSearch)
-                if (browseCategory != null) {
-                    SortAffordance(sortOption) {
-                        sortOption = SortOption.entries[(sortOption.ordinal + 1) % SortOption.entries.size]
-                    }
-                }
-                if (sources.size > 1 && selectedSource == null) {
-                    ProviderMenu(
-                        sources = sources,
-                        selected = selectedSource,
-                        onSelectAll = { browseCategory = null; viewModel.selectVodSource(null) },
-                        onSelectSource = { id -> browseCategory = null; viewModel.selectVodSource(id) },
-                    )
-                }
-                CategoryMenu(
-                    entries = categories.map { it.id to it.name },
-                    selected = browseCategory,
-                    onSelectHome = { browseCategory = null },
-                    onSelectCategory = { id -> browseCategory = id; viewModel.selectMovieCategory(id) },
-                    onHideCategories = { ids, _ ->
-                        if (browseCategory in ids) {
-                            browseCategory = null
-                            viewModel.selectMovieCategory(null)
-                        }
-                        viewModel.hideCategories(ids)
-                    },
+        Column(Modifier.fillMaxSize()) {
+            if (browseCategory == null && heroItems.isNotEmpty()) {
+                VodHeroCarousel(
+                    items = heroItems,
+                    modifier = Modifier.fillMaxWidth(),
                 )
             }
 
-            Box(Modifier.weight(1f).fillMaxHeight()) {
-                when {
-                    browseCategory != null -> MovieCategoryGrid(sortedMovies, viewModel, onOpenMovie)
-                    !hasContent -> when {
-                        vodLoading || isSyncing -> LoadingVod(stringResource(R.string.vod_loading_movies))
-                        hasSources -> EmptyVod(stringResource(R.string.vod_no_movies), stringResource(R.string.vod_no_movies_provider))
-                        else -> EmptyVod(stringResource(R.string.vod_no_movies), stringResource(R.string.vod_no_movies_add))
-                    }
-                    else -> LazyColumn(
-                        contentPadding = PaddingValues(vertical = 16.dp, horizontal = 16.dp),
-                        verticalArrangement = Arrangement.spacedBy(14.dp),
-                        modifier = Modifier.fillMaxSize(),
-                    ) {
-                        if (heroItems.isNotEmpty()) item(key = "hero_carousel") {
-                            VodHeroCarousel(items = heroItems)
+            Row(Modifier.weight(1f).fillMaxWidth()) {
+                Column(
+                    Modifier
+                        .width(260.dp)
+                        .fillMaxHeight()
+                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+                ) {
+                    SearchAffordance(onOpenSearch)
+                    if (browseCategory != null) {
+                        SortAffordance(sortOption) {
+                            sortOption = SortOption.entries[(sortOption.ordinal + 1) % SortOption.entries.size]
                         }
+                    }
+                    if (sources.size > 1 && selectedSource == null) {
+                        ProviderMenu(
+                            sources = sources,
+                            selected = selectedSource,
+                            onSelectAll = { browseCategory = null; viewModel.selectVodSource(null) },
+                            onSelectSource = { id -> browseCategory = null; viewModel.selectVodSource(id) },
+                        )
+                    }
+                    CategoryMenu(
+                        entries = categories.map { it.id to it.name },
+                        selected = browseCategory,
+                        onSelectHome = { browseCategory = null },
+                        onSelectCategory = { id -> browseCategory = id; viewModel.selectMovieCategory(id) },
+                        onHideCategories = { ids, _ ->
+                            if (browseCategory in ids) {
+                                browseCategory = null
+                                viewModel.selectMovieCategory(null)
+                            }
+                            viewModel.hideCategories(ids)
+                        },
+                    )
+                }
+
+                Box(Modifier.weight(1f).fillMaxHeight()) {
+                    when {
+                        browseCategory != null -> MovieCategoryGrid(sortedMovies, viewModel, onOpenMovie)
+                        !hasContent -> when {
+                            vodLoading || isSyncing -> LoadingVod(stringResource(R.string.vod_loading_movies))
+                            hasSources -> EmptyVod(stringResource(R.string.vod_no_movies), stringResource(R.string.vod_no_movies_provider))
+                            else -> EmptyVod(stringResource(R.string.vod_no_movies), stringResource(R.string.vod_no_movies_add))
+                        }
+                        else -> LazyColumn(
+                            contentPadding = PaddingValues(vertical = 16.dp, horizontal = 16.dp),
+                            verticalArrangement = Arrangement.spacedBy(14.dp),
+                            modifier = Modifier.fillMaxSize(),
+                        ) {
                         if (resume.isNotEmpty()) item(key = "cw") {
                             ContinueWatchingRow(
                                 items = resume,
@@ -288,6 +293,7 @@ fun MoviesScreen(
             }
         }
     }
+}
 
     if (showCategoryDialog) {
         VodAllCategoriesDialog(
@@ -436,69 +442,75 @@ fun SeriesScreen(
             }
         }
     } else {
-        Row(Modifier.fillMaxSize()) {
-            Column(
-                Modifier
-                    .width(260.dp)
-                    .fillMaxHeight()
-                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
-            ) {
-                SearchAffordance(onOpenSearch)
-                if (browseCategory != null) {
-                    SortAffordance(sortOption) {
-                        sortOption = SortOption.entries[(sortOption.ordinal + 1) % SortOption.entries.size]
-                    }
-                }
-                if (sources.size > 1 && selectedSource == null) {
-                    ProviderMenu(
-                        sources = sources,
-                        selected = selectedSource,
-                        onSelectAll = { browseCategory = null; viewModel.selectVodSource(null) },
-                        onSelectSource = { id -> browseCategory = null; viewModel.selectVodSource(id) },
-                    )
-                }
-                CategoryMenu(
-                    entries = categories.map { it.id to it.name },
-                    selected = browseCategory,
-                    onSelectHome = { browseCategory = null },
-                    onSelectCategory = { id -> browseCategory = id; viewModel.selectSeriesCategory(id) },
-                    onHideCategories = { ids, _ ->
-                        if (browseCategory in ids) {
-                            browseCategory = null
-                            viewModel.selectSeriesCategory(null)
-                        }
-                        viewModel.hideCategories(ids)
-                    },
+        Column(Modifier.fillMaxSize()) {
+            if (browseCategory == null && heroItems.isNotEmpty()) {
+                VodHeroCarousel(
+                    items = heroItems,
+                    modifier = Modifier.fillMaxWidth(),
                 )
             }
-            Box(Modifier.weight(1f).fillMaxHeight()) {
-                when {
-                    browseCategory != null -> SeriesCategoryGrid(sortedSeries, onOpenSeries)
-                    !hasContent -> when {
-                        vodLoading || isSyncing -> LoadingVod(stringResource(R.string.vod_loading_shows))
-                        hasSources -> EmptyVod(stringResource(R.string.vod_no_shows), stringResource(R.string.vod_no_shows_provider))
-                        else -> EmptyVod(stringResource(R.string.vod_no_shows), stringResource(R.string.vod_no_shows_add))
+
+            Row(Modifier.weight(1f).fillMaxWidth()) {
+                Column(
+                    Modifier
+                        .width(260.dp)
+                        .fillMaxHeight()
+                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+                ) {
+                    SearchAffordance(onOpenSearch)
+                    if (browseCategory != null) {
+                        SortAffordance(sortOption) {
+                            sortOption = SortOption.entries[(sortOption.ordinal + 1) % SortOption.entries.size]
+                        }
                     }
-                    else -> LazyColumn(
-                        contentPadding = PaddingValues(vertical = 16.dp, horizontal = 16.dp),
-                        verticalArrangement = Arrangement.spacedBy(14.dp),
-                        modifier = Modifier.fillMaxSize(),
-                    ) {
-                        if (heroItems.isNotEmpty()) item(key = "hero_carousel") {
-                            VodHeroCarousel(items = heroItems)
+                    if (sources.size > 1 && selectedSource == null) {
+                        ProviderMenu(
+                            sources = sources,
+                            selected = selectedSource,
+                            onSelectAll = { browseCategory = null; viewModel.selectVodSource(null) },
+                            onSelectSource = { id -> browseCategory = null; viewModel.selectVodSource(id) },
+                        )
+                    }
+                    CategoryMenu(
+                        entries = categories.map { it.id to it.name },
+                        selected = browseCategory,
+                        onSelectHome = { browseCategory = null },
+                        onSelectCategory = { id -> browseCategory = id; viewModel.selectSeriesCategory(id) },
+                        onHideCategories = { ids, _ ->
+                            if (browseCategory in ids) {
+                                browseCategory = null
+                                viewModel.selectSeriesCategory(null)
+                            }
+                            viewModel.hideCategories(ids)
+                        },
+                    )
+                }
+                Box(Modifier.weight(1f).fillMaxHeight()) {
+                    when {
+                        browseCategory != null -> SeriesCategoryGrid(sortedSeries, onOpenSeries)
+                        !hasContent -> when {
+                            vodLoading || isSyncing -> LoadingVod(stringResource(R.string.vod_loading_shows))
+                            hasSources -> EmptyVod(stringResource(R.string.vod_no_shows), stringResource(R.string.vod_no_shows_provider))
+                            else -> EmptyVod(stringResource(R.string.vod_no_shows), stringResource(R.string.vod_no_shows_add))
                         }
-                        if (resume.isNotEmpty()) item(key = "cw") {
-                            ContinueWatchingRow(
-                                items = resume,
-                                onResume = onResume,
-                                onRemove = { viewModel.removeContinueWatching(it.mediaKey) },
-                            )
-                        }
-                        if (recentlyAdded.isNotEmpty()) item(key = "recent") {
-                            SeriesPosterRow(stringResource(R.string.vod_recently_added), recentlyAdded, onOpenSeries)
-                        }
-                        items(genreRows, key = { "g:${it.genre}" }) { group ->
-                            SeriesPosterRow(group.genre, group.items, onOpenSeries)
+                        else -> LazyColumn(
+                            contentPadding = PaddingValues(vertical = 16.dp, horizontal = 16.dp),
+                            verticalArrangement = Arrangement.spacedBy(14.dp),
+                            modifier = Modifier.fillMaxSize(),
+                        ) {
+                            if (resume.isNotEmpty()) item(key = "cw") {
+                                ContinueWatchingRow(
+                                    items = resume,
+                                    onResume = onResume,
+                                    onRemove = { viewModel.removeContinueWatching(it.mediaKey) },
+                                )
+                            }
+                            if (recentlyAdded.isNotEmpty()) item(key = "recent") {
+                                SeriesPosterRow(stringResource(R.string.vod_recently_added), recentlyAdded, onOpenSeries)
+                            }
+                            items(genreRows, key = { "g:${it.genre}" }) { group ->
+                                SeriesPosterRow(group.genre, group.items, onOpenSeries)
+                            }
                         }
                     }
                 }

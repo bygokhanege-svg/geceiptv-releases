@@ -46,8 +46,11 @@ object ServiceLocator {
 
         val database: OpenTvDatabase by lazy { OpenTvDatabase.build(context) }
 
+        val antiFreezeDns: AntiFreezeDns by lazy { AntiFreezeDns(settings) }
+
         val httpClient: OkHttpClient by lazy {
             OkHttpClient.Builder()
+                .dns(antiFreezeDns)
                 .connectTimeout(15, TimeUnit.SECONDS)
                 // Generous: catalogue endpoints on a busy panel can take a long time to
                 // produce 40,000 rows, and timing out mid-list is worse than waiting.

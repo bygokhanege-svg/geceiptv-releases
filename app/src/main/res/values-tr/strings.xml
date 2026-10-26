@@ -222,6 +222,8 @@
     <string name="settings_next_episode_subtitle">Dizi bitimine 30-40 saniye kala sonraki bölüme geçme kartını gösterir.</string>
     <string name="settings_tunneling_title">Donanım Tünelleme (A/V Tunneling)</string>
     <string name="settings_tunneling_subtitle">Destekleyen Android TV\'lerde ses ve videoyu doğrudan donanım çipine tüneller. Kusursuz 60fps akıcılığı ve sıfır ses gecikmesi sağlar. Yayında siyah ekran olursa kapatın.</string>
+    <string name="settings_doh_title">Anti-Freeze Şifreli DNS (DoH)</string>
+    <string name="settings_doh_subtitle">İnternet sağlayıcısının (ISS) uyguladığı bant daraltmalarını (throttling), port engellemelerini ve DNS filtrelerini Cloudflare şifreli HTTPS tüneliyle aşar. Donma ve takılmaları önler.</string>
     <string name="settings_sleep_timer">Uyku zamanlayıcısı</string>
     <string name="settings_sleep_off_desc">Kapalı — siz durdurana kadar oynatma devam eder.</string>
     <string name="settings_sleep_on_desc">Açık — oynatma yaklaşık %1$d dakika içinde duracak.</string>

@@ -95,6 +95,7 @@ fun AppSettingsScreen(onBack: () -> Unit) {
     val resumeLast by settings.resumeLastChannel.collectAsState()
     val nextEpisodePrompt by settings.nextEpisodePromptEnabled.collectAsState()
     val tunnelingEnabled by settings.tunnelingEnabled.collectAsState()
+    val dohEnabled by settings.dohEnabled.collectAsState()
     val playerClockEnabled by settings.playerClockEnabled.collectAsState()
     val liveEnabled by settings.liveEnabled.collectAsState()
     val moviesEnabled by settings.moviesEnabled.collectAsState()
@@ -254,6 +255,12 @@ fun AppSettingsScreen(onBack: () -> Unit) {
                 subtitle = stringResource(R.string.settings_tunneling_subtitle),
                 checked = tunnelingEnabled,
                 onToggle = settings::setTunnelingEnabled,
+            )
+            ToggleRow(
+                title = stringResource(R.string.settings_doh_title),
+                subtitle = stringResource(R.string.settings_doh_subtitle),
+                checked = dohEnabled,
+                onToggle = settings::setDohEnabled,
             )
             ToggleRow(
                 title = stringResource(R.string.settings_player_clock_title),

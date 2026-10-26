@@ -430,6 +430,18 @@ class AppSettings private constructor(context: Context) {
         _tunnelingEnabled.value = enabled
     }
 
+    /**
+     * Anti-Freeze: Encrypted DNS-over-HTTPS (DoH via Cloudflare/Google).
+     * Bypasses ISP throttling, port blocking, and DNS poisoning with automatic System DNS fallback.
+     */
+    private val _dohEnabled = MutableStateFlow(prefs.getBoolean(KEY_DOH_ENABLED, true))
+    val dohEnabled: StateFlow<Boolean> = _dohEnabled.asStateFlow()
+
+    fun setDohEnabled(enabled: Boolean) {
+        prefs.edit().putBoolean(KEY_DOH_ENABLED, enabled).apply()
+        _dohEnabled.value = enabled
+    }
+
     /** Whether to display a sleek live clock in the top-right corner of the video player. */
     private val _playerClockEnabled = MutableStateFlow(prefs.getBoolean(KEY_PLAYER_CLOCK_ENABLED, true))
     val playerClockEnabled: StateFlow<Boolean> = _playerClockEnabled.asStateFlow()
@@ -747,6 +759,7 @@ class AppSettings private constructor(context: Context) {
         private const val KEY_ACTIVE_SOURCE_ID = "active_source_id"
         private const val KEY_TUNNELING_ENABLED = "hardware_tunneling_enabled"
         private const val KEY_PLAYER_CLOCK_ENABLED = "player_clock_enabled"
+        private const val KEY_DOH_ENABLED = "anti_freeze_doh_enabled"
 
         @Volatile private var instance: AppSettings? = null
 

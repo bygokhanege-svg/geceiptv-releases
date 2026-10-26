@@ -13,6 +13,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
@@ -54,14 +55,24 @@ fun VirtualMouseOverlay(server: VirtualMouseServer) {
                     }
                     .size(32.dp)
             ) {
-                // Click wave animation
+                // Click wave animation centered precisely at the arrow tip (0, 0)
                 if (isClicking) {
+                    val ringSize = 34.dp
                     Box(
                         modifier = Modifier
-                            .size(32.dp)
+                            .offset(x = -(ringSize / 2), y = -(ringSize / 2))
+                            .size(ringSize)
                             .clip(CircleShape)
-                            .background(app.opentv.ui.theme.GecePalette.AccentSubtle)
+                            .background(app.opentv.ui.theme.GecePalette.AccentSubtle.copy(alpha = 0.45f))
                             .border(2.dp, app.opentv.ui.theme.GecePalette.Accent, CircleShape)
+                    )
+                    // Sharp center pinpoint at the exact arrow tip
+                    Box(
+                        modifier = Modifier
+                            .offset(x = (-3).dp, y = (-3).dp)
+                            .size(6.dp)
+                            .clip(CircleShape)
+                            .background(app.opentv.ui.theme.GecePalette.Accent)
                     )
                 }
 

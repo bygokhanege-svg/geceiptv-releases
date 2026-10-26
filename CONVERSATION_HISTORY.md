@@ -768,6 +768,31 @@
 
 ---
 
+### 32. Sağlayıcılar Ekranı Yayın Formatı Butonları Mobil Düzen Optimizasyonu (v0.12.23)
+* **Kullanıcı Talebi:** "telefon için sağlayıcılar bölümündeki otomatik , hls ve mpeg-ts butonları telefonda orantısız duruyor. butonları ufaltarak yazıları da kısaltarak düzen sağlayalım."
+* **Uygulanan Değişiklikler:**
+  1. **Yayın Formatı Butonlarının Kompaktlaştırılması & Kısaltılması (`ProvidersScreen.kt`):**
+     - Uzun ve taşmaya neden olan metinler sadeleştirildi:
+       - *"Otomatik (Önerilen)"* ➔ **"Otomatik"**
+       - *"HLS (.m3u8)"* ➔ **"HLS"**
+       - *"MPEG-TS (.ts)"* ➔ **"MPEG-TS"**
+     - Hantal Material 3 butonları yerine `34.dp` yükseklikte, `8.dp` kavisli köşeli modern ve kompakt segment tasarımı uygulandı.
+     - Telefondaki `StreamFormatSelector` içinde her üç buton da eşit genişliğe (`Modifier.weight(1f)`) sahip olacak şekilde ayarlandı. Böylece butonlar kart genişliğini 3 eşit parçaya simetrik ve orantılı olarak bölerek taşma veya ezilmeyi tamamen engelledi.
+     - **3-Renkli Kurumsal Palet & Yüksek Kontrast:**
+       - Seçili format: Asil kehribar altın (`#F59E0B`) zemin üzerinde **Simsiyah (Jet Black `#000000`)** kalın metin.
+       - Seçili olmayan formatlar: Koyu grafit kart yüzeyi (`#1A1F2E`) ve gümüş metin.
+       - TV kumandası D-pad gezinmesinde altın odak çerçeveleri korundu.
+* **Versiyon ve Dağıtım:**
+  - `app/build.gradle.kts`: `versionCode = 44`, `versionName = "0.12.23"`.
+  - `.\gradlew compileDebugKotlin`: Başarılı (0 hata).
+  - `.\gradlew assembleRelease`: Başarılı (`GECEiptv-release.apk` - 13.44 MB).
+  - `bygokhanege-svg/geceiptv`: `main` dalına commit atıldı ve `v0.12.23` etiketi pushlandı.
+  - `bygokhanege-svg/geceiptv-releases`: `v0.12.23` sürümü oluşturulup APK yüklendi.
+* **Doğrulama:**
+  - `https://api.github.com/repos/bygokhanege-svg/geceiptv-releases/releases/latest` üzerinden `v0.12.23` ve `GECEiptv-release.apk` asset'inin aktif olduğu doğrulandı.
+
+---
+
 ## 📌 Hızlı Referans & Mimari Kurallar
 1. **Ekran Genişliği Sınırı (Mobil Breakpoint):**
    * `LocalConfiguration.current.screenWidthDp < 600` mobil/telefon cihazları temsil eder.
@@ -776,7 +801,7 @@
 2. **GitHub Bilgileri:**
    * Kaynak Kod Reposu (Private): `https://github.com/bygokhanege-svg/geceiptv.git`
    * Güncelleme / Dağıtım Reposu (Public): `https://github.com/bygokhanege-svg/geceiptv-releases.git`
-   * Release APK İndirme Bağlantısı: `https://github.com/bygokhanege-svg/geceiptv-releases/releases/download/v0.12.22/GECEiptv-release.apk`
+   * Release APK İndirme Bağlantısı: `https://github.com/bygokhanege-svg/geceiptv-releases/releases/download/v0.12.23/GECEiptv-release.apk`
    * Release APK Adı: `GECEiptv-release.apk`
    * Destek E-postası: `geceiptv@gmail.com`
 3. **Derleme Komutları:**

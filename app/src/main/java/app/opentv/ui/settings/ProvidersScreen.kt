@@ -7,6 +7,10 @@ package app.opentv.ui.settings
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,6 +50,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -54,6 +60,7 @@ import app.opentv.data.model.LiveStreamFormat
 import app.opentv.data.model.Source
 import app.opentv.data.model.SourceKind
 import app.opentv.ui.SourcesViewModel
+import app.opentv.ui.theme.GecePalette
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -321,20 +328,20 @@ private fun ProviderRow(
                         // Xtream için birincil kolay ulaşılabilir yerde: Otomatik, HLS, MPEG-TS
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(6.dp),
                         ) {
                             FormatSegment(
-                                label = stringResource(R.string.provider_stream_format_auto),
+                                label = "Otomatik",
                                 selected = source.liveFormat == LiveStreamFormat.AUTO,
                                 onClick = { onSetLiveFormat(LiveStreamFormat.AUTO) },
                             )
                             FormatSegment(
-                                label = stringResource(R.string.provider_stream_format_hls),
+                                label = "HLS",
                                 selected = source.liveFormat == LiveStreamFormat.HLS,
                                 onClick = { onSetLiveFormat(LiveStreamFormat.HLS) },
                             )
                             FormatSegment(
-                                label = stringResource(R.string.provider_stream_format_ts),
+                                label = "MPEG-TS",
                                 selected = source.liveFormat == LiveStreamFormat.MPEG_TS,
                                 onClick = { onSetLiveFormat(LiveStreamFormat.MPEG_TS) },
                             )
@@ -609,8 +616,7 @@ private fun MetricBox(
 }
 
 /**
- * The per-source HLS / MPEG-TS picker. A compact two-option segmented control (the selected
- * container is a filled button, the other outlined) with a one-line hint on when to reach for it.
+ * The per-source HLS / MPEG-TS picker. A compact, balanced segmented control for phone and TV.
  */
 @Composable
 private fun StreamFormatSelector(
@@ -618,28 +624,36 @@ private fun StreamFormatSelector(
     onSelect: (LiveStreamFormat) -> Unit,
     showHint: Boolean = true,
 ) {
-    Column {
+    Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             stringResource(R.string.provider_stream_format),
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.labelSmall,
+            color = GecePalette.TextSecondary,
+            fontWeight = FontWeight.Medium,
         )
         Spacer(Modifier.height(6.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
             FormatSegment(
-                label = stringResource(R.string.provider_stream_format_auto),
+                label = "Otomatik",
                 selected = selected == LiveStreamFormat.AUTO,
                 onClick = { onSelect(LiveStreamFormat.AUTO) },
+                modifier = Modifier.weight(1f),
             )
             FormatSegment(
-                label = stringResource(R.string.provider_stream_format_hls),
+                label = "HLS",
                 selected = selected == LiveStreamFormat.HLS,
                 onClick = { onSelect(LiveStreamFormat.HLS) },
+                modifier = Modifier.weight(1f),
             )
             FormatSegment(
-                label = stringResource(R.string.provider_stream_format_ts),
+                label = "MPEG-TS",
                 selected = selected == LiveStreamFormat.MPEG_TS,
                 onClick = { onSelect(LiveStreamFormat.MPEG_TS) },
+                modifier = Modifier.weight(1f),
             )
         }
         if (showHint) {
@@ -647,19 +661,61 @@ private fun StreamFormatSelector(
             Text(
                 stringResource(R.string.provider_stream_format_hint),
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = GecePalette.TextSecondary,
             )
         }
     }
 }
 
-/** One option of the stream-format control: filled when chosen, outlined otherwise. */
+/** One option of the stream-format control: compact, proportional and balanced. */
 @Composable
-private fun FormatSegment(label: String, selected: Boolean, onClick: () -> Unit) {
-    if (selected) {
-        Button(onClick = onClick) { Text(label) }
-    } else {
-        OutlinedButton(onClick = onClick) { Text(label) }
+private fun FormatSegment(
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isFocused by interactionSource.collectIsFocusedAsState()
+
+    Box(
+        modifier = modifier
+            .height(34.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .background(
+                when {
+                    selected -> GecePalette.Accent
+                    isFocused -> GecePalette.AccentSubtle
+                    else -> GecePalette.CardElevated
+                },
+            )
+            .border(
+                width = if (isFocused || selected) 1.5.dp else 1.dp,
+                color = when {
+                    isFocused -> GecePalette.Accent
+                    selected -> GecePalette.Accent
+                    else -> GecePalette.CardBorder
+                },
+                shape = RoundedCornerShape(8.dp),
+            )
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                onClick = onClick,
+            )
+            .focusable(interactionSource = interactionSource)
+            .padding(horizontal = 8.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = label,
+            color = if (selected) GecePalette.OnAccent else if (isFocused) GecePalette.Accent else GecePalette.TextPrimary,
+            fontSize = 12.sp,
+            fontWeight = if (selected) FontWeight.Bold else FontWeight.SemiBold,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            textAlign = TextAlign.Center,
+        )
     }
 }
 

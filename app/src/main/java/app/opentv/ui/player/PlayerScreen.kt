@@ -12,6 +12,11 @@ import androidx.annotation.OptIn
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import app.opentv.player.StreamFailoverManager
+import app.opentv.player.StreamCandidate
+import app.opentv.player.FailoverNotice
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -96,9 +101,11 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.C
 import androidx.media3.common.Tracks
@@ -180,6 +187,37 @@ fun PlayerScreen(
             }
         }
     }
+    val failoverManager = remember {
+        StreamFailoverManager(
+            context = context,
+            scope = scope,
+            catalogRepository = graph.catalogRepository,
+            sourceRepository = graph.sourceRepository,
+            settings = settings,
+            onSwitchRequest = { req, _ ->
+                controller.play(req, debounce = false)
+            },
+        )
+    }
+
+    DisposableEffect(controller, failoverManager) {
+        controller.onPlaybackStateListener = { state, isLive ->
+            failoverManager.onPlaybackStateChanged(state, isLive)
+        }
+        controller.onPlayerErrorFallback = { error ->
+            failoverManager.onPlaybackError(error)
+        }
+        onDispose {
+            controller.onPlaybackStateListener = null
+            controller.onPlayerErrorFallback = null
+            failoverManager.release()
+        }
+    }
+
+    val failoverNotice by failoverManager.notice.collectAsState()
+    val failoverCandidates by failoverManager.candidates.collectAsState()
+    val activeCandidate by failoverManager.activeCandidate.collectAsState()
+
     val state by controller.state.collectAsState()
     val tracks by controller.tracks.collectAsState()
     // What's recording right now, so the Record button can show as armed for this channel.
@@ -285,11 +323,13 @@ fun PlayerScreen(
             val source = graph.sourceRepository.byId(channel.sourceId)
             // Xtream/M3U carry a ready URL; a Stalker channel's URL is minted here from its cmd.
             val url = graph.catalogRepository.resolvePlaybackUrl(channel, source)
+            val userAgent = source?.userAgent ?: "OpenTV/0.1 (Android)"
+            failoverManager.onChannelTuned(channel, url, userAgent)
             controller.play(
                 PlayerController.Request(
                     url = url,
                     title = channel.shownName,
-                    userAgent = source?.userAgent ?: "OpenTV/0.1 (Android)",
+                    userAgent = userAgent,
                     isLive = true,
                 ),
                 debounce = false,
@@ -498,6 +538,28 @@ fun PlayerScreen(
             )
         }
 
+        // Top-Center Failover & Stream Optimized Notification Badge
+        AnimatedVisibility(
+            visible = failoverNotice != null && !inPip,
+            enter = fadeIn() + slideInVertically { -it },
+            exit = fadeOut() + slideOutVertically { -it },
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = 28.dp),
+        ) {
+            failoverNotice?.let { notice ->
+                FailoverNoticeBadge(
+                    notice = notice,
+                    onOpenBackups = {
+                        panel = Panel.FAILOVER
+                        controlsVisible = true
+                        interaction++
+                    },
+                    onDismiss = { failoverManager.dismissNotice() },
+                )
+            }
+        }
+
         // The channel number as you type it, top-right, until it resolves.
         if (numberEntry.isNotEmpty() && !inPip) {
             Box(
@@ -587,6 +649,7 @@ fun PlayerScreen(
                         resizeMode = resizeMode,
                         onResize = { resizeMode = it; settings.setPlayerResizeMode(it) },
                         onTune = { tuneTo(it) },
+                        failoverManager = failoverManager,
                         firstFocus = panelFocus,
                         onDone = { panel = Panel.NONE; interaction++ },
                     )
@@ -668,19 +731,15 @@ fun PlayerScreen(
                         panel = if (panel == Panel.ASPECT) Panel.NONE else Panel.ASPECT
                         interaction++
                     }
+                    val backupCount = failoverCandidates.filter { !it.isCurrent }.size
+                    val failoverLabel = if (backupCount > 0) "Donma Kalkanı ($backupCount)" else "Donma Kalkanı"
                     BarChip(
                         icon = Icons.Filled.Shield,
-                        label = "Anti-Freeze",
-                        selected = dohEnabled,
-                        iconTint = if (dohEnabled) Color(0xFF00E5FF) else null,
+                        label = failoverLabel,
+                        selected = panel == Panel.FAILOVER,
+                        iconTint = Color(0xFF00E5FF),
                     ) {
-                        val next = !dohEnabled
-                        settings.setDohEnabled(next)
-                        Toast.makeText(
-                            context,
-                            if (next) "Anti-Freeze (DoH) Aktif ⚡" else "Anti-Freeze Devre Dışı",
-                            Toast.LENGTH_SHORT,
-                        ).show()
+                        panel = if (panel == Panel.FAILOVER) Panel.NONE else Panel.FAILOVER
                         interaction++
                     }
                     BarChip(Icons.Filled.Analytics, stringResource(R.string.player_stats), showStatsDialog) {
@@ -847,7 +906,7 @@ private fun ChannelListRow(
     }
 }
 
-private enum class Panel { NONE, SUBTITLES, AUDIO, QUALITY, ASPECT }
+private enum class Panel { NONE, SUBTITLES, AUDIO, QUALITY, ASPECT, FAILOVER }
 
 @OptIn(UnstableApi::class)
 @Composable
@@ -861,9 +920,20 @@ private fun OptionPanel(
     resizeMode: Int,
     onResize: (Int) -> Unit,
     onTune: (Channel) -> Unit,
+    failoverManager: StreamFailoverManager,
     firstFocus: FocusRequester,
     onDone: () -> Unit,
 ) {
+    if (panel == Panel.FAILOVER) {
+        FailoverOptionPanel(
+            failoverManager = failoverManager,
+            settings = settings,
+            firstFocus = firstFocus,
+            onDone = onDone,
+        )
+        return
+    }
+
     val offLabel = stringResource(R.string.player_subtitles_off)
     val standardLabel = stringResource(R.string.player_quality_standard)
     val serverLabel = stringResource(R.string.player_quality_server)
@@ -895,7 +965,7 @@ private fun OptionPanel(
                 onResize(AspectRatioFrameLayout.RESIZE_MODE_FILL); onDone()
             },
         )
-        Panel.NONE -> emptyList()
+        Panel.NONE, Panel.FAILOVER -> emptyList()
     }
 
     val title = when (panel) {
@@ -903,7 +973,7 @@ private fun OptionPanel(
         Panel.AUDIO -> stringResource(R.string.player_audio)
         Panel.QUALITY -> stringResource(R.string.player_quality)
         Panel.ASPECT -> stringResource(R.string.player_aspect_ratio_title)
-        Panel.NONE -> ""
+        Panel.NONE, Panel.FAILOVER -> ""
     }
 
     Column(
@@ -1198,4 +1268,288 @@ private fun keyToDigit(key: Key): Char? = when (key) {
     Key.Eight, Key.NumPad8 -> '8'
     Key.Nine, Key.NumPad9 -> '9'
     else -> null
+}
+
+@Composable
+private fun FailoverNoticeBadge(
+    notice: FailoverNotice,
+    onOpenBackups: () -> Unit,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .clip(RoundedCornerShape(24.dp))
+            .background(Color(0xF0131722))
+            .border(1.5.dp, Color(0xFF00E5FF).copy(alpha = 0.85f), RoundedCornerShape(24.dp))
+            .clickable(onClick = onOpenBackups)
+            .padding(horizontal = 16.dp, vertical = 9.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        Box(
+            modifier = Modifier
+                .size(34.dp)
+                .clip(CircleShape)
+                .background(Color(0x2600E5FF)),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Shield,
+                contentDescription = null,
+                tint = Color(0xFF00E5FF),
+                modifier = Modifier.size(18.dp),
+            )
+        }
+
+        Column {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = notice.title.uppercase(Locale.getDefault()),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = Color(0xFFF59E0B),
+                    fontWeight = FontWeight.Bold,
+                )
+                if (notice.reason.isNotBlank()) {
+                    Text(
+                        text = " • ${notice.reason}",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color(0xFF94A3B8),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+            }
+            Text(
+                text = notice.details,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.White,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
+
+        Spacer(Modifier.width(4.dp))
+
+        Box(
+            modifier = Modifier
+                .clip(RoundedCornerShape(10.dp))
+                .background(Color(0x3300E5FF))
+                .padding(horizontal = 9.dp, vertical = 4.dp),
+        ) {
+            Text(
+                text = "Yedek Hatlar",
+                style = MaterialTheme.typography.labelSmall,
+                color = Color(0xFF00E5FF),
+                fontWeight = FontWeight.Bold,
+            )
+        }
+    }
+}
+
+@Composable
+private fun FailoverOptionPanel(
+    failoverManager: StreamFailoverManager,
+    settings: app.opentv.core.AppSettings,
+    firstFocus: FocusRequester,
+    onDone: () -> Unit,
+) {
+    val candidates by failoverManager.candidates.collectAsState()
+    val autoFailoverEnabled by settings.autoFailoverEnabled.collectAsState()
+    val dohEnabled by settings.dohEnabled.collectAsState()
+
+    Column(
+        Modifier
+            .widthIn(max = 500.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .background(Color(0xF0131722))
+            .border(1.dp, Color(0xFF22283A), RoundedCornerShape(16.dp))
+            .padding(18.dp),
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(36.dp)
+                    .clip(CircleShape)
+                    .background(Color(0x2600E5FF)),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Shield,
+                    contentDescription = null,
+                    tint = Color(0xFF00E5FF),
+                    modifier = Modifier.size(20.dp),
+                )
+            }
+            Column {
+                Text(
+                    stringResource(R.string.player_failover_panel_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                )
+                Text(
+                    stringResource(R.string.player_failover_panel_subtitle),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color(0xFF94A3B8),
+                )
+            }
+        }
+
+        Spacer(Modifier.height(14.dp))
+
+        // Quick Toggles Row
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            val autoBg = if (autoFailoverEnabled) Color(0x3300E5FF) else Color(0xFF1A1F2E)
+            val autoBorder = if (autoFailoverEnabled) Color(0xFF00E5FF) else Color(0xFF2A324B)
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(autoBg)
+                    .border(1.dp, autoBorder, RoundedCornerShape(10.dp))
+                    .clickable { settings.setAutoFailoverEnabled(!autoFailoverEnabled) }
+                    .padding(horizontal = 10.dp, vertical = 8.dp),
+            ) {
+                Column {
+                    Text(
+                        text = if (autoFailoverEnabled) "🛡️ Otomatik Kalkan: AÇIK" else "🛡️ Otomatik Kalkan: KAPALI",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = if (autoFailoverEnabled) Color(0xFF00E5FF) else Color.White,
+                        fontWeight = FontWeight.Bold,
+                    )
+                    Text(
+                        text = "3 sn donarsa anında yedeğe geçer",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color(0xFF94A3B8),
+                        fontSize = 10.sp,
+                    )
+                }
+            }
+
+            val dohBg = if (dohEnabled) Color(0x33F59E0B) else Color(0xFF1A1F2E)
+            val dohBorder = if (dohEnabled) Color(0xFFF59E0B) else Color(0xFF2A324B)
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(dohBg)
+                    .border(1.dp, dohBorder, RoundedCornerShape(10.dp))
+                    .clickable { settings.setDohEnabled(!dohEnabled) }
+                    .padding(horizontal = 10.dp, vertical = 8.dp),
+            ) {
+                Column {
+                    Text(
+                        text = if (dohEnabled) "⚡ Anti-Freeze DNS: AÇIK" else "⚡ Anti-Freeze DNS: KAPALI",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = if (dohEnabled) Color(0xFFF59E0B) else Color.White,
+                        fontWeight = FontWeight.Bold,
+                    )
+                    Text(
+                        text = "ISS kısıtlamalarını DoH ile aşar",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color(0xFF94A3B8),
+                        fontSize = 10.sp,
+                    )
+                }
+            }
+        }
+
+        Spacer(Modifier.height(14.dp))
+
+        Text(
+            text = "Kullanılabilir Yayın Hatları (${candidates.size})",
+            style = MaterialTheme.typography.labelMedium,
+            color = Color(0xFFF59E0B),
+            fontWeight = FontWeight.SemiBold,
+        )
+
+        Spacer(Modifier.height(6.dp))
+
+        Column(
+            Modifier
+                .heightIn(max = 240.dp)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            candidates.forEachIndexed { index, candidate ->
+                var focused by remember { mutableStateOf(false) }
+                val itemFocus = if (index == 0) firstFocus else remember { FocusRequester() }
+                val cardBg = when {
+                    focused -> Color(0xFF1E2638)
+                    candidate.isCurrent -> Color(0x2600E5FF)
+                    else -> Color(0xFF161B26)
+                }
+                val borderColor = when {
+                    focused -> Color(0xFFF59E0B)
+                    candidate.isCurrent -> Color(0xFF00E5FF)
+                    else -> Color(0xFF242C3E)
+                }
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(cardBg)
+                        .border(if (focused) 1.5.dp else 1.dp, borderColor, RoundedCornerShape(10.dp))
+                        .focusRequester(itemFocus)
+                        .onFocusChanged { focused = it.isFocused }
+                        .focusable()
+                        .clickable {
+                            failoverManager.switchCandidate(candidate, autoTriggered = false)
+                            onDone()
+                        }
+                        .padding(horizontal = 12.dp, vertical = 9.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    if (candidate.isCurrent) {
+                        Text("●", color = Color(0xFF00E5FF), fontSize = 12.sp)
+                    } else {
+                        Text("○", color = Color(0xFF94A3B8), fontSize = 12.sp)
+                    }
+                    Spacer(Modifier.width(10.dp))
+                    Column(Modifier.weight(1f)) {
+                        Text(
+                            text = candidate.title,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = if (candidate.isCurrent) Color(0xFF00E5FF) else Color.White,
+                            fontWeight = if (candidate.isCurrent) FontWeight.Bold else FontWeight.Medium,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                        Text(
+                            text = candidate.subtitle,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Color(0xFF94A3B8),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+                    if (candidate.isCurrent) {
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(6.dp))
+                                .background(Color(0x3300E5FF))
+                                .padding(horizontal = 6.dp, vertical = 2.dp),
+                        ) {
+                            Text(
+                                stringResource(R.string.player_failover_active_stream),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = Color(0xFF00E5FF),
+                                fontSize = 9.sp,
+                                fontWeight = FontWeight.Bold,
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

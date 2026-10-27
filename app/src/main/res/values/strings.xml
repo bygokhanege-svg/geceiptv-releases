@@ -237,6 +237,12 @@
     <string name="settings_tunneling_subtitle">Bypasses OS audio/video routing on supported Android TVs for ultra-smooth 60fps and zero audio lag. Turn off if you get a black screen.</string>
     <string name="settings_doh_title">Anti-Freeze Encrypted DNS (DoH)</string>
     <string name="settings_doh_subtitle">Bypasses ISP throttling, port blocks, and DNS poisoning via Cloudflare encrypted HTTPS tunnel. Eliminates buffering and freezes.</string>
+    <string name="settings_auto_failover_title">Smart Stream Failover &amp; Anti-Lag</string>
+    <string name="settings_auto_failover_subtitle">Automatically switches to backup streams or providers if a channel freezes or server stalls for over 3 seconds.</string>
+    <string name="player_failover_panel_title">Anti-Freeze &amp; Backup Streams</string>
+    <string name="player_failover_panel_subtitle">Alternative broadcast lines detected for the active channel</string>
+    <string name="player_failover_active_stream">Active Line</string>
+    <string name="player_failover_switch_success">Stream Optimized • Connected to backup</string>
     <string name="settings_sleep_timer">Sleep timer</string>
     <string name="settings_sleep_off_desc">Off — playback keeps going until you stop it.</string>
     <string name="settings_sleep_on_desc">On — playback will stop in about %1$d min.</string>

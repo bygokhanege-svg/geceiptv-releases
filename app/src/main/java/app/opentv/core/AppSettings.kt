@@ -451,6 +451,28 @@ class AppSettings private constructor(context: Context) {
         _playerClockEnabled.value = enabled
     }
 
+    /**
+     * Smart Stream Failover & Anti-Lag (Akıllı Sunucu Yük Dengeleyici & Donma Kalkanı).
+     * Automatically switches to backup stream or secondary provider if stream stalls or errors.
+     */
+    private val _autoFailoverEnabled = MutableStateFlow(prefs.getBoolean(KEY_AUTO_FAILOVER_ENABLED, true))
+    val autoFailoverEnabled: StateFlow<Boolean> = _autoFailoverEnabled.asStateFlow()
+
+    fun setAutoFailoverEnabled(enabled: Boolean) {
+        prefs.edit().putBoolean(KEY_AUTO_FAILOVER_ENABLED, enabled).apply()
+        _autoFailoverEnabled.value = enabled
+    }
+
+    /** Timeout in seconds of continuous buffering before failover is triggered (default: 3 seconds). */
+    private val _autoFailoverTimeoutSec = MutableStateFlow(prefs.getInt(KEY_AUTO_FAILOVER_TIMEOUT_SEC, 3))
+    val autoFailoverTimeoutSec: StateFlow<Int> = _autoFailoverTimeoutSec.asStateFlow()
+
+    fun setAutoFailoverTimeoutSec(seconds: Int) {
+        val clamped = seconds.coerceIn(2, 10)
+        prefs.edit().putInt(KEY_AUTO_FAILOVER_TIMEOUT_SEC, clamped).apply()
+        _autoFailoverTimeoutSec.value = clamped
+    }
+
     // ---- Content types -----------------------------------------------------------------------
 
     /**
@@ -760,6 +782,8 @@ class AppSettings private constructor(context: Context) {
         private const val KEY_TUNNELING_ENABLED = "hardware_tunneling_enabled"
         private const val KEY_PLAYER_CLOCK_ENABLED = "player_clock_enabled"
         private const val KEY_DOH_ENABLED = "anti_freeze_doh_enabled"
+        private const val KEY_AUTO_FAILOVER_ENABLED = "auto_failover_enabled"
+        private const val KEY_AUTO_FAILOVER_TIMEOUT_SEC = "auto_failover_timeout_sec"
 
         @Volatile private var instance: AppSettings? = null
 

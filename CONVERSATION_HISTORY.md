@@ -856,13 +856,38 @@
   * `ProfileAvatars.kt`: 8 tematik Netflix tarzı degrade renkli ve ikonlu avatar koleksiyonu oluşturuldu.
   * `ProfilesScreen.kt`: Sinematik "Kim İzliyor?" Netflix arayüzü, "+ Profil Ekle" kartı, "Profilleri Yönet" kalem modu, 4 daireli PIN kilit ekranı (`ProfilePinPromptDialog`) ve profil düzenleme ekranı (`ProfileEditScreen`) geliştirildi. TV'de D-pad `OnScreenKeyboard`, telefon/tablette yerel dokunmatik klavye sağlandı.
   * `MainScreen.kt` & `DashboardScreen.kt`: Seçili profilin menü tercihleri (`liveEnabled`, `moviesEnabled`, vb.) dinamik olarak ana ekrana ve navigasyon barlarına yansıtıldı.
-  * `app/build.gradle.kts`: `versionCode = 47`, `versionName = "0.12.26"`.
-  * `.\gradlew assembleRelease`: Başarılı (`GECEiptv-release.apk` - 13.50 MB).
-  * `bygokhanege-svg/geceiptv`: `main` dalına commit atıldı ve `v0.12.26` etiketi pushlandı.
-  * `bygokhanege-svg/geceiptv-releases`: `v0.12.26` sürümü oluşturulup APK yüklendi.
-* **Doğrulama:**
-  - `https://github.com/bygokhanege-svg/geceiptv-releases/releases/download/v0.12.26/GECEiptv-release.apk` aktif hale getirildi.
-
+### 34. Akıllı Sunucu Yük Dengeleyici & Donma Kalkanı (Smart Stream Failover & Anti-Lag) (v0.12.27)
+* **Kullanıcı İstekleri:**
+  * IPTV standartlarını bir üst seviyeye taşıyacak devrim niteliğinde bir özellik olarak: Yayın donması veya kopması durumunda kullanıcının hiçbir şey yapmasına gerek kalmadan arka planda otomatik olarak yedek akışa geçen akıllı yük dengeleyici (Auto Stream Failover) sisteminin entegre edilmesi istendi.
+* **Teknik Çözüm ve Mimari:**
+  1. **Çok Kademeli Yedek Akış Keşfi (`StreamFailoverManager.kt`):**
+     - Bir kanal açıldığında arka planda alternatif tüm yayın hatları dinamik olarak taranır:
+       - **1. Kademe:** Aynı sağlayıcıdaki farklı kalite/sunucu varyantları (FHD, HD, HEVC, RAW, YEDEK, SERVER 2).
+       - **2. Kademe:** Kullanıcının eklediği diğer sağlayıcılarda (`groupKey` veya EPG eşleşmesi) aynı kanalın yayınları.
+       - **3. Kademe:** HLS (`.m3u8`) ve MPEG-TS (`.ts`) dinamik format alternatifi.
+  2. **Akıllı Donma & Takılma Algılayıcı (Freeze & Stall Watchdog):**
+     - Canlı yayında `Player.STATE_BUFFERING` durumu aralıksız olarak **3.5 saniye** (ayarlardan 2-10 sn seçilebilir) sürdüğünde yayın "Donmuş" kabul edilir ve anında yedek hatta geçilir.
+     - Sık takılma kalkanı: 15 saniye içinde 3 kez ardışık tamponlama gerçekleşirse bağlantının tıkandığı tespit edilerek kesintisiz alternatif akışa yönlendirilir.
+  3. **Bağlantı Hatası Yakalayıcı (Zero-Error Seamless Recovery):**
+     - Sunucu 404/500 verdiğinde veya ağ koptuğunda kullanıcıya fatal hata ekranı göstermek yerine `onPlayerErrorFallback` ile anında diğer yedek hat denenir.
+  4. **Lüks Sinematik HUD Bildirimi (`FailoverNoticeBadge`):**
+     - Donma engellenip yedek hata geçildiğinde ekranın üst kısmında lüks bir bildirim kapsülü parlar:
+       `[🛡️ DONMA KALKANI DEVREDE] • [Yedek Hat 1 / HD] yayınına bağlandı`
+     - 4.5 saniye sonra yumuşak bir animasyonla kaybolur; kullanıcı kumandadan "Yedek Hatlar"a basarak detayları görebilir.
+  5. **Oynatıcı İçi Donma Kalkanı & Yedek Akışlar Paneli (`Panel.FAILOVER`):**
+     - Oynatıcı kontrol çubuğunda "Anti-Freeze" butonu **"Donma Kalkanı (X)"** (kaç adet yedek hat olduğunu gösterir) çipine dönüştürüldü.
+     - Tıklandığında açılan cam panelde:
+       - Aktif Hat (`● AKTİF`)
+       - Tüm yedek hatların listesi (dokunmatik/kumanda ile anında manuel geçiş yapılabilir)
+       - "Otomatik Donma Kalkanı" açma/kapatma anahtarı
+       - "Anti-Freeze Şifreli DNS (DoH)" açma/kapatma anahtarı
+  6. **Kullanıcı Ayarları (`AppSettingsScreen.kt`):**
+     - Ayarlar > Oynatma menüsüne `Akıllı Sunucu Yük Dengeleyici & Donma Kalkanı` anahtarı eklendi.
+     - Türkçe ve İngilizce dil kaynakları (`strings.xml`) eksiksiz tanımlandı.
+* **Versiyon ve Dağıtım:**
+  - `app/build.gradle.kts`: `versionCode = 48`, `versionName = "0.12.27"`.
+  - `.\gradlew compileDebugKotlin`: Başarılı (0 hata).
+  - `.\gradlew assembleRelease`: Başarılı (`GECEiptv-release.apk` - 13.50 MB).
 ---
 
 ## 📌 Hızlı Referans & Mimari Kurallar
@@ -873,13 +898,14 @@
 2. **GitHub Bilgileri:**
    * Kaynak Kod Reposu (Private): `https://github.com/bygokhanege-svg/geceiptv.git`
    * Güncelleme / Dağıtım Reposu (Public): `https://github.com/bygokhanege-svg/geceiptv-releases.git`
-   * Release APK İndirme Bağlantısı: `https://github.com/bygokhanege-svg/geceiptv-releases/releases/download/v0.12.26/GECEiptv-release.apk`
+   * Release APK İndirme Bağlantısı: `https://github.com/bygokhanege-svg/geceiptv-releases/releases/download/v0.12.27/GECEiptv-release.apk`
    * Release APK Adı: `GECEiptv-release.apk`
    * Destek E-postası: `geceiptv@gmail.com`
 3. **Derleme Komutları:**
    * Kod Doğrulama: `.\gradlew compileDebugKotlin` veya `.\gradlew compileReleaseKotlin`
    * Release APK Üretimi: `.\gradlew assembleRelease`
    * Çıktı Yolu: `app\build\outputs\apk\release\GECEiptv-release.apk`
+
 
 
 

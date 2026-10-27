@@ -175,7 +175,6 @@ interface ChannelDao {
     @Query("SELECT * FROM channels WHERE id = :id")
     suspend fun byId(id: Long): Channel?
 
-    /** Every quality variant of one logical channel, best first. */
     @Query(
         """
         SELECT * FROM channels
@@ -184,6 +183,19 @@ interface ChannelDao {
         """
     )
     suspend fun variantsInGroup(groupKey: String): List<Channel>
+
+    /** All backup candidates for stream failover: channels sharing groupKey or EPG id across all sources. */
+    @Query(
+        """
+        SELECT * FROM channels
+        WHERE (
+            (groupKey = :groupKey AND groupKey != '')
+            OR (:epgId IS NOT NULL AND epgChannelId = :epgId AND epgChannelId != '')
+        ) AND hidden = 0
+        ORDER BY (sourceId = :currentSourceId) DESC, qualityRank DESC, displayName ASC
+        """
+    )
+    suspend fun backupCandidates(groupKey: String, epgId: String?, currentSourceId: Long): List<Channel>
 
     @Query("SELECT COUNT(*) FROM channels WHERE sourceId = :sourceId")
     suspend fun countForSource(sourceId: Long): Int

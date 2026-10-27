@@ -1139,6 +1139,19 @@ class CatalogRepository(
     }
 
     /**
+     * Finds all alternative/backup channels for the given [channel] across active sources for stream failover.
+     * Looks up variants by groupKey and by matching epgChannelId, including backup lines with identical quality.
+     */
+    suspend fun findBackupChannels(channel: Channel): List<Channel> = withContext(Dispatchers.IO) {
+        if (channel.groupKey.isEmpty() && channel.epgChannelId.isNullOrEmpty()) {
+            return@withContext emptyList()
+        }
+        val epg = channel.epgChannelId?.takeIf { it.isNotBlank() }
+        val rawCandidates = channelDao.backupCandidates(channel.groupKey, epg, channel.sourceId)
+        rawCandidates.filter { it.id != channel.id }
+    }
+
+    /**
      * Switches an Xtream source's live-stream container (HLS ↔ MPEG-TS) and rewrites its live
      * channels' playback URLs in place, so the change takes effect immediately without a re-sync.
      *

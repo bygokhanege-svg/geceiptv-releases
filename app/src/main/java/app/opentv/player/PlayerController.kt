@@ -132,6 +132,8 @@ class PlayerController(
     private var consecutiveFailures = 0
 
     var onFormatResolved: ((originalUrl: String, workingUrl: String) -> Unit)? = null
+    var onPlaybackStateListener: ((state: Int, isLive: Boolean) -> Unit)? = null
+    var onPlayerErrorFallback: ((error: PlaybackException) -> Boolean)? = null
     private var initialRequestUrl: String? = null
     private var triedAlternateFormat: Boolean = false
 
@@ -306,11 +308,18 @@ class PlayerController(
                         Player.STATE_ENDED -> State.Idle
                         else -> _state.value
                     }
+                    onPlaybackStateListener?.invoke(playbackState, current?.isLive == true)
                 }
 
                 override fun onPlayerError(error: PlaybackException) {
                     val request = current
                     val altUrl = request?.url?.let { alternateStreamUrl(it) }
+
+                    // If failover fallback interceptor handles the error (switches to backup stream), return immediately
+                    if (onPlayerErrorFallback?.invoke(error) == true) {
+                        android.util.Log.i("PlayerController", "Stream error intercepted by failover listener: ${error.errorCodeName}")
+                        return
+                    }
 
                     // If tunneling was active and playback hit an error, automatically disable tunneling and retry with standard pipeline
                     if (defaultTrackSelector.parameters.tunnelingEnabled) {

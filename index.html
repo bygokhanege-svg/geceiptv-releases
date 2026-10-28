@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GECE İPTV Player • Cihaz Aktivasyon & Yönetim Paneli</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #080C14;
+            --surface: #101726;
+            --surface-glass: rgba(16, 23, 38, 0.75);
+            --border-glass: rgba(255, 255, 255, 0.1);
+            --primary: #3B82F6;
+            --primary-glow: rgba(59, 130, 246, 0.35);
+            --emerald: #10B981;
+            --amber: #F59E0B;
+            --rose: #F43F5E;
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 15% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 85% 80%, rgba(16, 185, 129, 0.12) 0%, transparent 40%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 18px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-glass);
+            border-radius: 50px;
+            margin-bottom: 14px;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo-badge span {
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            color: var(--primary);
+            text-transform: uppercase;
+        }
+
+        .title {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 15px;
+            color: var(--text-muted);
+            max-width: 440px;
+            line-height: 1.5;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 520px;
+            background: var(--surface-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(8, 12, 20, 0.6);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            color: var(--text-main);
+            font-size: 15px;
+            font-weight: 500;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        .mac-key-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 14px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border-radius: 12px;
+            border: none;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3B82F6, #2563EB);
+            color: #FFFFFF;
+            box-shadow: 0 10px 20px -5px var(--primary-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 25px -5px var(--primary-glow);
+        }
+
+        .btn-emerald {
+            background: linear-gradient(135deg, #10B981, #059669);
+            color: #FFFFFF;
+            margin-top: 10px;
+        }
+
+        .status-box {
+            display: none;
+            margin-top: 24px;
+            padding: 18px;
+            border-radius: 14px;
+            border: 1px solid transparent;
+            font-size: 14px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .status-trial {
+            background: rgba(245, 158, 11, 0.12);
+            border-color: rgba(245, 158, 11, 0.3);
+            color: #FCD34D;
+        }
+
+        .status-active {
+            background: rgba(16, 185, 129, 0.12);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: #6EE7B7;
+        }
+
+        .status-expired {
+            background: rgba(244, 63, 94, 0.12);
+            border-color: rgba(244, 63, 94, 0.3);
+            color: #FDA4AF;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 22px;
+            background: rgba(8, 12, 20, 0.5);
+            padding: 4px;
+            border-radius: 12px;
+            border: 1px solid var(--border-glass);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            background: var(--surface);
+            color: var(--text-main);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .hidden { display: none; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="logo-badge">
+            <span>GECE İPTV Player Portalı</span>
+        </div>
+        <h1 class="title">Cihaz &amp; Playlist Yönetimi</h1>
+        <p class="subtitle">Televizyonunuzdaki MAC adresini ve Güvenlik Kodunu girerek listenizi hemen yükleyin veya sürenizi uzatın.</p>
+    </div>
+
+    <div class="card">
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('check')">🔍 Lisans Kontrol</div>
+            <div class="tab" onclick="switchTab('playlist')">📺 Playlist Ekle</div>
+            <div class="tab" onclick="switchTab('buy')">💳 Satın Al</div>
+        </div>
+
+        <form id="authForm" onsubmit="event.preventDefault(); checkDevice();">
+            <div class="mac-key-row">
+                <div class="form-group">
+                    <label>Cihaz Kimliği (MAC)</label>
+                    <input type="text" id="mac" placeholder="Örn: 4B:7E:89:10:A1:2C" required>
+                </div>
+                <div class="form-group">
+                    <label>Güvenlik Anahtarı</label>
+                    <input type="text" id="key" placeholder="6 Haneli Kod" maxlength="6" required>
+                </div>
+            </div>
+
+            <!-- Tab 1: Check Status -->
+            <div id="checkTab">
+                <button type="submit" class="btn btn-primary" id="btnCheck">Cihaz Durumunu Sorgula</button>
+                <div id="statusResult" class="status-box"></div>
+            </div>
+
+            <!-- Tab 2: Add Playlist -->
+            <div id="playlistTab" class="hidden">
+                <div class="form-group">
+                    <label>Oynatma Listesi Adı</label>
+                    <input type="text" id="plName" placeholder="Örn: Ev Paketi" value="Ana IPTV Listem">
+                </div>
+                <div class="form-group">
+                    <label>Liste Tipi</label>
+                    <select id="plKind" onchange="toggleKindFields()">
+                        <option value="XTREAM">Xtream Codes (Kullanıcı Adı &amp; Şifre)</option>
+                        <option value="M3U">M3U / M3U8 Linki</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label id="urlLabel">Sunucu Adresi (URL)</label>
+                    <input type="text" id="plUrl" placeholder="http://sunucu.com:8080" required>
+                </div>
+                <div id="xtreamFields">
+                    <div class="mac-key-row">
+                        <div class="form-group">
+                            <label>Kullanıcı Adı</label>
+                            <input type="text" id="plUser" placeholder="Username">
+                        </div>
+                        <div class="form-group">
+                            <label>Şifre</label>
+                            <input type="password" id="plPass" placeholder="Password">
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-emerald" onclick="submitPlaylist()" id="btnSavePl">TV'ye Otomatik Gönder</button>
+                <div id="playlistResult" class="status-box"></div>
+            </div>
+
+            <!-- Tab 3: Buy License -->
+            <div id="buyTab" class="hidden">
+                <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 14px; padding: 16px; margin-bottom: 20px;">
+                    <div style="font-weight: 700; color: #10B981; font-size: 15px; margin-bottom: 4px;">⚡ Hızlı &amp; Güvenilir Aktivasyon</div>
+                    <p style="font-size: 13px; color: var(--text-muted); line-height: 1.4;">
+                        E-posta üzerinden doğrudan iletişime geçerek Havale / EFT / Papara veya Kripto ile lisansınızı hemen etkinleştirebilirsiniz.
+                    </p>
+                </div>
+
+                <a href="https://t.me/geceiptv" target="_blank" class="btn" style="background: #229ED9; color: #fff; text-decoration: none; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <span>✈️ Telegram ile Destek &amp; Satın Al (@geceiptv)</span>
+                </a>
+
+                <a href="javascript:void(0)" onclick="openMail()" class="btn btn-emerald" style="text-decoration: none; margin-bottom: 16px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <span>✉️ E-posta ile Satın Al &amp; Onayla (geceiptv@gmail.com)</span>
+                </a>
+
+                <div style="border-top: 1px solid var(--border-glass); padding-top: 16px; margin-top: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <span style="font-size: 13px; font-weight: 600; color: var(--text-muted);">GOOGLE PLAY İLE SATIN AL</span>
+                        <span style="font-size: 11px; padding: 2px 8px; border-radius: 20px; background: rgba(59, 130, 246, 0.2); color: #60A5FA; font-weight: 700;">YAKINDA</span>
+                    </div>
+                    <p style="font-size: 12px; color: var(--text-muted);">Google Play Store üzerinden kumandayla tek tıkla satın alma altyapısı hazırlanmaktadır.</p>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const SUPABASE_URL = "https://yhrftdpzrhtoaqohjmhs.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_KEatc4BhnVMiAv4LXxbnmQ_lKSINSYd";
+        const SUPPORT_EMAIL = "geceiptv@gmail.com";
+
+        // URL query parametrelerini otomatik oku (?mac=...&key=...)
+        window.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const macParam = params.get('mac');
+            const keyParam = params.get('key');
+            if (macParam) document.getElementById('mac').value = macParam;
+            if (keyParam) document.getElementById('key').value = keyParam;
+            if (macParam && keyParam) checkDevice();
+        });
+
+        function switchTab(type) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('checkTab').classList.add('hidden');
+            document.getElementById('playlistTab').classList.add('hidden');
+            document.getElementById('buyTab').classList.add('hidden');
+
+            if (type === 'check') {
+                document.querySelectorAll('.tab')[0].classList.add('active');
+                document.getElementById('checkTab').classList.remove('hidden');
+            } else if (type === 'playlist') {
+                document.querySelectorAll('.tab')[1].classList.add('active');
+                document.getElementById('playlistTab').classList.remove('hidden');
+            } else if (type === 'buy') {
+                document.querySelectorAll('.tab')[2].classList.add('active');
+                document.getElementById('buyTab').classList.remove('hidden');
+            }
+        }
+
+        function openMail() {
+            const mac = document.getElementById('mac').value.trim() || "BELİRTİLMEDİ";
+            const key = document.getElementById('key').value.trim() || "BELİRTİLMEDİ";
+            const subject = encodeURIComponent(`GECE İPTV Player Premium Lisans Talebi - MAC: ${mac}`);
+            const body = encodeURIComponent(`Merhaba,\n\nGECE İPTV Player uygulaması için lisans satın almak istiyorum.\n\nCihaz MAC: ${mac}\nCihaz Kodu: ${key}\n\nÖdeme bilgisi rica ederim.`);
+            window.location.href = `mailto:${SUPPORT_EMAIL}?subject=${subject}&body=${body}`;
+        }
+
+        function toggleKindFields() {
+            const kind = document.getElementById('plKind').value;
+            const xtreamFields = document.getElementById('xtreamFields');
+            const urlLabel = document.getElementById('urlLabel');
+            if (kind === 'M3U') {
+                xtreamFields.style.display = 'none';
+                urlLabel.innerText = 'M3U Oynatma Listesi Bağlantısı';
+                document.getElementById('plUrl').placeholder = 'http://sunucu.com:8080/get.php?...';
+            } else {
+                xtreamFields.style.display = 'block';
+                urlLabel.innerText = 'Sunucu Adresi (URL)';
+                document.getElementById('plUrl').placeholder = 'http://sunucu.com:8080';
+            }
+        }
+
+        async function checkDevice() {
+            const mac = document.getElementById('mac').value.trim();
+            const key = document.getElementById('key').value.trim();
+            const resBox = document.getElementById('statusResult');
+            const btn = document.getElementById('btnCheck');
+
+            if (!mac || !key) return;
+
+            btn.innerText = "Sorgulanıyor...";
+            btn.disabled = true;
+            resBox.style.display = 'none';
+
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/verify_or_register_device`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ p_mac: mac, p_key: key, p_version: "Web-1.0" })
+                });
+
+                const data = await response.json();
+                resBox.style.display = 'block';
+
+                if (!response.ok) {
+                    resBox.className = 'status-box status-expired';
+                    resBox.innerHTML = `⚠️ <b>Hata:</b> ${data.message || 'Cihaz bulunamadı.'}`;
+                } else {
+                    if (data.is_premium) {
+                        resBox.className = 'status-box status-active';
+                        resBox.innerHTML = `✅ <b>Premium Aktif!</b><br>Paket: ${data.plan_type}<br>Tüm özellikler açık.`;
+                    } else if (data.status === 'trial') {
+                        resBox.className = 'status-box status-trial';
+                        resBox.innerHTML = `⏳ <b>7 Günlük Deneme Sürümü Aktif</b><br>Kalan Süre: <b>${data.days_remaining} Gün</b><br>Bitiş: ${new Date(data.expires_at).toLocaleDateString('tr-TR')}`;
+                    } else {
+                        resBox.className = 'status-box status-expired';
+                        resBox.innerHTML = `❌ <b>Süre Doldu!</b><br>Deneme süreniz sona ermiştir. Devam etmek için lisans satın alınız.`;
+                    }
+                }
+            } catch (err) {
+                resBox.style.display = 'block';
+                resBox.className = 'status-box status-expired';
+                resBox.innerHTML = `⚠️ <b>Bağlantı Hatası:</b> ${err.message}`;
+            } finally {
+                btn.innerText = "Cihaz Durumunu Sorgula";
+                btn.disabled = false;
+            }
+        }
+
+        async function submitPlaylist() {
+            const mac = document.getElementById('mac').value.trim();
+            const key = document.getElementById('key').value.trim();
+            const plName = document.getElementById('plName').value.trim();
+            const plKind = document.getElementById('plKind').value;
+            const plUrl = document.getElementById('plUrl').value.trim();
+            const plUser = document.getElementById('plUser').value.trim();
+            const plPass = document.getElementById('plPass').value.trim();
+            const resBox = document.getElementById('playlistResult');
+            const btn = document.getElementById('btnSavePl');
+
+            if (!mac || !key || !plUrl) {
+                alert("Lütfen MAC, Güvenlik Kodu ve URL alanlarını doldurun.");
+                return;
+            }
+
+            btn.innerText = "TV'ye Gönderiliyor...";
+            btn.disabled = true;
+            resBox.style.display = 'none';
+
+            try {
+                // Verify device first
+                await fetch(`${SUPABASE_URL}/rest/v1/rpc/verify_or_register_device`, {
+                    method: 'POST',
+                    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ p_mac: mac, p_key: key })
+                });
+
+                // Insert into cloud_playlists
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/cloud_playlists`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify({
+                        device_mac: mac,
+                        name: plName,
+                        kind: plKind,
+                        url: plUrl,
+                        username: plUser,
+                        password: plPass,
+                        is_active: true
+                    })
+                });
+
+                resBox.style.display = 'block';
+                if (response.ok) {
+                    resBox.className = 'status-box status-active';
+                    resBox.innerHTML = `🎉 <b>Başarılı!</b><br>Listeniz buluta kaydedildi. TV uygulamanızı açtığınızda liste otomatik olarak yüklenecektir.`;
+                } else {
+                    const err = await response.json();
+                    resBox.className = 'status-box status-expired';
+                    resBox.innerHTML = `⚠️ <b>Hata:</b> ${err.message || 'Kayıt başarısız.'}`;
+                }
+            } catch (err) {
+                resBox.style.display = 'block';
+                resBox.className = 'status-box status-expired';
+                resBox.innerHTML = `⚠️ <b>Hata:</b> ${err.message}`;
+            } finally {
+                btn.innerText = "TV'ye Otomatik Gönder";
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
